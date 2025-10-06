@@ -1,0 +1,23 @@
+# Ultra-Lean ML Stack for $14.99/month pricing
+# Keep only essential, low-cost components
+
+# Core Data & ML (Free/Low-cost)
+numpy>=1.24.0,<2.0.0
+pandas>=2.0.0,<3.0.0  
+scikit-learn>=1.3.0,<2.0.0
+scipy>=1.10.0,<2.0.0
+
+# Prediction Models (Choose ONE only)
+xgboost>=2.0.0,<3.0.0
+# OR prophet>=1.1.4  # Pick one to reduce dependencies
+
+# Simple explainability (no heavy dependencies)
+shap>=0.42.0,<1.0.0
+
+# Basic contextual bandits (no heavy MABWiser)
+mabwiser>=2.0.0
+
+# Minimal utilities
+tqdm>=4.65.0
+
+# Remove entirely: TensorFlow, PyTroch heavy models, Flower, API-heavy components

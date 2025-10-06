@@ -1,0 +1,130 @@
+# Core ML and Data Science
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+scipy>=1.10.0
+
+# Deep Learning
+tensorflow>=2.13.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Gradient Boosting
+xgboost>=1.7.0
+lightgbm>=4.0.0
+catboost>=1.2.0
+
+# Time Series
+prophet>=1.1.4
+statsmodels>=0.14.0
+arch>=6.2.0
+# Classic ARIMA helpers
+pmdarima>=2.0.4
+
+# Explainability
+shap>=0.42.0
+lime>=0.2.0
+eli5>=0.13.0
+
+# Causal Inference
+dowhy>=0.8.0
+econml>=0.14.0
+causalml>=0.13.0
+
+# NLP and Text Processing
+transformers>=4.30.0
+torchaudio>=2.0.0
+nltk>=3.8.0
+spacy>=3.6.0
+sentence-transformers>=2.2.0
+
+# Computer Vision (for environmental data processing)
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Graph Neural Networks
+torch-geometric>=2.3.0
+dgl>=1.1.0
+
+# Reinforcement Learning
+stable-baselines3>=2.3.0
+gymnasium>=0.29.1
+ray[rllib]>=2.6.0
+
+# Contextual Bandits / Personalization
+mabwiser>=2.7.4,<2.8
+# vowpalwabbit can be heavy to build locally; keep as optional
+vowpalwabbit>=9.9.0
+scikit-surprise>=1.1.3
+
+# Time-series DL forecasting
+pytorch-forecasting>=1.0.0
+lightning>=2.4.0
+# TimesNet (no canonical pip; implement via repo when enabling)
+# timesnet @ git+https://github.com/thuml/TimesNet.git
+
+# Federated Learning (optional heavy)
+flwr>=1.9.0
+
+# Anomaly Detection
+pyod>=1.1.3
+
+# AutoML
+auto-sklearn>=0.15.0
+optuna>=3.2.0
+hyperopt>=0.2.7
+
+# Model Serving and Deployment
+mlflow>=2.5.0
+bentoml>=1.0.0
+onnx>=1.14.0
+onnxruntime>=1.15.0
+
+# Data Processing
+dask>=2023.5.0
+vaex>=4.17.0
+polars>=0.19.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+bokeh>=3.2.0
+
+# Recommenders (may require system libs; mark but optional)
+lightfm>=1.17
+implicit>=0.7.2
+
+# Database and Storage
+sqlalchemy>=2.0.0
+redis>=4.6.0
+pymongo>=4.4.0
+
+# Monitoring and Logging
+prometheus-client>=0.17.0
+grafana-api>=1.0.3
+wandb>=0.15.0
+
+# API and Web
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+httpx>=0.24.0
+
+# Utilities
+joblib>=1.3.0
+tqdm>=4.65.0
+click>=8.1.0
+python-dotenv>=1.0.0
+pydantic-settings>=2.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Development
+black>=23.7.0
+flake8>=6.0.0
+mypy>=1.5.0
+pre-commit>=3.3.0

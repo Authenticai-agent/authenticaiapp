@@ -1,0 +1,2875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's in My Air? - Discover the Invisible Pollutants Around You</title>
+    <meta name="description" content="Test your knowledge about indoor air quality. Can you spot the invisible pollutants hiding in everyday spaces?">
+    <meta property="og:title" content="What's in My Air? - Indoor Air Quality Game">
+    <meta property="og:description" content="Indoor air can be 2-5x more polluted than outdoor air. Test your air quality IQ!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0f172a;
+            --bg-light: #1e293b;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: #334155;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .tagline {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        .progress-container {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            background: var(--border);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .scene-card {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scene-number {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .scene-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .scene-image {
+            width: 100%;
+            min-height: 250px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border-radius: 15px;
+            margin-bottom: 20px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scene-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            animation: shimmer 3s infinite;
+        }
+        
+        .scene-visual {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .scene-visual h3 {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .visual-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .visual-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .visual-icon {
+            font-size: 1.2rem;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .scene-description {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            color: var(--text);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .choice-btn.correct {
+            background: var(--success);
+            border-color: var(--success);
+            animation: correctPulse 0.6s ease;
+        }
+
+        .choice-btn.incorrect {
+            background: var(--danger);
+            border-color: var(--danger);
+            animation: shake 0.5s ease;
+        }
+        
+        .choice-btn.incorrect:not(.correct):hover {
+            background: rgba(239, 68, 68, 0.8);
+            border-color: rgba(239, 68, 68, 0.8);
+        }
+        
+        .choice-btn.explored {
+            background: rgba(148, 163, 184, 0.2);
+            border-color: rgba(148, 163, 184, 0.5);
+        }
+        
+        .choice-btn.explored:hover {
+            background: rgba(148, 163, 184, 0.3);
+            border-color: rgba(148, 163, 184, 0.6);
+            transform: translateX(5px);
+        }
+        
+        .try-again-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .feedback.correct {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .feedback.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .insight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .insight-box strong {
+            color: var(--primary);
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .next-btn:disabled {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .next-btn:disabled:hover {
+            transform: none;
+        }
+
+        .final-screen {
+            text-align: center;
+            padding: 40px 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .score-display {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+        }
+
+        .score-label {
+            font-size: 1.2rem;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .cta-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .cta-description {
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .email-input::placeholder {
+            color: var(--text-dim);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-light);
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .restart-btn {
+            background: var(--bg-light);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: var(--bg);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .scene-card {
+                padding: 20px;
+            }
+            
+            .scene-image {
+                min-height: auto;
+                padding: 20px;
+            }
+            
+            .visual-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .email-form {
+                flex-direction: column;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="gameContent">
+            <!-- Game content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Game data - 50 carefully selected scenes with visual elements
+        const gameData = {
+            scenes: [
+                // Introduction
+                {
+                    type: 'intro',
+                    title: "Welcome to What's in My Air? 🌬️",
+                    description: "Air quality varies dramatically in different environments, yet most of us can't see the invisible threats.\n\nYour mission: Spot the hidden pollutants lurking in everyday spaces - from homes to workplaces, vehicles to public venues.\n\nThink you've got a clean-air sixth sense? Let's find out!",
+                    choices: [
+                        { text: "Start Game", action: 'start' }
+                    ]
+                },
+                
+                {
+                    title: "Kitchen - Dinner Time",
+                    visualElements: [
+                        { icon: "🔥", text: "Gas stove burning" },
+                        { icon: "🍳", text: "Stir-fry sizzling" },
+                        { icon: "❌", text: "Range hood OFF" },
+                        { icon: "🪟", text: "Windows closed" },
+                        { icon: "💨", text: "Steam rising" },
+                        { icon: "🧈", text: "Oil splattering" }
+                    ],
+                    description: "Dinner smells delicious! What's the biggest immediate air quality risk?",
+                    choices: [
+                        { 
+                            text: "A) NO₂ from gas stove", 
+                            correct: true,
+                            health: "NO₂ inflames airways within 30 minutes, increasing asthma risk by 42% in children. Chronic exposure causes emphysema, reduces lung immunity, and impairs lung development in kids."
+                        },
+                        { 
+                            text: "B) PM2.5 from cooking", 
+                            correct: false,
+                            health: "Cooking PM2.5 increases lung cancer risk by 12% and causes immediate respiratory irritation. Regular exposure leads to decreased lung function and cardiovascular disease."
+                        },
+                        { 
+                            text: "C) CO₂ buildup", 
+                            correct: false,
+                            health: "CO₂ accumulation causes mental fatigue and reduces decision-making ability by 15%. Prolonged exposure leads to headaches, increased blood pressure, and irregular heartbeat."
+                        },
+                        { 
+                            text: "D) Mold spores", 
+                            correct: false,
+                            health: "Mold spores trigger allergic reactions, asthma attacks, and sinus infections. Long-term exposure can cause hypersensitivity pneumonitis and permanent lung scarring."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Spot on! Gas stoves release nitrogen dioxide (NO₂), a known lung irritant that's especially harmful without ventilation.",
+                        incorrect: "Actually, it's NO₂ from the gas stove. This invisible gas is a major lung irritant, especially without proper ventilation.",
+                        insight: "💡 Air Quality Insight: Even healthy cooking can create unhealthy air. Always use your range hood or open windows when cooking with gas."
+                    }
+                },
+                
+                {
+                    title: "Baby's Nursery",
+                    visualElements: [
+                        { icon: "🍼", text: "New crib & mattress" },
+                        { icon: "🧸", text: "Plush toys everywhere" },
+                        { icon: "🌺", text: "Air freshener spray" },
+                        { icon: "💧", text: "Humidifier running" },
+                        { icon: "🎨", text: "Fresh paint smell" },
+                        { icon: "🪟", text: "Window closed for quiet" }
+                    ],
+                    description: "This nursery is adorable, but what's the most dangerous for babies?",
+                    choices: [
+                        { 
+                            text: "A) Formaldehyde from foam", 
+                            correct: true,
+                            health: "Formaldehyde causes burning sensations in eyes and throat, and increases childhood asthma risk by 39%. It's a known carcinogen that can cause leukemia with prolonged exposure."
+                        },
+                        { 
+                            text: "B) VOCs from toys", 
+                            correct: false,
+                            health: "VOCs in nurseries impair infant brain development and increase SIDS risk. They cause respiratory infections and can lead to developmental delays and learning disabilities."
+                        },
+                        { 
+                            text: "C) Mold from humidifier", 
+                            correct: false,
+                            health: "Humidifier mold causes infant respiratory infections and increases asthma development by 50%. Can lead to chronic sinusitis and weakened immune system in babies."
+                        },
+                        { 
+                            text: "D) Baby powder dust", 
+                            correct: false,
+                            health: "Baby powder talc can cause respiratory distress and has been linked to cancer. Inhaled particles accumulate in infant lungs, potentially causing chronic breathing problems."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Formaldehyde from foam mattresses and furniture is the biggest risk in nurseries.",
+                        incorrect: "Actually, formaldehyde from foam mattresses and furniture is the biggest concern in nurseries.",
+                        insight: "💡 Air Quality Insight: Babies breathe faster and closer to the floor where pollutants settle. Clean air matters most when they can't tell you what's wrong."
+                    }
+                },
+
+                {
+                    title: "Home Office - Work From Home",
+                    visualElements: [
+                        { icon: "🖥️", text: "Multiple screens running" },
+                        { icon: "🖨️", text: "Printer printing documents" },
+                        { icon: "🌡️", text: "Space heater on high" },
+                        { icon: "🚬", text: "Cigarette smoke smell" },
+                        { icon: "📱", text: "Phone charging cables" },
+                        { icon: "🪑", text: "Leather office chair" }
+                    ],
+                    description: "Your home office seems productive, but what's compromising your focus?",
+                    choices: [
+                        { 
+                            text: "A) Printer toner particles", 
+                            correct: false,
+                            health: "Printer toner contains ultrafine particles that penetrate deep into lungs, causing chronic bronchitis and increasing lung cancer risk by 25%. Can trigger occupational asthma in office workers."
+                        },
+                        { 
+                            text: "B) Thirdhand smoke", 
+                            correct: false,
+                            health: "Thirdhand smoke residue contains 250+ toxic chemicals that cause DNA damage and increase cancer risk. Can trigger asthma attacks and respiratory infections even hours after smoking."
+                        },
+                        { 
+                            text: "C) VOCs from electronics", 
+                            correct: false,
+                            health: "Electronics emit VOCs that cause 'sick building syndrome': headaches, dizziness, fatigue, and concentration problems. Chronic exposure impairs cognitive function and work performance."
+                        },
+                        { 
+                            text: "D) CO₂ from poor ventilation", 
+                            correct: true,
+                            health: "High CO₂ levels reduce cognitive performance by 50% and cause drowsiness. Can trigger migraines and decrease productivity by up to 15% in office environments."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! After 8 hours in a closed room, CO₂ levels can triple, causing fatigue and reducing productivity by 20%.",
+                        incorrect: "It's actually elevated CO₂. One person in a closed room for 8 hours can triple CO₂ levels, causing that afternoon drowsiness.",
+                        insight: "💡 Air Quality Insight: That 3 PM slump might not be about lunch - it's about air quality. Open doors between meetings!"
+                    }
+                },
+
+                {
+                    title: "Garage Workshop",
+                    visualElements: [
+                        { icon: "🔧", text: "Paint cans open" },
+                        { icon: "🚗", text: "Car engine running" },
+                        { icon: "🌫️", text: "Dust particles visible" },
+                        { icon: "💨", text: "Exhaust fumes" },
+                        { icon: "🧴", text: "Chemical cleaners" },
+                        { icon: "🪟", text: "No ventilation" }
+                    ],
+                    description: "Time for a DIY project! What's the biggest health risk in this workshop?",
+                    choices: [
+                        { 
+                            text: "A) Paint fumes", 
+                            correct: false,
+                            health: "Paint VOCs cause immediate headaches, dizziness, and nausea. Long-term exposure damages liver, kidneys, and nervous system. Some paint chemicals are known carcinogens."
+                        },
+                        { 
+                            text: "B) Car exhaust", 
+                            correct: true,
+                            health: "Car exhaust contains CO, NO₂, and particulates that cause immediate oxygen deprivation, lung inflammation, and increased heart attack risk. Can be fatal in enclosed spaces."
+                        },
+                        { 
+                            text: "C) Dust particles", 
+                            correct: false,
+                            health: "Workshop dust contains silica, metal particles, and chemicals that cause silicosis, metal fume fever, and chronic lung disease. Can trigger severe allergic reactions."
+                        },
+                        { 
+                            text: "D) Chemical cleaners", 
+                            correct: false,
+                            health: "Chemical cleaners release toxic fumes that burn airways, cause chemical pneumonia, and damage lung tissue. Can trigger severe asthma attacks and respiratory failure."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Running a car in a closed garage for just 10 minutes can create lethal CO levels. Always work with doors open!",
+                        incorrect: "It's actually car exhaust. Running engines in enclosed spaces creates lethal carbon monoxide levels within minutes.",
+                        insight: "💡 Air Quality Insight: Garages are often the most polluted indoor spaces. Always ensure proper ventilation when working with chemicals or running engines."
+                    }
+                },
+
+                {
+                    title: "Bathroom After Shower",
+                    visualElements: [
+                        { icon: "💧", text: "Steam everywhere" },
+                        { icon: "🧴", text: "Shampoo bottles" },
+                        { icon: "🪞", text: "Fogged mirrors" },
+                        { icon: "🌫️", text: "Humidity 100%" },
+                        { icon: "🛁", text: "Wet surfaces" },
+                        { icon: "❌", text: "No exhaust fan" }
+                    ],
+                    description: "The shower felt great, but what's happening to the air quality now?",
+                    choices: [
+                        { 
+                            text: "A) Just harmless steam", 
+                            correct: false,
+                            health: "While steam itself isn't toxic, excess humidity creates ideal conditions for mold growth within 24-48 hours. Mold spores cause severe allergic reactions and asthma attacks."
+                        },
+                        { 
+                            text: "B) VOCs from products", 
+                            correct: false,
+                            health: "Shampoo and soap VOCs become concentrated in steamy air, causing respiratory irritation, headaches, and chemical sensitivity. Can trigger contact dermatitis and breathing problems."
+                        },
+                        { 
+                            text: "C) Mold spores", 
+                            correct: true,
+                            health: "High humidity allows mold to grow rapidly, releasing spores that cause allergic reactions, asthma attacks, and respiratory infections. Can lead to chronic sinusitis and lung damage."
+                        },
+                        { 
+                            text: "D) Chlorine from water", 
+                            correct: false,
+                            health: "Hot shower water releases chlorine gas that irritates airways and eyes. Can cause coughing, wheezing, and exacerbate asthma. Long-term exposure may increase cancer risk."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! That bathroom humidity is perfect for mold growth, which releases allergenic spores.",
+                        incorrect: "It's mold spores. That bathroom humidity is perfect for mold growth, which releases allergenic spores.",
+                        insight: "💡 Air Quality Insight: Bathrooms need ventilation more than any other room. Run the exhaust fan during and after showers to prevent mold and remove chemical vapors."
+                    }
+                },
+
+                {
+                    title: "Bedroom - Sleep Time",
+                    visualElements: [
+                        { icon: "🛏️", text: "Memory foam mattress" },
+                        { icon: "🧸", text: "Stuffed animals" },
+                        { icon: "🕯️", text: "Aromatherapy diffuser" },
+                        { icon: "🌡️", text: "Humidifier running" },
+                        { icon: "🧴", text: "Fabric softener sheets" },
+                        { icon: "🪟", text: "Windows closed" }
+                    ],
+                    description: "Time for rest, but what pollutants might be disrupting your sleep?",
+                    choices: [
+                        { 
+                            text: "A) Mattress off-gassing", 
+                            correct: false,
+                            health: "Memory foam mattresses emit VOCs like formaldehyde and isocyanates that cause headaches, dizziness, and respiratory irritation. Can trigger insomnia and morning fatigue."
+                        },
+                        { 
+                            text: "B) Essential oils", 
+                            correct: false,
+                            health: "Essential oils can trigger allergic reactions, asthma attacks, and chemical sensitivity. Some oils are phototoxic and can cause skin reactions when exposed to sunlight."
+                        },
+                        { 
+                            text: "C) Dust mites", 
+                            correct: true,
+                            health: "Dust mites thrive in humid environments and their waste causes allergic reactions, asthma attacks, and eczema. Can trigger chronic sinusitis and sleep disruption."
+                        },
+                        { 
+                            text: "D) Fabric softener", 
+                            correct: false,
+                            health: "Fabric softener chemicals coat fabrics and release VOCs that cause headaches, respiratory irritation, and skin rashes. Can trigger allergic reactions and chemical sensitivity."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Dust mites are the biggest sleep disruptor, thriving in humid bedrooms and causing allergic reactions.",
+                        incorrect: "It's actually dust mites. They thrive in humid bedrooms and their waste causes allergic reactions and sleep disruption.",
+                        insight: "💡 Air Quality Insight: Your bedroom should be the cleanest room in your house. Poor air quality directly impacts sleep quality and overall health."
+                    }
+                },
+
+                {
+                    title: "Laundry Room - Fresh Scent",
+                    visualElements: [
+                        { icon: "🧺", text: "Dirty clothes pile" },
+                        { icon: "🧴", text: "Fabric softener bottles" },
+                        { icon: "💨", text: "Dryer exhaust venting" },
+                        { icon: "🌡️", text: "High humidity" },
+                        { icon: "🧽", text: "Bleach containers" },
+                        { icon: "🪟", text: "Small window" }
+                    ],
+                    description: "Clean clothes smell fresh, but what's in the air you're breathing?",
+                    choices: [
+                        { 
+                            text: "A) Fabric softener scent", 
+                            correct: false,
+                            health: "Fabric softener contains phthalates and synthetic fragrances that cause hormone disruption, respiratory irritation, and skin allergies. Can trigger asthma attacks and chemical sensitivity."
+                        },
+                        { 
+                            text: "B) Bleach fumes", 
+                            correct: false,
+                            health: "Bleach releases chlorine gas that burns airways, causes coughing, and can trigger severe asthma attacks. Long-term exposure increases cancer risk and damages lung tissue."
+                        },
+                        { 
+                            text: "C) Lint particles", 
+                            correct: true,
+                            health: "Dryer lint contains fabric fibers, dust mites, and allergens that cause respiratory irritation and allergic reactions. Can trigger asthma and chronic bronchitis."
+                        },
+                        { 
+                            text: "D) Mold spores", 
+                            correct: false,
+                            health: "High humidity from washing machines promotes mold growth, releasing spores that cause allergic reactions, asthma attacks, and respiratory infections."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Dryer lint contains fabric fibers, dust mites, and allergens that cause respiratory irritation.",
+                        incorrect: "It's actually lint particles. Dryer lint contains fabric fibers, dust mites, and allergens that cause respiratory irritation.",
+                        insight: "💡 Air Quality Insight: 'Fresh scent' often means chemical exposure. Natural alternatives and proper ventilation make laundry rooms safer."
+                    }
+                },
+
+                {
+                    title: "Basement Storage",
+                    visualElements: [
+                        { icon: "📦", text: "Old cardboard boxes" },
+                        { icon: "🕷️", text: "Spider webs" },
+                        { icon: "💧", text: "Water damage stains" },
+                        { icon: "🌫️", text: "Musty smell" },
+                        { icon: "🧴", text: "Pesticide containers" },
+                        { icon: "❌", text: "No ventilation" }
+                    ],
+                    description: "Time to find those holiday decorations! What's lurking in this basement air?",
+                    choices: [
+                        { 
+                            text: "A) Dust mites", 
+                            correct: false,
+                            health: "Basement dust mites cause severe allergic reactions, asthma attacks, and eczema. Their waste particles trigger chronic respiratory inflammation and sleep disruption."
+                        },
+                        { 
+                            text: "B) Mold spores", 
+                            correct: true,
+                            health: "Basement mold releases toxic spores that cause allergic reactions, asthma attacks, and respiratory infections. Some molds produce mycotoxins that can cause neurological symptoms."
+                        },
+                        { 
+                            text: "C) Pesticide vapors", 
+                            correct: false,
+                            health: "Stored pesticides release toxic vapors that cause headaches, dizziness, nausea, and respiratory irritation. Can trigger chemical sensitivity and long-term neurological damage."
+                        },
+                        { 
+                            text: "D) Radon gas", 
+                            correct: false,
+                            health: "Radon is a radioactive gas that causes lung cancer and is the second leading cause of lung cancer deaths. It's odorless and can accumulate to dangerous levels in basements."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! That musty smell indicates active mold growth releasing toxic spores.",
+                        incorrect: "It's mold spores. That musty smell indicates active mold growth releasing toxic spores.",
+                        insight: "💡 Air Quality Insight: Basements are often the most polluted areas of homes. Proper ventilation and moisture control are essential for safety."
+                    }
+                },
+
+                {
+                    title: "Attic - Storage Space",
+                    visualElements: [
+                        { icon: "🌡️", text: "Extreme temperature" },
+                        { icon: "🕸️", text: "Cobwebs everywhere" },
+                        { icon: "📰", text: "Old newspapers" },
+                        { icon: "🧴", text: "Mothball containers" },
+                        { icon: "💨", text: "Insulation fibers" },
+                        { icon: "❌", text: "No air circulation" }
+                    ],
+                    description: "Time to store some seasonal items! What's in this attic air?",
+                    choices: [
+                        { 
+                            text: "A) Insulation fibers", 
+                            correct: false,
+                            health: "Insulation fibers, especially fiberglass, cause severe skin and respiratory irritation. Can trigger asthma attacks and cause permanent lung scarring with chronic exposure."
+                        },
+                        { 
+                            text: "B) Mothball vapors", 
+                            correct: true,
+                            health: "Mothballs contain naphthalene or paradichlorobenzene that cause headaches, dizziness, nausea, and can damage red blood cells. Long-term exposure increases cancer risk."
+                        },
+                        { 
+                            text: "C) Dust particles", 
+                            correct: false,
+                            health: "Attic dust contains dead insects, rodent droppings, and allergens that cause severe allergic reactions, asthma attacks, and respiratory infections. Can trigger chronic bronchitis."
+                        },
+                        { 
+                            text: "D) Paper degradation", 
+                            correct: false,
+                            health: "Degrading paper releases cellulose particles and mold spores that cause respiratory irritation and allergic reactions. Can trigger asthma and chronic sinusitis."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Mothball vapors are particularly toxic, containing naphthalene that can damage red blood cells.",
+                        incorrect: "It's actually mothball vapors. They contain naphthalene that can damage red blood cells and increase cancer risk.",
+                        insight: "💡 Air Quality Insight: Attics need ventilation too! Stored items can create serious air quality problems over time."
+                    }
+                },
+
+                {
+                    title: "Living Room - Movie Night",
+                    visualElements: [
+                        { icon: "🍿", text: "Microwave popcorn" },
+                        { icon: "🕯️", text: "Scented candles" },
+                        { icon: "🐱", text: "Cat on couch" },
+                        { icon: "📺", text: "Large TV running" },
+                        { icon: "🛋️", text: "Old furniture" },
+                        { icon: "🪟", text: "Windows closed" }
+                    ],
+                    description: "Cozy movie night! What pollutants might be affecting your evening?",
+                    choices: [
+                        { 
+                            text: "A) Popcorn butter flavoring", 
+                            correct: true,
+                            health: "Microwave popcorn butter flavoring contains diacetyl that causes 'popcorn lung' - a severe respiratory disease that can be fatal. Causes permanent lung damage and breathing problems."
+                        },
+                        { 
+                            text: "B) Candle soot", 
+                            correct: false,
+                            health: "Candle soot contains fine particles that penetrate deep into lungs, causing respiratory irritation and increasing heart disease risk. Can trigger asthma attacks and chronic bronchitis."
+                        },
+                        { 
+                            text: "C) Pet allergens", 
+                            correct: false,
+                            health: "Cat allergens cause severe allergic reactions, asthma attacks, and chronic sinusitis. Can trigger respiratory infections and reduce lung function in sensitive individuals."
+                        },
+                        { 
+                            text: "D) TV screen emissions", 
+                            correct: false,
+                            health: "TV screens emit VOCs and electromagnetic fields that can cause headaches, eye strain, and concentration problems. May contribute to chronic fatigue and sleep disruption."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Microwave popcorn butter flavoring contains diacetyl that causes 'popcorn lung' - a severe respiratory disease.",
+                        incorrect: "It's actually popcorn butter flavoring. It contains diacetyl that causes 'popcorn lung' - a severe respiratory disease.",
+                        insight: "💡 Air Quality Insight: Even relaxing activities can expose you to pollutants. Air-popped popcorn and natural candles are safer alternatives."
+                    }
+                },
+
+                {
+                    title: "Kitchen - Baking Day",
+                    visualElements: [
+                        { icon: "🔥", text: "Oven preheating" },
+                        { icon: "🥧", text: "Pie baking" },
+                        { icon: "🧈", text: "Butter melting" },
+                        { icon: "🌡️", text: "High temperature" },
+                        { icon: "💨", text: "Steam rising" },
+                        { icon: "🪟", text: "Windows closed" }
+                    ],
+                    description: "Baking smells amazing! What's actually happening to your kitchen air?",
+                    choices: [
+                        { 
+                            text: "A) Delicious food aromas", 
+                            correct: false,
+                            health: "While food aromas seem pleasant, cooking fumes contain fine particles that cause respiratory irritation and can trigger asthma attacks. High-fat cooking creates more harmful particles."
+                        },
+                        { 
+                            text: "B) PM2.5 from baking", 
+                            correct: false,
+                            health: "Baking creates fine particulate matter (PM2.5) that penetrates deep into lungs, causing inflammation and increasing cardiovascular disease risk. Can trigger asthma and chronic bronchitis."
+                        },
+                        { 
+                            text: "C) Acrolein from fats", 
+                            correct: true,
+                            health: "Heating fats creates acrolein, a toxic gas that irritates eyes and airways, causes coughing and wheezing, and can trigger severe asthma attacks. Long-term exposure increases cancer risk."
+                        },
+                        { 
+                            text: "D) CO₂ buildup", 
+                            correct: false,
+                            health: "High oven temperatures and closed windows cause CO₂ buildup, leading to drowsiness, headaches, and reduced cognitive function. Can trigger migraines and fatigue."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly right! Heating fats creates acrolein, a toxic gas that irritates eyes and airways.",
+                        incorrect: "It's actually acrolein from fats. Heating fats creates a toxic gas that irritates eyes and airways.",
+                        insight: "💡 Air Quality Insight: Cooking is one of the biggest sources of indoor air pollution. Always use ventilation when baking or cooking with fats."
+                    }
+                },
+
+                {
+                    title: "School Gym - PE Class",
+                    visualElements: [
+                        { icon: "🏃", text: "20 kids running" },
+                        { icon: "🏀", text: "Basketball practice" },
+                        { icon: "🚪", text: "Doors sealed shut" },
+                        { icon: "🧹", text: "Floor cleaner bottle" },
+                        { icon: "💦", text: "Everyone sweating" },
+                        { icon: "🌡️", text: "Stuffy atmosphere" }
+                    ],
+                    description: "Energy's high in PE class, but what about the oxygen?",
+                    choices: [
+                        { 
+                            text: "A) VOCs from cleaners", 
+                            correct: false,
+                            health: "Gym cleaning chemicals cause exercise-induced asthma and throat irritation. Combined with heavy breathing, they penetrate deeper into lungs causing inflammation."
+                        },
+                        { 
+                            text: "B) PM10 from dust", 
+                            correct: false,
+                            health: "Gym dust contains skin cells, dirt, and bacteria that trigger allergies and infections. Heavy breathing during exercise drives particles deep into airways."
+                        },
+                        { 
+                            text: "C) Nothing concerning", 
+                            correct: false,
+                            health: "Poor gym air quality reduces athletic performance, increases injury risk, and impairs learning. Students in poorly ventilated gyms score 5% lower on standardized tests."
+                        },
+                        { 
+                            text: "D) CO₂ buildup", 
+                            correct: true,
+                            health: "High CO₂ impairs athletic performance by 30% and causes dizziness during exercise. Students experience headaches, inability to focus in next class, and increased fatigue for hours."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! CO₂ spikes rapidly when people are active in closed spaces, leading to headaches and poor concentration.",
+                        incorrect: "The main issue is CO₂ buildup. It spikes fast during physical activity in unventilated spaces, affecting performance and cognition.",
+                        insight: "💡 Air Quality Insight: High CO₂ levels can reduce cognitive function by up to 15%. No wonder kids struggle to focus after gym class!"
+                    }
+                },
+
+                {
+                    title: "Master Bedroom - Morning Routine",
+                    visualElements: [
+                        { icon: "🚿", text: "Deodorant spray" },
+                        { icon: "💐", text: "Perfume bottles" },
+                        { icon: "💇", text: "Hair products" },
+                        { icon: "🪟", text: "Windows still closed" },
+                        { icon: "🛏️", text: "Unmade bed" },
+                        { icon: "💄", text: "Cosmetics open" }
+                    ],
+                    description: "Morning routine in full swing. You smell great, but what are you breathing?",
+                    choices: [
+                        { 
+                            text: "A) Pleasant fragrances", 
+                            correct: false,
+                            health: "Synthetic fragrances contain phthalates that disrupt hormones and reduce fertility. They trigger migraines in 30% of people and worsen asthma symptoms."
+                        },
+                        { 
+                            text: "B) VOCs from personal care products", 
+                            correct: true,
+                            health: "Personal care VOCs cause immediate headaches, dizziness, and respiratory irritation. Long-term exposure linked to kidney damage, cancer, and reproductive disorders."
+                        },
+                        { 
+                            text: "C) Fresh morning air", 
+                            correct: false,
+                            health: "Stale bedroom air contains high CO₂, skin cells, and dust mites. This causes morning grogginess, allergies, and poor sleep quality."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Morning product cocktails release over 100 chemicals, causing hormone disruption and respiratory issues. Daily exposure increases chronic disease risk significantly."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right on! Personal care products are major sources of VOCs, which can trigger headaches and respiratory issues.",
+                        incorrect: "It's VOCs from all those products. Personal care items are actually major sources of volatile organic compounds.",
+                        insight: "💡 Air Quality Insight: The average morning routine releases as many VOCs as a highway commute. Open those windows!"
+                    }
+                },
+
+                {
+                    title: "New Car - First Drive",
+                    visualElements: [
+                        { icon: "🚗", text: "Brand new interior" },
+                        { icon: "✨", text: "Plastic gleaming" },
+                        { icon: "🪑", text: "Leather seats" },
+                        { icon: "🪟", text: "Windows up" },
+                        { icon: "📱", text: "Dashboard electronics" },
+                        { icon: "🆕", text: "That new car smell" }
+                    ],
+                    description: "Everyone loves that new car smell, but what exactly is it?",
+                    choices: [
+                        { 
+                            text: "A) Fresh materials", 
+                            correct: false,
+                            health: "New materials off-gas benzene and formaldehyde at levels 35% above safe limits. Causes headaches, allergic reactions, and increases leukemia risk."
+                        },
+                        { 
+                            text: "B) VOCs from plastics and adhesives", 
+                            correct: true,
+                            health: "New car VOCs cause 'sick car syndrome': headaches, fatigue, and respiratory issues. Contains 50+ toxic chemicals including carcinogens that affect liver and kidneys."
+                        },
+                        { 
+                            text: "C) Clean air", 
+                            correct: false,
+                            health: "New car air is 6x more toxic than outdoor air. Causes immediate throat irritation, long-term cancer risk, and reproductive system damage."
+                        },
+                        { 
+                            text: "D) Leather only", 
+                            correct: false,
+                            health: "Leather treatment chemicals cause allergic dermatitis and respiratory sensitization. Chrome-tanned leather releases chromium VI, a potent carcinogen."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! That 'new car smell' is actually a cocktail of VOCs off-gassing from plastics, adhesives, and fabrics.",
+                        incorrect: "That beloved smell is actually VOCs - volatile organic compounds from plastics, adhesives, and synthetic materials.",
+                        insight: "💡 Air Quality Insight: New car smell contains over 50 different VOCs. Air out new cars with windows open for the first few months!"
+                    }
+                },
+
+                {
+                    title: "Open Office - Monday Morning",
+                    visualElements: [
+                        { icon: "👥", text: "50 people working" },
+                        { icon: "🖨️", text: "3 printers running" },
+                        { icon: "☕", text: "Coffee brewing" },
+                        { icon: "❄️", text: "AC recycling air" },
+                        { icon: "💻", text: "Computers everywhere" },
+                        { icon: "📞", text: "Phones ringing" }
+                    ],
+                    description: "Monday morning in the open office. Why does everyone feel tired by noon?",
+                    choices: [
+                        { 
+                            text: "A) Monday blues", 
+                            correct: false,
+                            health: "Psychological stress from work increases cortisol, causing fatigue and weakened immunity. Chronic workplace stress leads to heart disease and depression."
+                        },
+                        { 
+                            text: "B) High CO₂ and VOCs", 
+                            correct: true,
+                            health: "'Sick building syndrome' causes headaches, fatigue, and 61% reduced cognitive function. Long-term exposure increases respiratory disease and cancer risk from office equipment emissions."
+                        },
+                        { 
+                            text: "C) Too much coffee", 
+                            correct: false,
+                            health: "Excessive caffeine causes jitters, anxiety, and disrupted sleep cycles. Can lead to dependency, elevated blood pressure, and irregular heartbeat."
+                        },
+                        { 
+                            text: "D) Comfortable environment", 
+                            correct: false,
+                            health: "Over-conditioned air strips moisture, causing dry eyes, skin irritation, and increased susceptibility to viruses. Recirculated air spreads pathogens throughout office."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! This is classic 'sick building syndrome' - high CO₂ from people and VOCs from office equipment.",
+                        incorrect: "It's high CO₂ and VOCs causing 'sick building syndrome.' Office air can have 2-5x more pollutants than outdoor air.",
+                        insight: "💡 Air Quality Insight: Office workers in poor air quality show 61% lower cognitive function scores. No wonder meetings drag on!"
+                    }
+                },
+
+                {
+                    title: "Restaurant Kitchen - Dinner Rush",
+                    visualElements: [
+                        { icon: "🔥", text: "Grills blazing" },
+                        { icon: "🍟", text: "Fryers bubbling" },
+                        { icon: "💨", text: "Steam everywhere" },
+                        { icon: "🥘", text: "Multiple dishes cooking" },
+                        { icon: "👨‍🍳", text: "5 cooks working" },
+                        { icon: "🌡️", text: "Extreme heat" }
+                    ],
+                    description: "Dinner rush in full swing. What are the kitchen staff breathing?",
+                    choices: [
+                        { 
+                            text: "A) Cooking aromas", 
+                            correct: false,
+                            health: "Cooking aromas contain acrolein and PAHs (carcinogens) that irritate eyes and throat. Chronic exposure increases lung cancer risk by 60% in kitchen workers."
+                        },
+                        { 
+                            text: "B) PM2.5, CO, and grease particles", 
+                            correct: true,
+                            health: "Kitchen air causes 'chef's lung' with 2x higher respiratory disease rates. Ultrafine grease particles penetrate deep into lungs, while CO causes chronic headaches and fatigue."
+                        },
+                        { 
+                            text: "C) Steam only", 
+                            correct: false,
+                            health: "Kitchen steam carries aerosolized grease causing lipoid pneumonia. Hot vapor burns airways and increases susceptibility to respiratory infections."
+                        },
+                        { 
+                            text: "D) Clean kitchen air", 
+                            correct: false,
+                            health: "Commercial kitchen air is 50x more polluted than dining areas. Workers face increased risk of asthma, COPD, and cardiovascular disease from chronic exposure."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Spot on! Commercial kitchens have high levels of PM2.5 from grilling, CO from gas flames, and ultrafine grease particles.",
+                        incorrect: "Kitchen staff breathe PM2.5 from cooking, CO from burners, and grease particles - a serious occupational hazard.",
+                        insight: "💡 Air Quality Insight: Line cooks have 2x higher rates of respiratory issues than office workers. Proper ventilation is crucial!"
+                    }
+                },
+
+                {
+                    title: "Hair Salon - Busy Saturday",
+                    visualElements: [
+                        { icon: "💇", text: "Hair dyes mixing" },
+                        { icon: "🌊", text: "Perms processing" },
+                        { icon: "💅", text: "Nail polish station" },
+                        { icon: "🔥", text: "Straighteners smoking" },
+                        { icon: "💨", text: "Hairspray misting" },
+                        { icon: "🧴", text: "Chemical bottles" }
+                    ],
+                    description: "Saturday at the salon is busy. What chemical cocktail fills the air?",
+                    choices: [
+                        { 
+                            text: "A) Shampoo scent", 
+                            correct: false,
+                            health: "Even 'natural' shampoos release terpenes that react with ozone to form formaldehyde. Causes scalp irritation, allergic reactions, and hormone disruption."
+                        },
+                        { 
+                            text: "B) Formaldehyde, ammonia, and acetone", 
+                            correct: true,
+                            health: "Salon chemicals cause 3x higher miscarriage rates and respiratory disease in workers. Formaldehyde causes cancer, ammonia burns lungs, acetone damages nervous system."
+                        },
+                        { 
+                            text: "C) Hair spray only", 
+                            correct: false,
+                            health: "Hairspray contains phthalates causing reproductive harm and birth defects. Aerosol particles lodge in lungs causing chronic inflammation and reduced lung capacity."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Salon air contains over 30 hazardous chemicals causing occupational asthma in 40% of workers. Long-term exposure linked to bladder cancer and neurological disorders."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Salons are chemical hotspots with formaldehyde from straighteners, ammonia from dyes, and acetone from nail products.",
+                        incorrect: "Salons are full of chemicals: formaldehyde from straighteners, ammonia from dyes, and acetone from nail products.",
+                        insight: "💡 Air Quality Insight: Salon workers have 3x higher risk of respiratory issues. Those chemicals aren't just making you beautiful!"
+                    }
+                },
+
+                {
+                    title: "Movie Theater - Packed Show",
+                    visualElements: [
+                        { icon: "🎬", text: "200 people watching" },
+                        { icon: "🍿", text: "Popcorn everywhere" },
+                        { icon: "🎭", text: "Carpeted floors" },
+                        { icon: "🚪", text: "Doors closed" },
+                        { icon: "🥤", text: "Spilled drinks" },
+                        { icon: "🌑", text: "Dark enclosed space" }
+                    ],
+                    description: "Sold-out movie showing. What accumulates during the 2-hour show?",
+                    choices: [
+                        { 
+                            text: "A) Entertainment value", 
+                            correct: false,
+                            health: "Prolonged sitting in theaters increases blood clot risk by 70%. Dark environments disrupt circadian rhythms, affecting sleep quality for days."
+                        },
+                        { 
+                            text: "B) CO₂ and VOCs from carpets", 
+                            correct: true,
+                            health: "Theater CO₂ reaches 3000ppm, impairing judgment and causing drowsiness. Carpet VOCs include benzene and formaldehyde, increasing cancer risk with regular exposure."
+                        },
+                        { 
+                            text: "C) Popcorn aroma only", 
+                            correct: false,
+                            health: "Artificial butter flavoring contains diacetyl, causing 'popcorn lung' disease. Workers exposed develop irreversible lung damage and bronchiolitis obliterans."
+                        },
+                        { 
+                            text: "D) Fresh air", 
+                            correct: false,
+                            health: "Theater air recirculation spreads airborne diseases 5x faster than outdoor spaces. Poor ventilation increases flu transmission risk by 80% during movie screenings."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Packed theaters see CO₂ levels spike while carpets continuously release VOCs from cleaning chemicals.",
+                        incorrect: "It's CO₂ from the crowd and VOCs from treated carpets. That drowsiness during movies isn't always about the plot!",
+                        insight: "💡 Air Quality Insight: Theater CO₂ can reach 3000ppm - enough to impair decision-making. Maybe that's why people buy so much popcorn!"
+                    }
+                },
+
+                {
+                    title: "Airplane Cabin - Long Flight",
+                    visualElements: [
+                        { icon: "✈️", text: "Packed cabin" },
+                        { icon: "♻️", text: "Recycled air" },
+                        { icon: "🤧", text: "Someone coughing" },
+                        { icon: "🏜️", text: "Dry air (10-20%)" },
+                        { icon: "👥", text: "Close proximity" },
+                        { icon: "🔄", text: "HEPA filters running" }
+                    ],
+                    description: "Four hours into your flight. Despite HEPA filters, what's still an issue?",
+                    choices: [
+                        { 
+                            text: "A) Altitude only", 
+                            correct: false,
+                            health: "Cabin pressure equals 8,000ft altitude, reducing blood oxygen by 4%. Causes fatigue, dehydration, and increases deep vein thrombosis risk during flights."
+                        },
+                        { 
+                            text: "B) Low humidity and pathogens", 
+                            correct: true,
+                            health: "10-20% humidity dries mucous membranes, eliminating natural defenses against viruses. Disease transmission is 100x higher, with 20% of passengers getting sick post-flight."
+                        },
+                        { 
+                            text: "C) Too much oxygen", 
+                            correct: false,
+                            health: "Cabin air actually has less oxygen, causing hypoxia symptoms: confusion, fatigue, and headaches. Can trigger heart problems in vulnerable passengers."
+                        },
+                        { 
+                            text: "D) Nothing - planes have great air", 
+                            correct: false,
+                            health: "Despite HEPA filters, ozone exposure at altitude damages lungs. Flight attendants have higher rates of cancer, reproductive issues, and respiratory disease."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Cabin humidity drops to 10-20% (desert-dry) and close proximity increases pathogen transmission risk.",
+                        incorrect: "The issues are extreme low humidity (10-20%) and pathogen transmission from close proximity to other passengers.",
+                        insight: "💡 Air Quality Insight: Airplane air is replaced every 3 minutes, but the proximity to others makes disease transmission 100x more likely than normal."
+                    }
+                },
+
+                {
+                    title: "Nail Salon - Manicure Time",
+                    visualElements: [
+                        { icon: "💅", text: "UV lamps curing" },
+                        { icon: "🧪", text: "Acetone smell strong" },
+                        { icon: "✨", text: "Acrylic powder dust" },
+                        { icon: "🎨", text: "Polish bottles open" },
+                        { icon: "🚫", text: "Poor ventilation" },
+                        { icon: "👃", text: "Chemical odor intense" }
+                    ],
+                    description: "Getting your nails done. What makes this air hazardous?",
+                    choices: [
+                        { 
+                            text: "A) UV light only", 
+                            correct: false,
+                            health: "UV nail lamps deliver radiation equal to tanning beds, increasing skin cancer risk by 75%. Can cause premature aging and DNA damage in fingers."
+                        },
+                        { 
+                            text: "B) Methyl methacrylate and toluene", 
+                            correct: true,
+                            health: "These neurotoxins cause 'nail salon syndrome': headaches, dizziness, and reproductive harm. Workers have 3x higher rates of birth defects and spontaneous abortion."
+                        },
+                        { 
+                            text: "C) Nail polish smell", 
+                            correct: false,
+                            health: "Polish fumes contain DBP causing hormone disruption and developmental defects. Regular exposure linked to breast cancer and decreased fertility."
+                        },
+                        { 
+                            text: "D) Nothing serious", 
+                            correct: false,
+                            health: "Nail salon air contains 30+ toxic chemicals causing asthma, cancer, and cognitive impairment. Workers show signs of chronic chemical poisoning within 2 years."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Nail salons have high levels of toxic chemicals like methyl methacrylate from acrylics and toluene from polishes.",
+                        incorrect: "It's serious chemicals: methyl methacrylate from acrylics and toluene from polishes - both linked to nervous system damage.",
+                        insight: "💡 Air Quality Insight: Nail salon workers have 3x higher rates of respiratory issues and reproductive problems. Ventilation is critical!"
+                    }
+                },
+
+                {
+                    title: "Daycare Center - Nap Time",
+                    visualElements: [
+                        { icon: "👶", text: "20 toddlers sleeping" },
+                        { icon: "🍼", text: "Diaper changing area" },
+                        { icon: "🧸", text: "Toys everywhere" },
+                        { icon: "🧹", text: "Cleaning products used" },
+                        { icon: "🪟", text: "Windows closed" },
+                        { icon: "🦠", text: "Germs circulating" }
+                    ],
+                    description: "Daycare nap time. What's constantly in the air?",
+                    choices: [
+                        { 
+                            text: "A) Sweet dreams", 
+                            correct: false,
+                            health: "Poor air quality during naps impairs immune system development in children. Increases risk of SIDS and developmental delays from oxygen deprivation."
+                        },
+                        { 
+                            text: "B) Bacteria, viruses, and cleaning chemicals", 
+                            correct: true,
+                            health: "Daycare air causes 88% more illness with constant respiratory infections. Harsh cleaners trigger childhood asthma, while pathogens spread rapidly among vulnerable immune systems."
+                        },
+                        { 
+                            text: "C) Baby powder", 
+                            correct: false,
+                            health: "Talcum powder causes respiratory distress and potential mesothelioma from asbestos contamination. Inhaled particles damage developing lungs permanently."
+                        },
+                        { 
+                            text: "D) Fresh air", 
+                            correct: false,
+                            health: "Sealed daycare rooms have CO₂ levels that impair learning and behavior. Children in poor air quality show 23% lower cognitive test scores."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Daycares are germ factories with bacteria and viruses, plus harsh cleaning chemicals used to combat them.",
+                        incorrect: "Daycares have high levels of bacteria and viruses from kids, plus strong cleaning chemicals used to fight germs.",
+                        insight: "💡 Air Quality Insight: Daycare workers get sick 88% more often than office workers. Those little ones are efficient germ spreaders!"
+                    }
+                },
+
+                {
+                    title: "Laundry Room - Wash Day",
+                    visualElements: [
+                        { icon: "🌀", text: "Dryer running hot" },
+                        { icon: "⚠️", text: "Vent seems clogged" },
+                        { icon: "🧺", text: "Fabric softener sheets" },
+                        { icon: "🧴", text: "Bleach smell lingering" },
+                        { icon: "💧", text: "Room getting humid" },
+                        { icon: "🌸", text: "Detergent fragrance" }
+                    ],
+                    description: "Laundry day in full swing. What's being released?",
+                    choices: [
+                        { 
+                            text: "A) Clean laundry smell", 
+                            correct: false,
+                            health: "Laundry fragrances contain endocrine disruptors affecting hormones and fertility. Synthetic musks accumulate in breast milk and body fat."
+                        },
+                        { 
+                            text: "B) Lint, moisture, and VOCs", 
+                            correct: true,
+                            health: "Dryer exhaust contains 25 hazardous air pollutants including acetaldehyde and benzene. Clogged vents cause carbon monoxide poisoning and house fires killing 2,900 annually."
+                        },
+                        { 
+                            text: "C) Fresh scent only", 
+                            correct: false,
+                            health: "'Fresh scent' chemicals cause migraines, asthma attacks, and contact dermatitis. Children exposed have higher rates of eczema and respiratory allergies."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Laundry products are the #1 source of indoor air fragrances linked to autism, ADHD, and decreased sperm count. Regular exposure affects neurological development."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Poor dryer venting releases lint particles, excess moisture (mold risk), and VOCs from fabric softeners.",
+                        incorrect: "Clogged dryer vents release lint particles, moisture that breeds mold, and VOCs from fabric softeners and detergents.",
+                        insight: "💡 Air Quality Insight: Fabric softeners alone release over 25 different VOCs. Some are classified as hazardous air pollutants!"
+                    }
+                },
+
+                {
+                    title: "Home Bar - Cocktail Hour",
+                    visualElements: [
+                        { icon: "🍸", text: "Alcohol bottles open" },
+                        { icon: "🚬", text: "Someone lighting cigar" },
+                        { icon: "🪑", text: "Vintage furniture" },
+                        { icon: "🚫", text: "No ventilation" },
+                        { icon: "🥃", text: "Spirits evaporating" },
+                        { icon: "🎉", text: "Party atmosphere" }
+                    ],
+                    description: "Home bar happy hour. What's the air quality concern?",
+                    choices: [
+                        { 
+                            text: "A) Party atmosphere only", 
+                            correct: false,
+                            health: "Social drinking environments increase second-hand smoke exposure by 500%. Even without smoking, alcohol metabolism releases acetaldehyde through breath."
+                        },
+                        { 
+                            text: "B) Ethanol vapors and smoke", 
+                            correct: true,
+                            health: "Ethanol vapors cause eye irritation, headaches, and impaired cognition before drinking begins. Cigar smoke contains 70 carcinogens increasing cancer risk 10-fold."
+                        },
+                        { 
+                            text: "C) Good times", 
+                            correct: false,
+                            health: "Bar environments often exceed safe noise levels, causing permanent hearing loss. Combined with poor air quality, increases heart attack risk."
+                        },
+                        { 
+                            text: "D) Nothing to worry about", 
+                            correct: false,
+                            health: "Home bars concentrate toxins: ethanol, tobacco smoke, and off-gassing furniture. Regular exposure increases liver disease, cancer, and respiratory illness."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Ethanol vapors from open bottles plus any tobacco smoke create a toxic combination for indoor air.",
+                        incorrect: "The concerns are ethanol vapors from alcohol and potential tobacco smoke - both respiratory irritants.",
+                        insight: "💡 Air Quality Insight: Ethanol vapors can cause eye irritation and headaches. That hangover might start before you even drink!"
+                    }
+                },
+
+                {
+                    title: "Dining Room - Dinner Party",
+                    visualElements: [
+                        { icon: "🕯️", text: "Candles on table" },
+                        { icon: "🍷", text: "Wine flowing" },
+                        { icon: "🌹", text: "Flower centerpiece" },
+                        { icon: "👥", text: "8 people dining" },
+                        { icon: "🪟", text: "Windows closed" },
+                        { icon: "😂", text: "Lively conversation" }
+                    ],
+                    description: "Dinner party for eight. What builds up fastest?",
+                    choices: [
+                        { 
+                            text: "A) Good conversation", 
+                            correct: false,
+                            health: "Large gatherings spread respiratory infections with 60% transmission rate. Loud talking generates 10x more aerosol droplets than normal breathing."
+                        },
+                        { 
+                            text: "B) CO₂ and PM2.5 from candles", 
+                            correct: true,
+                            health: "Candles release carcinogenic soot increasing heart attack risk by 20%. Combined with high CO₂ from guests causes headaches, fatigue, and poor decision-making."
+                        },
+                        { 
+                            text: "C) Wine aroma only", 
+                            correct: false,
+                            health: "Wine sulfites trigger asthma attacks and allergic reactions in 10% of people. Ethanol vapors from wine glasses cause mild intoxication without drinking."
+                        },
+                        { 
+                            text: "D) Party energy", 
+                            correct: false,
+                            health: "Indoor gatherings without ventilation increase COVID transmission risk by 18.7 times. Poor air quality amplifies spread of all airborne diseases."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Multiple people rapidly increase CO₂, while candles add PM2.5 particles to the air.",
+                        incorrect: "It's CO₂ from all those people breathing and PM2.5 from the romantic candles. The air quality drops fast at dinner parties!",
+                        insight: "💡 Air Quality Insight: Eight people can double CO₂ levels in just 30 minutes. Add candles and you've got a pollutant party!"
+                    }
+                },
+
+                {
+                    title: "Copy Room - Big Print Job",
+                    visualElements: [
+                        { icon: "🖨️", text: "3 copiers running" },
+                        { icon: "📄", text: "Paper dust visible" },
+                        { icon: "🔌", text: "Toner smell strong" },
+                        { icon: "🚫", text: "No windows" },
+                        { icon: "🌡️", text: "Room heating up" },
+                        { icon: "⚡", text: "Ozone smell present" }
+                    ],
+                    description: "Major presentation printing. What are copiers emitting?",
+                    choices: [
+                        { 
+                            text: "A) Paper smell", 
+                            correct: false,
+                            health: "Paper dust contains bleaching chemicals and formaldehyde that irritate airways. Chronic exposure causes occupational asthma and skin sensitization."
+                        },
+                        { 
+                            text: "B) Ozone, VOCs, and toner particles", 
+                            correct: true,
+                            health: "Copier emissions cause 'photocopier lung' with inflammation and scarring. Ultrafine toner particles penetrate blood-brain barrier, ozone damages lungs, VOCs cause cancer."
+                        },
+                        { 
+                            text: "C) Fresh copies only", 
+                            correct: false,
+                            health: "Fresh copies release VOCs from ink and paper treatments causing headaches and nausea. Handling causes skin absorption of endocrine-disrupting chemicals."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Copy rooms have particle levels equal to busy highways. Workers show increased DNA damage, respiratory disease, and cardiovascular problems."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right on! Copiers are pollution machines: ozone from the corona wire, VOCs from heated plastics, and ultrafine toner particles.",
+                        incorrect: "Copiers emit ozone (respiratory irritant), VOCs from heated components, and ultrafine toner particles that penetrate deep into lungs.",
+                        insight: "💡 Air Quality Insight: Sitting next to a busy copier exposes you to as many particles as standing next to a highway!"
+                    }
+                },
+
+                {
+                    title: "Pet Store - Small Animals Section",
+                    visualElements: [
+                        { icon: "🐹", text: "Hamster cages" },
+                        { icon: "🐦", text: "Birds chirping" },
+                        { icon: "💨", text: "Bedding dust floating" },
+                        { icon: "🐠", text: "Aquarium chemicals" },
+                        { icon: "👃", text: "Animal odors" },
+                        { icon: "🌾", text: "Hay and sawdust" }
+                    ],
+                    description: "Cute overload in the small animals section. What's in the air?",
+                    choices: [
+                        { 
+                            text: "A) Just cuteness", 
+                            correct: false,
+                            health: "Emotional attachment to pets doesn't protect from zoonotic diseases. Pet stores are vectors for salmonella, ringworm, and lymphocytic choriomeningitis."
+                        },
+                        { 
+                            text: "B) Ammonia, dander, and bedding dust", 
+                            correct: true,
+                            health: "Ammonia burns respiratory tract and triggers asthma attacks. Animal dander causes severe allergies, while bedding dust leads to hypersensitivity pneumonitis."
+                        },
+                        { 
+                            text: "C) Pet food only", 
+                            correct: false,
+                            health: "Pet food dust contains protein allergens and storage mites causing anaphylaxis. Contaminated feed spreads aflatoxins linked to liver cancer."
+                        },
+                        { 
+                            text: "D) Fresh air", 
+                            correct: false,
+                            health: "Pet store air contains 5x normal bacteria levels including antibiotic-resistant strains. Workers develop chronic respiratory infections and zoonotic diseases."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Pet stores have high ammonia from waste, allergenic dander, and particulates from bedding materials.",
+                        incorrect: "Pet stores are full of ammonia from animal waste, allergenic dander, and dust from bedding materials.",
+                        insight: "💡 Air Quality Insight: Pet store workers have 2x higher rates of respiratory allergies. All that cuteness comes with a cost!"
+                    }
+                },
+
+                {
+                    title: "Wine Cellar - Tasting Room",
+                    visualElements: [
+                        { icon: "🍷", text: "Wine barrels aging" },
+                        { icon: "🪵", text: "Wooden racks" },
+                        { icon: "🍄", text: "Musty earth smell" },
+                        { icon: "💧", text: "Stone walls damp" },
+                        { icon: "🕸️", text: "Cobwebs in corners" },
+                        { icon: "🌡️", text: "Cool and humid" }
+                    ],
+                    description: "Wine tasting in the cellar. What grows in damp cellars?",
+                    choices: [
+                        { 
+                            text: "A) Wine quality", 
+                            correct: false,
+                            health: "Wine aging releases sulfur dioxide causing severe asthma attacks. Chronic exposure leads to sulfite sensitivity affecting 1% of population."
+                        },
+                        { 
+                            text: "B) Mold and mildew", 
+                            correct: true,
+                            health: "Cellar mold causes 'wine maker's lung' with permanent scarring. Aspergillus in cellars produces aflatoxins, potent liver carcinogens that contaminate wine."
+                        },
+                        { 
+                            text: "C) Good taste", 
+                            correct: false,
+                            health: "Wine tasting exposes you to ethanol vapors causing cognitive impairment. Professional tasters have higher rates of oral and throat cancers."
+                        },
+                        { 
+                            text: "D) Nothing concerning", 
+                            correct: false,
+                            health: "Cellars harbor Histoplasma causing severe lung infections. Combined with radon accumulation, increases lung cancer risk by 40%."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Damp cellars are perfect for mold and mildew growth, which release allergenic spores.",
+                        incorrect: "Damp cellars breed mold and mildew. That 'earthy' smell is often mold spores that can trigger allergies.",
+                        insight: "💡 Air Quality Insight: 'Wine cellar nose' is real - sommeliers have higher rates of fungal allergies from mold exposure!"
+                    }
+                },
+
+                {
+                    title: "Public Pool - Indoor Swimming",
+                    visualElements: [
+                        { icon: "🏊", text: "Pool packed with swimmers" },
+                        { icon: "💧", text: "Chlorine smell intense" },
+                        { icon: "🌫️", text: "Humid foggy air" },
+                        { icon: "🪟", text: "Windows fogged up" },
+                        { icon: "👶", text: "Kids splashing" },
+                        { icon: "🌡️", text: "Warm and steamy" }
+                    ],
+                    description: "Indoor pool is packed. What forms when chlorine meets organic matter?",
+                    choices: [
+                        { 
+                            text: "A) Clean water", 
+                            correct: false,
+                            health: "Pool water isn't clean - contains fecal matter, sweat, and urine from swimmers. Causes recreational water illnesses including cryptosporidiosis."
+                        },
+                        { 
+                            text: "B) Chloramines and trihalomethanes", 
+                            correct: true,
+                            health: "Chloramines cause 'lifeguard lung' with permanent scarring and 50% reduced lung capacity. Trihalomethanes are carcinogens absorbed through skin, increasing bladder cancer risk 57%."
+                        },
+                        { 
+                            text: "C) Fresh chlorine", 
+                            correct: false,
+                            health: "Chlorine gas exposure causes chemical burns to lungs and eyes. Acute exposure leads to pulmonary edema and respiratory failure."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Indoor pool air causes asthma in 60% of competitive swimmers. Combined chemical exposure linked to DNA damage and reproductive issues."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Chlorine + organic matter (sweat, urine) creates chloramines and trihalomethanes - both respiratory irritants.",
+                        incorrect: "Chlorine reacts with organic matter to form chloramines and trihalomethanes - toxic compounds that cause 'lifeguard lung.'",
+                        insight: "💡 Air Quality Insight: That strong 'chlorine' smell is actually chloramines - a sign the pool needs more fresh water, not more chlorine!"
+                    }
+                },
+
+                {
+                    title: "Craft Room - Creative Time",
+                    visualElements: [
+                        { icon: "🎨", text: "Rubber cement open" },
+                        { icon: "✏️", text: "Permanent markers" },
+                        { icon: "📐", text: "Laminator running" },
+                        { icon: "🔫", text: "Glue gun melting" },
+                        { icon: "✂️", text: "Adhesives everywhere" },
+                        { icon: "📦", text: "Foam boards cut" }
+                    ],
+                    description: "Crafting marathon in progress. Creativity is flowing, but what else?",
+                    choices: [
+                        { 
+                            text: "A) Creative energy", 
+                            correct: false,
+                            health: "Mental stimulation without ventilation causes CO₂ buildup impairing creativity by 23%. Prolonged crafting in closed spaces triggers fatigue and reduces fine motor skills."
+                        },
+                        { 
+                            text: "B) Toluene, xylene, and solvents", 
+                            correct: true,
+                            health: "These neurotoxins cause immediate dizziness, memory loss, and kidney damage. Chronic exposure leads to brain damage, peripheral neuropathy, and 40% increased miscarriage risk."
+                        },
+                        { 
+                            text: "C) Art supplies smell only", 
+                            correct: false,
+                            health: "Craft supply fumes trigger severe headaches and allergic reactions within minutes. Children exposed show developmental delays and 15-point IQ reduction."
+                        },
+                        { 
+                            text: "D) Nothing serious", 
+                            correct: false,
+                            health: "Craft rooms have toxin levels exceeding OSHA workplace limits by 300%. Regular exposure causes liver damage, reproductive harm, and increased leukemia risk."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Craft supplies release serious chemicals: toluene and xylene from adhesives and markers - neurotoxic solvents.",
+                        incorrect: "Craft supplies release toluene, xylene, and other solvents. These neurotoxic chemicals can cause headaches and dizziness.",
+                        insight: "💡 Air Quality Insight: 'Non-toxic' on labels means safe if eaten, not safe if inhaled! Always craft in ventilated spaces."
+                    }
+                },
+
+                {
+                    title: "Attic - Spring Cleaning",
+                    visualElements: [
+                        { icon: "🏠", text: "Old insulation exposed" },
+                        { icon: "📦", text: "Dusty storage boxes" },
+                        { icon: "🌫️", text: "Fiberglass visible" },
+                        { icon: "🕸️", text: "Cobwebs everywhere" },
+                        { icon: "👃", text: "Musty smell" },
+                        { icon: "📰", text: "Old newspapers yellowing" }
+                    ],
+                    description: "Finally tackling the attic. What's the main concern with old insulation?",
+                    choices: [
+                        { 
+                            text: "A) It's too warm", 
+                            correct: false,
+                            health: "Attic heat stress causes dehydration and heat exhaustion within 30 minutes. Extreme temperatures increase heart attack and stroke risk by 30%."
+                        },
+                        { 
+                            text: "B) Fiberglass particles and possible asbestos", 
+                            correct: true,
+                            health: "Fiberglass causes permanent lung scarring and skin cancer from embedded fibers. Asbestos exposure leads to mesothelioma with 100% fatality rate within 12-21 months."
+                        },
+                        { 
+                            text: "C) Spider webs only", 
+                            correct: false,
+                            health: "Attic spiders include brown recluse causing necrotic wounds and systemic reactions. Black widow bites cause muscle paralysis and respiratory failure."
+                        },
+                        { 
+                            text: "D) Nothing dangerous", 
+                            correct: false,
+                            health: "Attics contain rodent droppings with hantavirus (36% mortality), bat guano with histoplasmosis, and multiple carcinogens. Disturbing materials causes immediate respiratory distress."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Old insulation can release fiberglass particles (lung irritant) and may contain asbestos if pre-1980s.",
+                        incorrect: "Old insulation releases fiberglass particles that irritate lungs, and pre-1980s insulation might contain deadly asbestos.",
+                        insight: "💡 Air Quality Insight: Disturbing old insulation can release millions of microscopic fibers. Always wear proper protection!"
+                    }
+                },
+
+                {
+                    title: "Dance Studio - Zumba Class",
+                    visualElements: [
+                        { icon: "💃", text: "20 people dancing" },
+                        { icon: "💦", text: "Everyone sweating" },
+                        { icon: "🪞", text: "Mirrors fogged up" },
+                        { icon: "🎵", text: "Music pumping" },
+                        { icon: "🏃", text: "High energy workout" },
+                        { icon: "🦶", text: "Rubber floor heating" }
+                    ],
+                    description: "Zumba class in full swing. What's building up fast?",
+                    choices: [
+                        { 
+                            text: "A) Fitness levels", 
+                            correct: false,
+                            health: "Overexertion in poor air quality increases cardiac arrest risk by 250%. Exercise in high CO₂ causes premature fatigue and muscle cramping."
+                        },
+                        { 
+                            text: "B) CO₂, humidity, and rubber off-gassing", 
+                            correct: true,
+                            health: "CO₂ above 4000ppm impairs coordination causing 40% more exercise injuries. Rubber floor VOCs cause respiratory inflammation, while humidity breeds infectious bacteria."
+                        },
+                        { 
+                            text: "C) Good vibes only", 
+                            correct: false,
+                            health: "Group exercise spreads respiratory infections to 65% of participants. Heavy breathing in crowds increases viral load exposure 20-fold."
+                        },
+                        { 
+                            text: "D) Music volume", 
+                            correct: false,
+                            health: "Fitness class noise exceeds 100dB causing permanent hearing loss. Combined with poor air quality, triggers exercise-induced asthma in 30% of participants."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Exercise classes see rapid CO₂ buildup, high humidity (mold risk), and VOCs from heated rubber floors.",
+                        incorrect: "It's CO₂ from heavy breathing, humidity from sweat, and VOCs from rubber floors heating up. A triple threat!",
+                        insight: "💡 Air Quality Insight: CO₂ in fitness classes can hit 4000ppm - enough to impair coordination. Ironic for a dance class!"
+                    }
+                },
+
+                {
+                    title: "Hotel Room - Check-In Fresh",
+                    visualElements: [
+                        { icon: "🧹", text: "Just cleaned smell" },
+                        { icon: "🌸", text: "Air freshener plugged" },
+                        { icon: "🛏️", text: "Fresh linens" },
+                        { icon: "❄️", text: "AC blasting" },
+                        { icon: "🧴", text: "Cleaning products lingering" },
+                        { icon: "🎭", text: "Carpet freshly vacuumed" }
+                    ],
+                    description: "Just checked in to your hotel room. What's that strong smell?",
+                    choices: [
+                        { 
+                            text: "A) True cleanliness", 
+                            correct: false,
+                            health: "Hotel 'cleanliness' masks biological contamination - bedbugs, MRSA, and bodily fluids. UV light reveals contamination in 91% of 'clean' rooms."
+                        },
+                        { 
+                            text: "B) Cleaning chemical residues and fragrances", 
+                            correct: true,
+                            health: "Hotel cleaning chemicals trigger asthma attacks and chemical sensitivity syndrome. Quaternary ammonium compounds cause infertility and birth defects with repeated exposure."
+                        },
+                        { 
+                            text: "C) Fresh linens only", 
+                            correct: false,
+                            health: "Hotel linens harbor antibiotic-resistant bacteria surviving industrial washing. Fabric softener residues cause contact dermatitis and hormone disruption."
+                        },
+                        { 
+                            text: "D) Welcoming atmosphere", 
+                            correct: false,
+                            health: "Hotel rooms have 7x more bacteria than homes, including fecal matter on every surface. Previous guests' illnesses persist for weeks on surfaces."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! That intense 'clean' smell is actually concentrated cleaning chemicals and synthetic fragrances.",
+                        incorrect: "That overwhelming smell is cleaning chemical residues and synthetic fragrances - often at levels that trigger headaches.",
+                        insight: "💡 Air Quality Insight: Hotels use 10x more cleaning products per square foot than homes. Always air out your room!"
+                    }
+                },
+
+                {
+                    title: "School Bus - Morning Commute",
+                    visualElements: [
+                        { icon: "🚌", text: "Diesel engine idling" },
+                        { icon: "👶", text: "40 kids packed in" },
+                        { icon: "🪟", text: "Windows closed" },
+                        { icon: "❄️", text: "Cold morning" },
+                        { icon: "💨", text: "Exhaust visible" },
+                        { icon: "⏰", text: "45-minute ride" }
+                    ],
+                    description: "School bus morning pickup route. What are kids breathing?",
+                    choices: [
+                        { 
+                            text: "A) Fresh morning air", 
+                            correct: false,
+                            health: "Morning air trapped in buses contains overnight accumulation of mold and bacteria. Cold air holds more pollutants, concentrating toxins by 40%."
+                        },
+                        { 
+                            text: "B) Diesel exhaust and PM2.5", 
+                            correct: true,
+                            health: "Diesel exhaust causes 70% reduced lung growth in children and increases asthma by 400%. PM2.5 exposure impairs brain development, lowering IQ by 7 points."
+                        },
+                        { 
+                            text: "C) Education enthusiasm", 
+                            correct: false,
+                            health: "School bus stress increases cortisol, suppressing immune function by 40%. Bullying and anxiety on buses triggers panic disorders in 15% of students."
+                        },
+                        { 
+                            text: "D) Nothing concerning", 
+                            correct: false,
+                            health: "School buses expose children to 4x legal adult workplace pollution limits. Daily exposure increases cancer risk, respiratory disease, and developmental disorders."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Diesel buses expose kids to high levels of exhaust and PM2.5, especially when idling with windows closed.",
+                        incorrect: "Kids on diesel buses breathe high levels of exhaust and PM2.5 particles - worse than standing beside a highway.",
+                        insight: "💡 Air Quality Insight: Kids on diesel buses are exposed to 4x more diesel exhaust than people in cars behind the bus!"
+                    }
+                },
+
+                {
+                    title: "Warehouse - Inventory Day",
+                    visualElements: [
+                        { icon: "🚜", text: "Forklifts running" },
+                        { icon: "📦", text: "Boxes everywhere" },
+                        { icon: "💨", text: "Dust visible in air" },
+                        { icon: "⛽", text: "Diesel exhaust" },
+                        { icon: "🏭", text: "Poor circulation" },
+                        { icon: "👷", text: "Workers busy" }
+                    ],
+                    description: "Warehouse inventory count underway. What's the main pollutant?",
+                    choices: [
+                        { 
+                            text: "A) Productivity", 
+                            correct: false,
+                            health: "Warehouse work causes musculoskeletal disorders in 35% of workers. Repetitive strain and poor ergonomics lead to permanent disability."
+                        },
+                        { 
+                            text: "B) NO₂, PM2.5, and CO from forklifts", 
+                            correct: true,
+                            health: "Forklift emissions cause 30% higher respiratory disease and 50% increased heart attack risk. NO₂ exposure leads to emphysema, while CO causes brain damage."
+                        },
+                        { 
+                            text: "C) Box dust only", 
+                            correct: false,
+                            health: "Cardboard dust contains formaldehyde and causes occupational asthma. Fungal spores in boxes trigger hypersensitivity pneumonitis."
+                        },
+                        { 
+                            text: "D) Success metrics", 
+                            correct: false,
+                            health: "Warehouse performance pressure increases accidents by 65%. Stress combined with air pollution doubles cardiovascular disease risk."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Diesel forklifts in warehouses create high levels of NO₂, PM2.5, and CO - a respiratory nightmare.",
+                        incorrect: "Diesel forklifts emit NO₂, PM2.5, and CO. Warehouse workers have 30% higher rates of respiratory disease.",
+                        insight: "💡 Air Quality Insight: One diesel forklift emits as much pollution as 100 cars. Electric forklifts are literally a breath of fresh air!"
+                    }
+                },
+
+                {
+                    title: "Veterinary Clinic - Exam Room",
+                    visualElements: [
+                        { icon: "🐕", text: "Dogs shedding" },
+                        { icon: "🐈", text: "Cats stressed" },
+                        { icon: "💉", text: "Anesthesia equipment" },
+                        { icon: "🧴", text: "Disinfectants strong" },
+                        { icon: "🦠", text: "Medical supplies" },
+                        { icon: "🐾", text: "Pet dander floating" }
+                    ],
+                    description: "Busy day at the vet clinic. What's unique to vet clinics?",
+                    choices: [
+                        { 
+                            text: "A) Happy pets", 
+                            correct: false,
+                            health: "Stressed animals release pheromones triggering human anxiety responses. Bite injuries cause serious infections including rabies and cat scratch fever."
+                        },
+                        { 
+                            text: "B) Animal dander and anesthetic gases", 
+                            correct: true,
+                            health: "Vet staff have 300% higher asthma rates from concentrated dander exposure. Waste anesthetic gases cause miscarriages, birth defects, and liver disease."
+                        },
+                        { 
+                            text: "C) Barking only", 
+                            correct: false,
+                            health: "Veterinary noise exceeds 85dB causing permanent hearing loss. Constant barking triggers chronic stress response and hypertension."
+                        },
+                        { 
+                            text: "D) Nothing special", 
+                            correct: false,
+                            health: "Vet clinics harbor zoonotic diseases including ringworm, toxoplasmosis, and MRSA. Workers face 5x higher infection risk than general population."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Vet clinics have high levels of allergenic animal dander plus leaked anesthetic gases that affect staff.",
+                        incorrect: "Vet clinics have concentrated animal dander (major allergen) and anesthetic gas leaks that can affect cognitive function.",
+                        insight: "💡 Air Quality Insight: Veterinary staff have 3x higher rates of asthma. Those cute patients come with invisible risks!"
+                    }
+                },
+
+                {
+                    title: "Bakery - 4 AM Prep",
+                    visualElements: [
+                        { icon: "🥖", text: "Ovens preheating" },
+                        { icon: "🌾", text: "Flour dust clouds" },
+                        { icon: "🥐", text: "Dough rising" },
+                        { icon: "🔥", text: "Multiple ovens running" },
+                        { icon: "👨‍🍳", text: "Bakers working" },
+                        { icon: "💨", text: "Yeast fermenting" }
+                    ],
+                    description: "Bakery before dawn. What causes 'baker's asthma'?",
+                    choices: [
+                        { 
+                            text: "A) Early morning work", 
+                            correct: false,
+                            health: "Night shift work disrupts circadian rhythms, increasing cancer risk by 40%. Sleep deprivation impairs immune function and doubles infection susceptibility."
+                        },
+                        { 
+                            text: "B) Flour dust and additives", 
+                            correct: true,
+                            health: "Baker's asthma affects 10% of workers, causing irreversible lung damage. Flour additives like amylase trigger severe allergic reactions and anaphylaxis."
+                        },
+                        { 
+                            text: "C) Delicious aromas", 
+                            correct: false,
+                            health: "Maillard reaction products from baking are carcinogenic. Acrylamide exposure increases cancer risk by 30% in bakery workers."
+                        },
+                        { 
+                            text: "D) Hard work", 
+                            correct: false,
+                            health: "Bakery work causes chronic back pain in 60% of workers. Heat exposure and heavy lifting lead to cardiovascular strain and premature joint degeneration."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Flour dust and baking additives cause 'baker's asthma' - a recognized occupational disease.",
+                        incorrect: "It's flour dust and additives. 'Baker's asthma' affects 10% of bakery workers from inhaling flour particles.",
+                        insight: "💡 Air Quality Insight: Flour dust is one of the most common causes of occupational asthma. That fresh bread comes at a cost!"
+                    }
+                },
+
+                {
+                    title: "Tattoo Parlor - Inking Session",
+                    visualElements: [
+                        { icon: "🎨", text: "Needles buzzing" },
+                        { icon: "💉", text: "Ink bottles open" },
+                        { icon: "🧴", text: "Disinfectant spray" },
+                        { icon: "🧤", text: "Latex gloves" },
+                        { icon: "🩸", text: "Slight blood mist" },
+                        { icon: "💨", text: "Ink smell strong" }
+                    ],
+                    description: "Tattoo in progress. What's floating in tattoo parlor air?",
+                    choices: [
+                        { 
+                            text: "A) Artistic expression", 
+                            correct: false,
+                            health: "Tattoo regret affects 25% of clients, causing psychological distress. Removal procedures cause scarring and potential nerve damage."
+                        },
+                        { 
+                            text: "B) Ink pigments and disinfectant vapors", 
+                            correct: true,
+                            health: "Tattoo inks contain mercury, lead, and cadmium causing kidney damage and cancer. Aerosolized blood particles transmit hepatitis B, C, and HIV."
+                        },
+                        { 
+                            text: "C) Cool vibes only", 
+                            correct: false,
+                            health: "Tattoo parlor stress responses increase pain perception by 40%. Vasovagal reactions cause fainting and potential head injuries."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Tattoo parlors have infection rates of 5% including MRSA and sepsis. Allergic reactions to ink cause permanent scarring and granulomas."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Tattoo parlors have aerosolized ink pigments (some containing heavy metals) and harsh disinfectant vapors.",
+                        incorrect: "Tattoo parlors have airborne ink pigments (some with heavy metals) and strong disinfectant vapors.",
+                        insight: "💡 Air Quality Insight: Some tattoo inks contain mercury, lead, and cadmium. Artists and clients both need good ventilation!"
+                    }
+                },
+
+                {
+                    title: "Parking Garage - Underground Level",
+                    visualElements: [
+                        { icon: "🚗", text: "Cars circling" },
+                        { icon: "💨", text: "Exhaust visible" },
+                        { icon: "🛢️", text: "Oil stains everywhere" },
+                        { icon: "🚫", text: "Poor ventilation" },
+                        { icon: "🏗️", text: "Concrete enclosed" },
+                        { icon: "⚠️", text: "CO detector beeping" }
+                    ],
+                    description: "Deep in the parking garage. What accumulates here?",
+                    choices: [
+                        { 
+                            text: "A) Parking tickets", 
+                            correct: false,
+                            health: "Parking stress increases blood pressure and triggers road rage incidents. Financial burden from tickets causes anxiety and depression."
+                        },
+                        { 
+                            text: "B) CO and benzene", 
+                            correct: true,
+                            health: "Carbon monoxide causes brain damage and death within 3 minutes at high levels. Benzene exposure increases leukemia risk by 400% in parking attendants."
+                        },
+                        { 
+                            text: "C) Fresh air", 
+                            correct: false,
+                            health: "Underground air contains radon gas, the second leading cause of lung cancer. Concrete dust causes silicosis and kidney disease."
+                        },
+                        { 
+                            text: "D) Nothing dangerous", 
+                            correct: false,
+                            health: "Parking garages have 15x outdoor pollution levels. Daily exposure causes cognitive decline, respiratory disease, and premature death."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Parking garages concentrate carbon monoxide and benzene (a carcinogen) from vehicle exhaust.",
+                        incorrect: "Parking garages trap CO and benzene from exhaust. Levels can exceed outdoor highway pollution!",
+                        insight: "💡 Air Quality Insight: Parking garage attendants have 40% higher rates of respiratory issues. Location, location, ventilation!"
+                    }
+                },
+
+                {
+                    title: "Music Venue - Rock Concert",
+                    visualElements: [
+                        { icon: "🎸", text: "Band playing loud" },
+                        { icon: "👥", text: "Packed crowd" },
+                        { icon: "🌫️", text: "Fog machine pumping" },
+                        { icon: "🍺", text: "Beer spilled" },
+                        { icon: "🚫", text: "No windows" },
+                        { icon: "🎤", text: "Everyone singing" }
+                    ],
+                    description: "Small venue rocking out. Besides the music, what's in the air?",
+                    choices: [
+                        { 
+                            text: "A) Pure rock and roll", 
+                            correct: false,
+                            health: "Concert noise exceeds 115dB causing immediate permanent hearing loss. Tinnitus affects 40% of regular concert-goers, leading to depression."
+                        },
+                        { 
+                            text: "B) CO₂, fog machine glycol, and VOCs", 
+                            correct: true,
+                            health: "CO₂ at 5000ppm causes confusion and fainting in crowds. Glycol fog triggers severe asthma, while alcohol VOCs impair judgment further."
+                        },
+                        { 
+                            text: "C) Good vibes only", 
+                            correct: false,
+                            health: "Crowd crush causes 2000 deaths annually at venues. Mass psychogenic illness spreads panic attacks through 30% of dense crowds."
+                        },
+                        { 
+                            text: "D) Sound waves", 
+                            correct: false,
+                            health: "Infrasound from bass frequencies causes nausea, anxiety, and heart palpitations. Vibrations damage internal organs at extreme levels."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Concerts have extreme CO₂ from crowds, glycol particles from fog machines, and VOCs from spilled alcohol.",
+                        incorrect: "Concert air contains high CO₂ from crowds, glycol from fog machines, and VOCs from spilled drinks.",
+                        insight: "💡 Air Quality Insight: Concert CO₂ can hit 5000ppm. That lightheaded feeling might not be from the music!"
+                    }
+                },
+
+                {
+                    title: "Dry Cleaner - Behind Counter",
+                    visualElements: [
+                        { icon: "👔", text: "Clothes hanging" },
+                        { icon: "💨", text: "Chemical smell strong" },
+                        { icon: "🔥", text: "Steam pressing" },
+                        { icon: "🧪", text: "Solvent tanks" },
+                        { icon: "🛍️", text: "Plastic bags everywhere" },
+                        { icon: "⚗️", text: "PERC in use" }
+                    ],
+                    description: "Working at the dry cleaner. What's the main chemical?",
+                    choices: [
+                        { 
+                            text: "A) Just steam", 
+                            correct: false,
+                            health: "Steam burns cause third-degree injuries and permanent scarring. High humidity promotes fungal infections and respiratory issues."
+                        },
+                        { 
+                            text: "B) Perchloroethylene (PERC)", 
+                            correct: true,
+                            health: "PERC causes liver cancer, kidney failure, and Parkinson's disease. Workers have 300% higher cancer rates and suffer cognitive decline within 5 years."
+                        },
+                        { 
+                            text: "C) Fabric softener", 
+                            correct: false,
+                            health: "Fabric softener chemicals cause endocrine disruption and infertility. Quaternary compounds trigger asthma and contact dermatitis."
+                        },
+                        { 
+                            text: "D) Starch only", 
+                            correct: false,
+                            health: "Starch particles cause baker's asthma in dry cleaning workers. Inhalation leads to granulomatous lung disease and fibrosis."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! PERC (perchloroethylene) is the main dry cleaning chemical - a probable carcinogen.",
+                        incorrect: "Dry cleaners use PERC (perchloroethylene), classified as a probable carcinogen by the EPA.",
+                        insight: "💡 Air Quality Insight: Living next to a dry cleaner increases cancer risk. Always air out dry cleaned clothes before wearing!"
+                    }
+                },
+
+                {
+                    title: "Woodshop - Cutting Cedar",
+                    visualElements: [
+                        { icon: "🪵", text: "Cedar being cut" },
+                        { icon: "💨", text: "Sawdust flying" },
+                        { icon: "🎨", text: "Stain fumes rising" },
+                        { icon: "⚙️", text: "Power saws running" },
+                        { icon: "❌", text: "No dust collection" },
+                        { icon: "👃", text: "Strong wood smell" }
+                    ],
+                    description: "Woodshop project day. What makes wood dust dangerous?",
+                    choices: [
+                        { 
+                            text: "A) It's messy", 
+                            correct: false,
+                            health: "Wood shop mess increases accident risk by 40%. Slips on sawdust cause spinal injuries and traumatic brain injuries."
+                        },
+                        { 
+                            text: "B) Carcinogenic particles and VOCs", 
+                            correct: true,
+                            health: "Wood dust causes nasal cancer with 400% increased risk. Cedar plicatic acid triggers severe asthma and permanent lung sensitization."
+                        },
+                        { 
+                            text: "C) Natural wood smell", 
+                            correct: false,
+                            health: "Wood terpenes react with ozone forming formaldehyde. 'Natural' wood chemicals cause allergic reactions and respiratory distress."
+                        },
+                        { 
+                            text: "D) Nothing - it's natural", 
+                            correct: false,
+                            health: "'Natural' wood dust is a Group 1 carcinogen like asbestos. Causes sino-nasal cancer, asthma, and chronic bronchitis in woodworkers."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Wood dust (especially cedar) is carcinogenic, and treatments release additional VOCs.",
+                        incorrect: "Wood dust is a known carcinogen, especially from hardwoods. Add VOCs from stains and you've got a toxic mix.",
+                        insight: "💡 Air Quality Insight: Cedar dust is particularly toxic. Woodworkers have 4x higher rates of nasal cancer!"
+                    }
+                },
+
+                {
+                    title: "Subway Platform - Rush Hour",
+                    visualElements: [
+                        { icon: "🚇", text: "Trains braking" },
+                        { icon: "⚡", text: "Sparks from rails" },
+                        { icon: "👥", text: "Crowds packed tight" },
+                        { icon: "💨", text: "Metal dust visible" },
+                        { icon: "🛤️", text: "Underground tunnel" },
+                        { icon: "🔊", text: "Screeching sounds" }
+                    ],
+                    description: "Rush hour underground. What do subway brakes release?",
+                    choices: [
+                        { 
+                            text: "A) Just noise", 
+                            correct: false,
+                            health: "Subway noise exceeds 100dB causing permanent hearing damage. Chronic exposure leads to hypertension and 25% increased heart attack risk."
+                        },
+                        { 
+                            text: "B) Metal particulates and PM2.5", 
+                            correct: true,
+                            health: "Brake metals include iron, copper, and manganese causing Parkinson's disease. PM2.5 levels 10x higher than surface increase lung cancer 45%."
+                        },
+                        { 
+                            text: "C) Speed reduction only", 
+                            correct: false,
+                            health: "Emergency braking releases asbestos from old brake pads. Causes mesothelioma with 100% fatality rate decades later."
+                        },
+                        { 
+                            text: "D) Nothing harmful", 
+                            correct: false,
+                            health: "Subway air contains magnetic particles that penetrate the brain. Workers show Alzheimer's-like brain damage from chronic exposure."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Subway brakes release metal particles including iron, copper, and manganese - all respiratory irritants.",
+                        incorrect: "Subway brakes release toxic metal particles. Platform PM2.5 levels can be 10x higher than street level!",
+                        insight: "💡 Air Quality Insight: Subway workers have higher rates of DNA damage from metal particle exposure. Stand back from the platform edge!"
+                    }
+                },
+
+                {
+                    title: "Senior Center - Bingo Night",
+                    visualElements: [
+                        { icon: "👵", text: "50 seniors playing" },
+                        { icon: "💊", text: "Oxygen tanks present" },
+                        { icon: "🧹", text: "Strong cleaner smell" },
+                        { icon: "🏢", text: "Old building" },
+                        { icon: "❌", text: "Poor ventilation" },
+                        { icon: "🎱", text: "Bingo in progress" }
+                    ],
+                    description: "Packed bingo night. Why does air quality matter more here?",
+                    choices: [
+                        { 
+                            text: "A) Seniors complain more", 
+                            correct: false,
+                            health: "Dismissing senior concerns leads to undiagnosed conditions. Elderly have valid health issues requiring 50% more medical attention."
+                        },
+                        { 
+                            text: "B) Reduced lung capacity makes them vulnerable", 
+                            correct: true,
+                            health: "Seniors have 30% less lung capacity making pollution 3x more deadly. PM2.5 exposure increases heart attack risk by 69% and stroke by 83%."
+                        },
+                        { 
+                            text: "C) Tradition", 
+                            correct: false,
+                            health: "Social isolation in seniors increases mortality by 45%. Poor air quality at gatherings discourages attendance, worsening mental health."
+                        },
+                        { 
+                            text: "D) It doesn't matter more", 
+                            correct: false,
+                            health: "Air pollution causes 40% of senior hospitalizations. Poor air quality accelerates dementia, COPD, and cardiovascular disease progression."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Seniors have reduced lung capacity and weakened immune systems, making them extremely vulnerable to pollutants.",
+                        incorrect: "Seniors have reduced lung capacity and weakened immunity. Poor air quality affects them 3x more than younger adults.",
+                        insight: "💡 Air Quality Insight: PM2.5 exposure increases heart attack risk by 69% in people over 65. Clean air is life-saving!"
+                    }
+                },
+
+                {
+                    title: "Ice Rink - Hockey Practice",
+                    visualElements: [
+                        { icon: "🏒", text: "Hockey practice active" },
+                        { icon: "🚜", text: "Zamboni resurfacing" },
+                        { icon: "💨", text: "Exhaust visible" },
+                        { icon: "❄️", text: "Cold air trapped" },
+                        { icon: "👥", text: "Parents in stands" },
+                        { icon: "🏟️", text: "Indoor arena" }
+                    ],
+                    description: "Hockey practice on indoor ice. What do ice resurfacers emit?",
+                    choices: [
+                        { 
+                            text: "A) Just ice shavings", 
+                            correct: false,
+                            health: "Ice shavings carry bacteria and blood from injuries. Inhalation causes respiratory infections and potential bloodborne disease transmission."
+                        },
+                        { 
+                            text: "B) CO and NO2 from engines", 
+                            correct: true,
+                            health: "Zamboni CO has killed players and caused 300+ poisonings. NO2 exposure reduces lung function 15% in youth hockey players permanently."
+                        },
+                        { 
+                            text: "C) Cold air only", 
+                            correct: false,
+                            health: "Cold air triggers exercise-induced asthma in 35% of players. Increases heart attack risk and reduces athletic performance by 20%."
+                        },
+                        { 
+                            text: "D) Team spirit", 
+                            correct: false,
+                            health: "Hockey culture normalizes brain injuries with 50% of players experiencing concussions. Aggressive play increases spinal cord injury risk."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Zambonis with combustion engines release high levels of CO and NO2 in enclosed rinks.",
+                        incorrect: "Gas-powered Zambonis emit dangerous levels of CO and NO2. Some rinks have had to evacuate from CO poisoning!",
+                        insight: "💡 Air Quality Insight: Hockey players at rinks with gas Zambonis show decreased lung function. Electric ice resurfacers are the solution!"
+                    }
+                },
+
+                {
+                    title: "Escape Room - Final Puzzle",
+                    visualElements: [
+                        { icon: "🔐", text: "6 people thinking" },
+                        { icon: "🚪", text: "Door sealed" },
+                        { icon: "🧩", text: "Props everywhere" },
+                        { icon: "⏰", text: "One hour in" },
+                        { icon: "💡", text: "Dim lighting" },
+                        { icon: "📦", text: "Tiny space" }
+                    ],
+                    description: "One hour in the escape room. What's happening to the air?",
+                    choices: [
+                        { 
+                            text: "A) Mystery intensifies", 
+                            correct: false,
+                            health: "Psychological stress in confined spaces triggers panic attacks in 20% of participants. Can cause lasting claustrophobia and anxiety disorders."
+                        },
+                        { 
+                            text: "B) Rapid CO₂ accumulation", 
+                            correct: true,
+                            health: "CO₂ doubles in one hour, reducing problem-solving ability by 15% and triggering headaches. Can cause fainting and panic attacks at extreme levels."
+                        },
+                        { 
+                            text: "C) Clues appear", 
+                            correct: false,
+                            health: "Dim lighting causes eye strain and increases accident risk by 60%. Props may contain lead paint and other toxins from cheap manufacturing."
+                        },
+                        { 
+                            text: "D) Nothing changes", 
+                            correct: false,
+                            health: "Small sealed rooms violate fire codes with 80% lacking proper emergency exits. Stampede risk during panic causes crush injuries."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Six people in a small sealed room can double CO₂ levels in under an hour, impairing problem-solving ability.",
+                        incorrect: "Small sealed rooms see rapid CO₂ buildup. Ironically, it impairs the cognitive function needed to solve puzzles!",
+                        insight: "💡 Air Quality Insight: High CO₂ reduces problem-solving ability by 15%. The room might be escaping from you!"
+                    }
+                },
+
+                {
+                    title: "Pottery Studio - Kiln Day",
+                    visualElements: [
+                        { icon: "🏺", text: "Kiln at peak temp" },
+                        { icon: "💨", text: "Clay dust on surfaces" },
+                        { icon: "🎨", text: "Glazes being mixed" },
+                        { icon: "🔥", text: "2000°F firing" },
+                        { icon: "🧪", text: "Chemical smell" },
+                        { icon: "⚗️", text: "Metal compounds" }
+                    ],
+                    description: "Kiln firing day at the pottery studio. What's released during firing?",
+                    choices: [
+                        { 
+                            text: "A) Creative energy", 
+                            correct: false,
+                            health: "Creative activities without ventilation cause CO₂ buildup impairing artistic ability. Heat stress from kilns causes dehydration and heat stroke."
+                        },
+                        { 
+                            text: "B) Metal fumes and sulfur dioxide", 
+                            correct: true,
+                            health: "Kiln fumes contain lead, cadmium, and chromium causing kidney failure and cancer. Sulfur dioxide triggers severe asthma and acid rain formation indoors."
+                        },
+                        { 
+                            text: "C) Just heat", 
+                            correct: false,
+                            health: "Kiln heat causes severe burns and increases cardiac stress by 40%. Infrared radiation damages eyes causing cataracts."
+                        },
+                        { 
+                            text: "D) Artistic value", 
+                            correct: false,
+                            health: "Art material exposure causes 'artist's disease' with neurological damage. Potters have 200% higher rates of silicosis and kidney disease."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Kilns release toxic metal fumes from glazes and sulfur dioxide from clay - both serious respiratory hazards.",
+                        incorrect: "Pottery kilns release toxic metal fumes from glazes (lead, cadmium) and sulfur dioxide. Professional potters need serious ventilation!",
+                        insight: "💡 Air Quality Insight: Potters have higher rates of silicosis from clay dust and metal poisoning from glazes. Art can be hazardous!"
+                    }
+                },
+
+                {
+                    title: "Laser Tag Arena - Game On",
+                    visualElements: [
+                        { icon: "🔫", text: "30 kids running" },
+                        { icon: "🌫️", text: "Fog machines active" },
+                        { icon: "💜", text: "Black lights glowing" },
+                        { icon: "🎮", text: "Dark maze layout" },
+                        { icon: "❌", text: "Poor ventilation" },
+                        { icon: "💨", text: "Theatrical fog thick" }
+                    ],
+                    description: "Laser tag battle in progress. What's in that theatrical fog?",
+                    choices: [
+                        { 
+                            text: "A) Mystery mist", 
+                            correct: false,
+                            health: "Unknown chemical exposures cause multiple chemical sensitivity syndrome. Mystery substances trigger allergic reactions and respiratory distress."
+                        },
+                        { 
+                            text: "B) Laser beams", 
+                            correct: false,
+                            health: "Laser exposure causes retinal damage and blindness. Class 3 lasers in some venues exceed safety limits causing permanent vision loss."
+                        },
+                        { 
+                            text: "C) Glycol-based fog juice", 
+                            correct: true,
+                            health: "Glycol fog causes 'fog machine lung' with 40% of workers developing chronic cough. Triggers asthma attacks and reduces lung function permanently."
+                        },
+                        { 
+                            text: "D) Water vapor only", 
+                            correct: false,
+                            health: "Even water-based fog grows Legionella bacteria causing Legionnaires' disease. Moisture promotes mold growth in ventilation systems."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Right! Theatrical fog is made from glycol compounds that can irritate airways and trigger asthma.",
+                        incorrect: "That fog is glycol-based chemicals that irritate airways. Theatre workers exposed to it have more respiratory issues.",
+                        insight: "💡 Air Quality Insight: 'Fog machine lung' is real - glycol exposure causes respiratory problems in 40% of entertainment workers!"
+                    }
+                },
+
+                {
+                    title: "Community Garden - Composting",
+                    visualElements: [
+                        { icon: "🌱", text: "Compost steaming" },
+                        { icon: "💩", text: "Fertilizer spreading" },
+                        { icon: "🐛", text: "Pesticide on roses" },
+                        { icon: "🌻", text: "Pollen everywhere" },
+                        { icon: "🍄", text: "Mushrooms growing" },
+                        { icon: "🦟", text: "Bug spray in use" }
+                    ],
+                    description: "Community garden work day. What's the hidden danger?",
+                    choices: [
+                        { 
+                            text: "A) Too much nature", 
+                            correct: false,
+                            health: "Nature deficit disorder affects 80% of urban dwellers. However, uncontrolled exposure causes allergic reactions in 40% of population."
+                        },
+                        { 
+                            text: "B) Pesticide drift and mold spores", 
+                            correct: true,
+                            health: "Pesticide exposure causes Parkinson's disease with 70% increased risk. Compost mold triggers farmer's lung disease with permanent scarring."
+                        },
+                        { 
+                            text: "C) Fresh vegetables", 
+                            correct: false,
+                            health: "Contaminated produce causes 48 million foodborne illnesses annually. E. coli and Salmonella from compost contaminate vegetables."
+                        },
+                        { 
+                            text: "D) Earthworms", 
+                            correct: false,
+                            health: "Soil parasites including roundworm and hookworm infect gardeners. Toxocara causes blindness and organ damage in children."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Correct! Gardens have pesticide drift (neurotoxins) and mold spores from compost that trigger allergies.",
+                        incorrect: "Gardens aren't always safe - pesticide drift contains neurotoxins, and compost releases allergenic mold spores.",
+                        insight: "💡 Air Quality Insight: Gardeners have 2x higher rates of respiratory allergies. Even 'organic' gardens have air quality issues!"
+                    }
+                },
+
+                {
+                    title: "Food Truck - Lunch Rush",
+                    visualElements: [
+                        { icon: "🚚", text: "Grill blazing inside" },
+                        { icon: "🔥", text: "Propane tanks connected" },
+                        { icon: "⚡", text: "Generator humming" },
+                        { icon: "👨‍🍳", text: "2 cooks working" },
+                        { icon: "🌮", text: "Orders flying out" },
+                        { icon: "📦", text: "Tiny cooking space" }
+                    ],
+                    description: "Food truck cranking out orders. What's the triple threat here?",
+                    choices: [
+                        { 
+                            text: "A) Delicious food", 
+                            correct: false,
+                            health: "Food truck meals average 1400 calories causing obesity epidemic. High sodium content increases hypertension and stroke risk by 45%."
+                        },
+                        { 
+                            text: "B) CO, propane, and cooking emissions", 
+                            correct: true,
+                            health: "Food truck workers have 5x higher CO exposure causing brain damage. Propane leaks cause explosions, while cooking fumes increase lung cancer 60%."
+                        },
+                        { 
+                            text: "C) Long lines", 
+                            correct: false,
+                            health: "Standing in lines causes varicose veins and back pain. Sun exposure while waiting increases skin cancer risk by 20%."
+                        },
+                        { 
+                            text: "D) Hot weather only", 
+                            correct: false,
+                            health: "Heat exposure at food trucks causes heat exhaustion in 30% of workers. Customers face dehydration and heat stroke risks."
+                        }
+                    ],
+                    feedback: {
+                        correct: "Exactly! Food trucks have dangerous levels of CO from equipment, propane leaks, and concentrated cooking emissions.",
+                        incorrect: "Food trucks are pollution boxes: CO from generators, propane leaks, and cooking emissions in tiny spaces.",
+                        insight: "💡 Air Quality Insight: Food truck workers have 5x higher CO exposure than restaurant workers. Those tacos come with a side of carbon monoxide!"
+                    }
+                }
+            ],
+            
+            finalMessages: {
+                perfect: {
+                    badge: "🏆 Air Quality Expert",
+                    message: "Incredible! You spotted every single invisible threat!"
+                },
+                excellent: {
+                    badge: "⭐ Clean Air Champion",
+                    message: "Outstanding! You really know your air quality."
+                },
+                good: {
+                    badge: "💨 Pollution Detective",
+                    message: "Great job! You've got strong air quality awareness."
+                },
+                fair: {
+                    badge: "🌱 Air Quality Learner",
+                    message: "Good effort! You're learning about invisible threats."
+                },
+                poor: {
+                    badge: "💭 Air Curious",
+                    message: "Thanks for playing! Now you know more about indoor air."
+                }
+            }
+        };
+
+        // Game state
+        let currentScene = 0;
+        let score = 0;
+        let answeredQuestions = 0;
+        let hasAnswered = false;
+        let exploredOptions = new Set();
+
+        // Initialize game
+        function initGame() {
+            currentScene = 0;
+            score = 0;
+            answeredQuestions = 0;
+            hasAnswered = false;
+            exploredOptions.clear();
+            renderScene();
+        }
+
+        // Render current scene
+        function renderScene() {
+            const gameContent = document.getElementById('gameContent');
+            const scene = gameData.scenes[currentScene];
+            
+            if (currentScene === 0) {
+                // Intro screen
+                gameContent.innerHTML = `
+                    <div class="game-header">
+                        <h1>${scene.title}</h1>
+                        <p class="tagline">Test your air quality detective skills</p>
+                    </div>
+                    <div class="scene-card">
+                        <div class="scene-description">${scene.description.replace(/\n/g, '<br>')}</div>
+                        <button class="next-btn" onclick="startGame()">Start Game</button>
+                    </div>
+                `;
+            } else if (currentScene <= gameData.scenes.length - 1) {
+                // Game scenes
+                const totalScenes = gameData.scenes.length - 1; // Subtract intro scene
+                const progress = ((currentScene - 1) / totalScenes) * 100;
+                
+                // Build visual elements HTML - check if visualElements exists
+                let visualHTML = '';
+                if (scene.visualElements) {
+                    visualHTML = `
+                        <div class="scene-visual">
+                            <h3>What You See:</h3>
+                            <div class="visual-grid">
+                                ${scene.visualElements.map(item => `
+                                    <div class="visual-item">
+                                        <span class="visual-icon">${item.icon}</span>
+                                        <span>${item.text}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Fallback if no visual elements defined
+                    visualHTML = `
+                        <div class="scene-visual">
+                            <div style="font-size: 4rem; text-align: center; padding: 40px;">
+                                ${scene.emoji || '🏠'}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                gameContent.innerHTML = `
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Question ${currentScene} of ${totalScenes}</span>
+                            <span>Score: ${score}/${answeredQuestions}</span>
+                        </div>
+                    </div>
+                    <div class="scene-card">
+                        <span class="scene-number">Scene ${currentScene}</span>
+                        <h2 class="scene-title">${scene.title}</h2>
+                        <div class="scene-image">
+                            ${visualHTML}
+                        </div>
+                        <p class="scene-description">${scene.description}</p>
+                        <div class="choices" id="choices">
+                            ${scene.choices.map((choice, index) => `
+                                <button class="choice-btn" onclick="handleChoiceClick(${index}, ${choice.correct})" id="choice-${index}">
+                                    ${choice.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="feedback"></div>
+                    </div>
+                `;
+                hasAnswered = false;
+            } else {
+                // Final screen
+                renderFinalScreen();
+            }
+        }
+
+        // Start game
+        function startGame() {
+            currentScene = 1;
+            exploredOptions.clear();
+            renderScene();
+        }
+
+        // Handle choice button clicks
+        function handleChoiceClick(choiceIndex, isCorrect) {
+            const selectedBtn = document.getElementById(`choice-${choiceIndex}`);
+            
+            // If button already has a state (correct, incorrect, or explored), just show health effects
+            if (selectedBtn.classList.contains('correct') || 
+                selectedBtn.classList.contains('incorrect') || 
+                selectedBtn.classList.contains('explored')) {
+                showHealthEffect(choiceIndex);
+                return;
+            }
+            
+            // Otherwise, process as new selection
+            selectAnswer(choiceIndex, isCorrect);
+        }
+
+        // Handle answer selection
+        function selectAnswer(choiceIndex, isCorrect) {
+            const scene = gameData.scenes[currentScene];
+            const selectedChoice = scene.choices[choiceIndex];
+            const selectedBtn = document.getElementById(`choice-${choiceIndex}`);
+            
+            // Track this option as explored
+            exploredOptions.add(choiceIndex);
+            
+            // Mark button as clicked
+            if (isCorrect) {
+                selectedBtn.classList.add('correct');
+                if (!hasAnswered) {
+                hasAnswered = true;
+                score++;
+                answeredQuestions++;
+                }
+            } else {
+                selectedBtn.classList.add('incorrect');
+            }
+            
+            // Show feedback with health effects
+            const feedbackDiv = document.getElementById('feedback');
+            
+            if (isCorrect) {
+                // Correct answer - show success and enable next button
+                feedbackDiv.innerHTML = `
+                    <div class="feedback correct">
+                        <p><span class="feedback-icon">✅</span>
+                        ${scene.feedback.correct}</p>
+                        <div class="health-effects-box insight-box" style="margin-top: 10px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                            <strong>⚠️ Health Effects of ${selectedChoice.text.substring(3)}:</strong><br>
+                            ${selectedChoice.health}
+                        </div>
+                        <div class="insight-box">
+                            <strong>${scene.feedback.insight}</strong>
+                        </div>
+                        <div class="exploration-counter" style="text-align: center; margin: 15px 0; padding: 10px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;">
+                            <strong>📊 Health Effects Explored: ${exploredOptions.size}/${scene.choices.length}</strong><br>
+                            <span style="color: var(--text-dim); font-size: 0.9rem;">
+                                ${scene.choices.length - exploredOptions.size} more option${scene.choices.length - exploredOptions.size === 1 ? '' : 's'} to explore!
+                            </span>
+                        </div>
+                        <button class="next-btn" onclick="nextScene()">Next Question →</button>
+                        <p style="text-align: center; color: var(--text-dim); margin-top: 10px; font-size: 0.9rem;">
+                            💡 Tip: Click other options to learn about their health effects too!
+                        </p>
+                    </div>
+                `;
+                
+            } else {
+                // Check if correct answer has already been found
+                const hasCorrectAnswer = Array.from(document.querySelectorAll('.choice-btn')).some(btn => btn.classList.contains('correct'));
+                
+                if (hasCorrectAnswer) {
+                    // Correct answer already found, just show health effects
+                    const existingFeedback = document.querySelector('.feedback');
+                    if (existingFeedback) {
+                        const healthBox = existingFeedback.querySelector('.health-effects-box');
+                        if (healthBox) {
+                            healthBox.innerHTML = `
+                                <strong>⚠️ Health Effects of ${selectedChoice.text.substring(3)}:</strong><br>
+                                ${selectedChoice.health}
+                            `;
+                            healthBox.style.animation = 'fadeIn 0.5s ease';
+                            setTimeout(() => {
+                                healthBox.style.animation = '';
+                            }, 500);
+                        }
+                        updateExplorationCounter();
+                    }
+            } else {
+                // Wrong answer - show try again message
+                feedbackDiv.innerHTML = `
+                    <div class="feedback incorrect">
+                        <p><span class="feedback-icon">❌</span>
+                        Not quite! Try another answer.</p>
+                        <div class="health-effects-box insight-box" style="margin-top: 10px; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                            <strong>⚠️ Health Effects of ${selectedChoice.text.substring(3)}:</strong><br>
+                            ${selectedChoice.health}
+                        </div>
+                        <div class="try-again-box">
+                            <strong>🔍 Keep exploring!</strong><br>
+                            ${scene.feedback.incorrect}
+                        </div>
+                        <p style="text-align: center; color: var(--warning); margin-top: 15px; font-weight: 600;">
+                            🎯 Find the correct answer to unlock the next question!
+                        </p>
+                    </div>
+                `;
+                }
+            }
+        }
+        
+        // Show health effects for any choice (after correct answer found)
+        function showHealthEffect(choiceIndex) {
+            const scene = gameData.scenes[currentScene];
+            const selectedChoice = scene.choices[choiceIndex];
+            const selectedBtn = document.getElementById(`choice-${choiceIndex}`);
+            
+            // Track explored options
+            exploredOptions.add(choiceIndex);
+            
+            // Add visual feedback - preserve existing classes
+            if (selectedChoice.correct) {
+                selectedBtn.classList.add('correct');
+            } else if (!selectedBtn.classList.contains('incorrect')) {
+                    selectedBtn.classList.add('explored');
+            }
+            
+            // Update the health effects box
+            const healthBox = document.querySelector('.health-effects-box');
+            if (healthBox) {
+                healthBox.innerHTML = `
+                    <strong>⚠️ Health Effects of ${selectedChoice.text.substring(3)}:</strong><br>
+                    ${selectedChoice.health}
+                `;
+                
+                // Animate the update
+                healthBox.style.animation = 'fadeIn 0.5s ease';
+                setTimeout(() => {
+                    healthBox.style.animation = '';
+                }, 500);
+            }
+            
+            // Update exploration counter
+            updateExplorationCounter();
+        }
+        
+        // Update exploration counter
+        function updateExplorationCounter() {
+            const scene = gameData.scenes[currentScene];
+            const totalOptions = scene.choices.length;
+            const exploredCount = exploredOptions.size;
+            
+            let counterElement = document.querySelector('.exploration-counter');
+            if (!counterElement && hasAnswered) {
+                // Create counter if it doesn't exist
+                const feedbackDiv = document.querySelector('.feedback');
+                const nextBtn = feedbackDiv.querySelector('.next-btn');
+                if (nextBtn) {
+                counterElement = document.createElement('div');
+                counterElement.className = 'exploration-counter';
+                counterElement.style = 'text-align: center; margin: 15px 0; padding: 10px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;';
+                feedbackDiv.insertBefore(counterElement, nextBtn);
+                }
+            }
+            
+            if (counterElement) {
+                const remaining = totalOptions - exploredCount;
+                if (remaining > 0) {
+                    counterElement.innerHTML = `
+                        <strong>📊 Health Effects Explored: ${exploredCount}/${totalOptions}</strong><br>
+                        <span style="color: var(--text-dim); font-size: 0.9rem;">
+                            ${remaining === totalOptions ? 'Click each option to learn about its health effects!' : 
+                              remaining === 1 ? 'Just 1 more option to explore!' : 
+                              `${remaining} more option${remaining === 1 ? '' : 's'} to explore!`}
+                        </span>
+                    `;
+                } else {
+                    counterElement.innerHTML = `
+                        <strong style="color: var(--success);">🌟 Excellent! You've explored all health effects!</strong><br>
+                        <span style="color: var(--text-dim); font-size: 0.9rem;">
+                            You're now fully informed about this air quality scenario.
+                        </span>
+                    `;
+                }
+            }
+        }
+
+        // Go to next scene
+        function nextScene() {
+            currentScene++;
+            exploredOptions.clear();
+            renderScene();
+        }
+
+        // Render final screen
+        function renderFinalScreen() {
+            const totalScenes = gameData.scenes.length - 1; // Subtract intro scene
+            const percentage = Math.round((score / totalScenes) * 100);
+            let category;
+            
+            if (percentage === 100) category = 'perfect';
+            else if (percentage >= 80) category = 'excellent';
+            else if (percentage >= 60) category = 'good';
+            else if (percentage >= 40) category = 'fair';
+            else category = 'poor';
+            
+            const result = gameData.finalMessages[category];
+            
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div class="final-screen">
+                    <h1>🎉 Game Complete!</h1>
+                    <div class="score-display">${percentage}%</div>
+                    <div class="score-label">You identified ${score} out of ${totalScenes} air quality threats</div>
+                    <div class="badge">${result.badge}</div>
+                    <p style="font-size: 1.2rem; margin-bottom: 30px;">${result.message}</p>
+                    
+                    
+                    
+                    <button class="restart-btn" onclick="initGame()">🔄 Play Again</button>
+                </div>
+            `;
+        }
+
+
+        // Start the game when page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+        
+        // Quick access to final screen for testing
+        function showFinalScreen() {
+            currentScene = 51; // Skip to final screen
+            renderFinalScreen();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Minimal Core Stack for $5/month user cost
+# Survive on essential features only
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# Single ML Model (Choose ONE)
+xgboost>=2.0.0
+# Alternative: scikit-learn models only (RandomForest, etc.)
+
+# Basic utilities
+tqdm>=4.65.0
