@@ -18,7 +18,12 @@ from routers.users import map_db_to_user_format
 
 router = APIRouter()
 security = HTTPBearer()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use bcrypt with truncate_error=False to avoid 72-byte limit issues
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__truncate_error=False
+)
 logger = setup_logger()
 
 SECRET_KEY = os.getenv("JWT_SECRET")
