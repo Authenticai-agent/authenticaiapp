@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { XMarkIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 
 const CookieConsent: React.FC = () => {
   const [showBanner, setShowBanner] = useState(false);
