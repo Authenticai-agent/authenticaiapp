@@ -13,6 +13,9 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 
+// API Base URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+
 // Free Tier Components
 import TomorrowOutlook from '../components/TomorrowOutlook';
 import SmartScoreTrend from '../components/SmartScoreTrend';
@@ -321,7 +324,7 @@ const Dashboard: React.FC = () => {
       if (token && user) {
         try {
           const authResponse = await fetch(
-            `http://localhost:8000/api/v1/daily-briefing/dynamic-briefing-authenticated?lat=${currentLocation.lat}&lon=${currentLocation.lon}`,
+            `${API_BASE_URL}/daily-briefing/dynamic-briefing-authenticated?lat=${currentLocation.lat}&lon=${currentLocation.lon}`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -348,7 +351,7 @@ const Dashboard: React.FC = () => {
       // Use public endpoint if authenticated failed or no token
       if (!data) {
         const publicResponse = await fetch(
-          `http://localhost:8000/api/v1/daily-briefing/dynamic-briefing?lat=${currentLocation.lat}&lon=${currentLocation.lon}`
+          `${API_BASE_URL}/daily-briefing/dynamic-briefing?lat=${currentLocation.lat}&lon=${currentLocation.lon}`
         );
         
         if (!publicResponse.ok) {
