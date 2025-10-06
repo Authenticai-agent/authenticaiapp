@@ -32,16 +32,15 @@ if not SECRET_KEY:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a password against its hash - truncate to 72 bytes for bcrypt compatibility"""
     # Apply same truncation as during hashing
-    password_bytes = plain_password.encode('utf-8')[:72]
-    password_truncated = password_bytes.decode('utf-8', errors='ignore')
-    return pwd_context.verify(password_truncated, hashed_password)
+    password_safe = plain_password[:50] if len(plain_password) > 50 else plain_password
+    return pwd_context.verify(password_safe, hashed_password)
 
 def get_password_hash(password: str) -> str:
     """Hash a password - truncate to 72 bytes for bcrypt compatibility"""
     # Bcrypt has a 72-byte limit, so truncate if necessary
-    password_bytes = password.encode('utf-8')[:72]
-    password_truncated = password_bytes.decode('utf-8', errors='ignore')
-    return pwd_context.hash(password_truncated)
+    # Truncate to 50 characters to be safe (well under 72 bytes even with UTF-8)
+    password_safe = password[:50] if len(password) > 50 else password
+    return pwd_context.hash(password_safe)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Create JWT access token"""
