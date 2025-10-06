@@ -18,12 +18,8 @@ from routers.users import map_db_to_user_format
 
 router = APIRouter()
 security = HTTPBearer()
-# Use bcrypt with truncate_error=False to avoid 72-byte limit issues
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
-    bcrypt__truncate_error=False
-)
+# Use argon2 instead of bcrypt (no byte limits, more secure)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 logger = setup_logger()
 
 SECRET_KEY = os.getenv("JWT_SECRET")
@@ -35,17 +31,12 @@ if not SECRET_KEY:
     raise ValueError("JWT_SECRET environment variable must be set")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash - truncate to 72 bytes for bcrypt compatibility"""
-    # Apply same truncation as during hashing
-    password_safe = plain_password[:50] if len(plain_password) > 50 else plain_password
-    return pwd_context.verify(password_safe, hashed_password)
+    """Verify a password against its hash"""
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password: str) -> str:
-    """Hash a password - truncate to 72 bytes for bcrypt compatibility"""
-    # Bcrypt has a 72-byte limit, so truncate if necessary
-    # Truncate to 50 characters to be safe (well under 72 bytes even with UTF-8)
-    password_safe = password[:50] if len(password) > 50 else password
-    return pwd_context.hash(password_safe)
+    """Hash a password using argon2"""
+    return pwd_context.hash(password)
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Create JWT access token"""
