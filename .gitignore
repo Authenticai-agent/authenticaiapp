@@ -98,7 +98,7 @@ dump.rdb
 # ML Models (if storing locally)
 *.pkl
 *.joblib
-models/
+# models/ - REMOVED: We need models/schemas.py for the app
 
 # API Keys and secrets (backup check)
 *secret*
