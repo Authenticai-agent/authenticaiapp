@@ -141,7 +141,14 @@ async def update_user_profile(
         from datetime import datetime
         mapped_data["updated_at"] = datetime.utcnow().isoformat()
         
-        logger.info("Updating user %s with data: %s", current_user.id, mapped_data)
+        # Log avatar specifically
+        if "avatar" in mapped_data:
+            avatar_preview = mapped_data["avatar"][:100] if mapped_data["avatar"] else "None"
+            logger.info("Avatar being saved: %s... (length: %s)", avatar_preview, len(mapped_data["avatar"]) if mapped_data["avatar"] else 0)
+        else:
+            logger.info("No avatar in update data")
+        
+        logger.info("Updating user %s with data keys: %s", current_user.id, list(mapped_data.keys()))
         
         result = db.table("users").update(mapped_data).eq("id", current_user.id).execute()
         
