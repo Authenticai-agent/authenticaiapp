@@ -273,41 +273,12 @@ const DynamicDailyBriefing: React.FC = () => {
         </div>
       </div>
 
-      {/* Briefing Content */}
+      {/* Daily Briefing Content */}
       <div className="bg-white rounded-xl shadow-lg p-8">
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Daily Briefing</h3>
         {sections.map((section, index) => {
-          if (section.type === 'action_plan') {
-            return (
-              <div key={index} className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
-                  <ShieldCheckIcon className="w-5 h-5 mr-2 text-blue-600" />
-                  Your Action Plan
-                </h3>
-                <ul className="space-y-2">
-                  {(section.content as string[]).map((item, i) => (
-                    <li key={i} className="flex items-start text-gray-700">
-                      <span className="mr-2">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
-          } else if (section.type === 'wellness') {
-            return (
-              <div key={index} className="mb-6 bg-green-50 rounded-lg p-4 border border-green-200">
-                <h3 className="text-lg font-bold text-green-900 mb-3 flex items-center">
-                  <HeartIcon className="w-5 h-5 mr-2 text-green-600" />
-                  Wellness Boost
-                </h3>
-                <ul className="space-y-2">
-                  {(section.content as string[]).map((item, i) => (
-                    <li key={i} className="flex items-start text-green-800">
-                      <span className="mr-2">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            );
+          if (section.type === 'action_plan' || section.type === 'wellness') {
+            return null; // Skip these, we'll render them separately
           } else {
             // Parse and color-code conditions
             const content = section.content as string;
@@ -355,6 +326,40 @@ const DynamicDailyBriefing: React.FC = () => {
           }
         })}
       </div>
+
+      {/* Your Action Plan - Separate Card */}
+      {sections.find(s => s.type === 'action_plan') && (
+        <div className="bg-blue-50 rounded-xl shadow-lg p-8 border-2 border-blue-200">
+          <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
+            <ShieldCheckIcon className="w-6 h-6 mr-2 text-blue-600" />
+            🎯 Your Action Plan
+          </h3>
+          <ul className="space-y-3">
+            {(sections.find(s => s.type === 'action_plan')?.content as string[]).map((item, i) => (
+              <li key={i} className="flex items-start text-blue-900 font-medium">
+                <span className="mr-2">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Wellness Boost - Separate Card */}
+      {sections.find(s => s.type === 'wellness') && (
+        <div className="bg-green-50 rounded-xl shadow-lg p-8 border-2 border-green-200">
+          <h3 className="text-xl font-bold text-green-900 mb-4 flex items-center">
+            <HeartIcon className="w-6 h-6 mr-2 text-green-600" />
+            💪 Wellness Boost
+          </h3>
+          <ul className="space-y-3">
+            {(sections.find(s => s.type === 'wellness')?.content as string[]).map((item, i) => (
+              <li key={i} className="flex items-start text-green-800 font-medium">
+                <span className="mr-2">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Metadata Footer */}
       <div className="bg-gray-50 rounded-lg p-4 text-xs text-gray-600">
