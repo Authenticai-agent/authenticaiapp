@@ -38,9 +38,11 @@ def update_profile(payload: Dict[str, Any]) -> Dict[str, Any]:
             user_id, user_email = latest
 
     rows = 0
-    if user_id and full_name:
-        rows = update_user_full_name(user_id, full_name)
-        # Write full profile into public.users
+    if user_id:
+        if full_name:
+            rows = update_user_full_name(user_id, full_name)
+        # Write full profile into public.users (always update, even if no name)
+        print(f"🟢 SERVICE: Calling update_user_full_profile for user {user_id}")
         update_user_full_profile(user_id, payload)
 
     # Store entire profile payload in a JSONB table (upsert)
