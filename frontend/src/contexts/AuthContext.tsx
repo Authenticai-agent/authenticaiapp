@@ -113,11 +113,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Fetch user and merge with full profile
       const userResponse = await api.get('/auth/me');
       let mergedUser = userResponse.data;
+      console.log('User from /auth/me:', mergedUser);
+      console.log('Avatar from /auth/me:', mergedUser.avatar);
+      
       try {
         const profileResp = await api.put('/users/profile', { email }, {
           headers: { 'X-Suppress-Api-Error': 'true' }
         } as any);
         const profileData = profileResp.data?.profile_data || {};
+        console.log('Profile data from /users/profile:', profileData);
+        console.log('Avatar from profile:', profileData.avatar);
+        
         const normalized = {
           ...profileData,
           location: profileData.location || (
@@ -127,7 +133,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
           )
         };
         mergedUser = { ...mergedUser, ...normalized };
-      } catch (e) {}
+        console.log('Final merged user:', mergedUser);
+        console.log('Final avatar:', mergedUser.avatar);
+      } catch (e) {
+        console.log('Profile merge error:', e);
+      }
       setUser(mergedUser);
       setLoading(false);
       
