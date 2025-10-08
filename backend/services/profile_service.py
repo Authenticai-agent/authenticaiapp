@@ -10,6 +10,17 @@ from repos.profile_repo import ensure_user_profiles_table, upsert_user_profile
 
 def update_profile(payload: Dict[str, Any]) -> Dict[str, Any]:
     """Update profile in Supabase if available; return standard response dict."""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # Log avatar info
+    avatar = payload.get("avatar")
+    if avatar:
+        avatar_preview = avatar[:100] if isinstance(avatar, str) else str(avatar)[:100]
+        logger.info(f"Profile update received avatar: {avatar_preview}... (length: {len(avatar) if avatar else 0})")
+    else:
+        logger.info("Profile update: No avatar in payload")
+    
     first_name = payload.get("first_name", "").strip()
     last_name = payload.get("last_name", "").strip()
     full_name = f"{first_name} {last_name}".strip()
