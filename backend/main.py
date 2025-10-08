@@ -1605,20 +1605,23 @@ async def logout_user():
 @app.put("/api/v1/users/profile-update")
 async def update_user_profile(profile_data: Dict[str, Any]):
     """Update user profile information (modular path)."""
+    import logging as log
+    auth_logger = log.getLogger("authenticai")
+    
     try:
-        logger.info("🔵 /profile-update endpoint called")
-        logger.info(f"🔵 Profile data keys: {list(profile_data.keys())}")
+        auth_logger.info("🔵 /profile-update endpoint called")
+        auth_logger.info(f"🔵 Profile data keys: {list(profile_data.keys())}")
         if 'avatar' in profile_data:
             avatar_preview = profile_data['avatar'][:50] if profile_data['avatar'] else "None"
-            logger.info(f"🔵 Avatar in request: {avatar_preview}...")
+            auth_logger.info(f"🔵 Avatar in request: {avatar_preview}...")
         else:
-            logger.info("🔵 NO avatar key in profile_data")
+            auth_logger.info("🔵 NO avatar key in profile_data")
         
         db_url = load_database_url()
         if db_url and "supabase" in db_url:
-            logger.info("🔵 Calling profile_update_service")
+            auth_logger.info("🔵 Calling profile_update_service")
             result = profile_update_service(profile_data)
-            logger.info(f"🔵 Service returned: {result.get('status')}")
+            auth_logger.info(f"🔵 Service returned: {result.get('status')}")
             return result
         return {
             "status": "success",
