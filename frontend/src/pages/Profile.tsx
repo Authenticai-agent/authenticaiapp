@@ -55,7 +55,8 @@ const Profile: React.FC = () => {
     setLoadingDonations(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8000/api/v1/stripe/donations/${user.id}`, {
+      const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+      const response = await fetch(`${API_URL}/stripe/donations/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
