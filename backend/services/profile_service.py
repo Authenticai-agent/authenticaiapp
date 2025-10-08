@@ -30,13 +30,20 @@ def update_profile(payload: Dict[str, Any]) -> Dict[str, Any]:
 
     user_id = None
     user_email = payload.get("email")
+    print(f"🟢 SERVICE: Email from payload: {user_email}")
+    
     if user_email:
         user_id = get_user_id_by_email(user_email)
+        print(f"🟢 SERVICE: User ID from email lookup: {user_id}")
+    
     if not user_id:
         latest = get_latest_user_id_and_email()
+        print(f"🟢 SERVICE: Latest user from DB: {latest}")
         if latest:
             user_id, user_email = latest
 
+    print(f"🟢 SERVICE: Final user_id: {user_id}, email: {user_email}")
+    
     rows = 0
     if user_id:
         if full_name:
