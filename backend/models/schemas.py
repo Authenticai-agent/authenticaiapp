@@ -32,6 +32,7 @@ class UserBase(BaseModel):
     asthma_severity: Optional[str] = None
     triggers: Optional[List[str]] = []
     household_info: Optional[Dict[str, Any]] = None
+    avatar: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str
@@ -45,6 +46,7 @@ class UserUpdate(BaseModel):
     asthma_severity: Optional[str] = None
     triggers: Optional[List[str]] = None
     household_info: Optional[Dict[str, Any]] = None
+    avatar: Optional[str] = None  # Can be preset ID or base64 image
 
 class User(UserBase):
     id: str

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import AvatarSelector from '../components/AvatarSelector';
 import toast from 'react-hot-toast';
 import { HeartIcon } from '@heroicons/react/24/outline';
 
@@ -40,6 +41,7 @@ const Profile: React.FC = () => {
       air_purifier: false,
       hvac_system: '',
     },
+    avatar: '',
   });
 
   const [newAllergy, setNewAllergy] = useState('');
@@ -101,6 +103,7 @@ const Profile: React.FC = () => {
           air_purifier: user.household_info?.air_purifier || false,
           hvac_system: user.household_info?.hvac_system || '',
         },
+        avatar: (user as any).avatar || '',
       });
       // Fetch donations
       fetchDonations();
@@ -303,6 +306,14 @@ const Profile: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="px-6 py-4 space-y-6">
+            {/* Avatar Section */}
+            <div className="flex justify-center py-4">
+              <AvatarSelector
+                currentAvatar={formData.avatar}
+                onAvatarChange={(avatar) => setFormData({ ...formData, avatar })}
+              />
+            </div>
+
             {/* Basic Information */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
