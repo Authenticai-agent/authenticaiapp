@@ -36,6 +36,11 @@ const FAQ: React.FC = () => {
       answer: "Yes, you need a free account to use AuthentiCare. The good news? It's completely free to sign up and use! Your free account includes personalized Daily Briefings, custom health profiles, location-based air quality data, and wellness recommendations. In the future, we'll introduce premium features with advanced analytics and forecasting, but the core app will always remain free.",
       category: 'getting-started'
     },
+    {
+      question: "How do I add a profile photo or avatar?",
+      answer: "To add a profile photo:\n\n1. Click on the user icon in the top-right corner of the navigation bar\n2. Select 'Profile' from the dropdown menu\n3. On the Profile page, you'll see a circular avatar at the top\n4. Click on the avatar circle to open the avatar selector\n5. Choose from 5 preset emoji avatars (😊 🌟 🦋 🌸 💚) OR click 'Click to upload' to upload your own photo\n6. If uploading a photo, select an image file (max 2MB, any image format)\n7. Your avatar will update immediately\n8. Click 'Save Changes' at the bottom of the profile form to save your avatar\n\nYour avatar will then appear in the navigation bar on all pages!",
+      category: 'getting-started'
+    },
 
     // Features
     {
