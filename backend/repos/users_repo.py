@@ -99,6 +99,7 @@ def update_user_full_profile(user_id: str, payload: dict) -> int:
     health_conditions = payload.get("health_conditions") or None
     medications = payload.get("medications") or None
     household = payload.get("household_info") or None
+    avatar = payload.get("avatar") or None
 
     # Ensure columns exist
     ensure_users_profile_columns()
@@ -119,6 +120,7 @@ def update_user_full_profile(user_id: str, payload: dict) -> int:
             medications = %s,
             household_info = %s::jsonb,
             profile = %s::jsonb,
+            avatar = %s,
             full_name = COALESCE(%s, '') || CASE WHEN %s IS NOT NULL AND %s <> '' THEN ' ' || %s ELSE '' END
         WHERE id = %s
         """,
@@ -136,6 +138,7 @@ def update_user_full_profile(user_id: str, payload: dict) -> int:
             medications,
             json_dump(household) if household is not None else None,
             json_dump(payload),
+            avatar,
             first_name, last_name, last_name, last_name,
             user_id,
         ),
