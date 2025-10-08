@@ -104,46 +104,55 @@ def update_user_full_profile(user_id: str, payload: dict) -> int:
     # Ensure columns exist
     ensure_users_profile_columns()
 
-    cur.execute(
-        """
-        UPDATE public.users
-        SET first_name = %s,
-            last_name = %s,
-            age = %s,
-            asthma_severity = %s,
-            location_lat = %s,
-            location_lon = %s,
-            location_address = %s,
-            allergies = %s,
-            triggers = %s,
-            health_conditions = %s,
-            medications = %s,
-            household_info = %s::jsonb,
-            profile = %s::jsonb,
-            avatar = %s,
-            full_name = COALESCE(%s, '') || CASE WHEN %s IS NOT NULL AND %s <> '' THEN ' ' || %s ELSE '' END
-        WHERE id = %s
-        """,
-        (
-            first_name,
-            last_name,
-            age,
-            asthma,
-            loc_lat,
-            loc_lon,
-            loc_addr,
-            allergies,
-            triggers,
-            health_conditions,
-            medications,
-            json_dump(household) if household is not None else None,
-            json_dump(payload),
-            avatar,
-            first_name, last_name, last_name, last_name,
-            user_id,
-        ),
-    )
-    affected = cur.rowcount
+    print(f"🔴 REPO: Updating user {user_id} with avatar length: {len(avatar) if avatar else 0}")
+    
+    try:
+        cur.execute(
+            """
+            UPDATE public.users
+            SET first_name = %s,
+                last_name = %s,
+                age = %s,
+                asthma_severity = %s,
+                location_lat = %s,
+                location_lon = %s,
+                location_address = %s,
+                allergies = %s,
+                triggers = %s,
+                health_conditions = %s,
+                medications = %s,
+                household_info = %s::jsonb,
+                profile = %s::jsonb,
+                avatar = %s,
+                full_name = COALESCE(%s, '') || CASE WHEN %s IS NOT NULL AND %s <> '' THEN ' ' || %s ELSE '' END
+            WHERE id = %s
+            """,
+            (
+                first_name,
+                last_name,
+                age,
+                asthma,
+                loc_lat,
+                loc_lon,
+                loc_addr,
+                allergies,
+                triggers,
+                health_conditions,
+                medications,
+                json_dump(household) if household is not None else None,
+                json_dump(payload),
+                avatar,
+                first_name, last_name, last_name, last_name,
+                user_id,
+            ),
+        )
+        affected = cur.rowcount
+        print(f"🔴 REPO: SQL executed, rows affected: {affected}")
+    except Exception as e:
+        print(f"🔴 REPO ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        affected = 0
     # If no rows updated (user_id not present), try upsert by email
     if affected == 0:
         email = payload.get("email")
