@@ -141,6 +141,9 @@ const Profile: React.FC = () => {
       
       // Household info
       updateData.household_info = formData.household_info;
+      
+      // Avatar
+      if (formData.avatar) updateData.avatar = formData.avatar;
 
       // Ensure email is included so the backend can target the correct row
       if (user?.email) {
@@ -148,6 +151,8 @@ const Profile: React.FC = () => {
       }
 
       console.log('Profile form submission - prepared update data:', updateData);
+      console.log('Avatar value being sent:', formData.avatar);
+      console.log('Avatar in updateData:', updateData.avatar);
       await updateUser(updateData);
       
       // Show success message and refresh the form

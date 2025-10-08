@@ -42,6 +42,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ currentAvatar, onAvatar
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
+        console.log('Avatar uploaded, base64 length:', base64String.length);
         onAvatarChange(base64String);
         setIsOpen(false);
       };
@@ -55,6 +56,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ currentAvatar, onAvatar
   };
 
   const handlePresetSelect = (avatarId: string) => {
+    console.log('Preset avatar selected:', avatarId);
     onAvatarChange(avatarId);
     setIsOpen(false);
   };
@@ -82,6 +84,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ currentAvatar, onAvatar
     <div className="relative">
       {/* Avatar Display */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="relative w-32 h-32 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden hover:ring-4 hover:ring-blue-500 transition-all group"
       >
@@ -104,6 +107,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ currentAvatar, onAvatar
             <div className="grid grid-cols-5 gap-2">
               {PRESET_AVATARS.map((avatar) => (
                 <button
+                  type="button"
                   key={avatar.id}
                   onClick={() => handlePresetSelect(avatar.id)}
                   className={`relative w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-3xl hover:ring-2 hover:ring-blue-500 transition-all ${
@@ -150,6 +154,7 @@ const AvatarSelector: React.FC<AvatarSelectorProps> = ({ currentAvatar, onAvatar
 
           {/* Close button */}
           <button
+            type="button"
             onClick={() => setIsOpen(false)}
             className="mt-3 w-full py-2 text-sm text-gray-600 hover:text-gray-800"
           >

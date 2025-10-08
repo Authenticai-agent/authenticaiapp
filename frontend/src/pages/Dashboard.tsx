@@ -12,11 +12,6 @@ import { resolveEffectiveLocation } from '../utils/location';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
-
-// API Base URL
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
-
-// Free Tier Components
 import TomorrowOutlook from '../components/TomorrowOutlook';
 import SmartScoreTrend from '../components/SmartScoreTrend';
 import LungEnergyMeter from '../components/LungEnergyMeter';
@@ -24,6 +19,9 @@ import CommunityGoodDayChallenge from '../components/CommunityGoodDayChallenge';
 import EducationalMicroTips from '../components/EducationalMicroTips';
 import IndoorWellnessTip from '../components/IndoorWellnessTip';
 import DonationCTA from '../components/DonationCTA';
+
+// API Base URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
 interface RiskPrediction {
   id: string;

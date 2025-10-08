@@ -17,6 +17,7 @@ interface User {
   asthma_severity?: string;
   triggers?: string[];
   household_info?: any;
+  avatar?: string;
   subscription_tier: string;
   created_at: string;
   updated_at: string;
@@ -223,6 +224,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         asthma_severity: updated.asthma_severity ?? user.asthma_severity,
         age: updated.age ?? user.age,
         location: updated.location ?? user.location,
+        avatar: updated.avatar ?? user.avatar,
         updated_at: new Date().toISOString(),
       } as User;
 
