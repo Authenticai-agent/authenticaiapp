@@ -1618,11 +1618,15 @@ async def update_user_profile(profile_data: Dict[str, Any]):
             auth_logger.info("🔵 NO avatar key in profile_data")
         
         db_url = load_database_url()
+        auth_logger.info(f"🔵 Database URL loaded: {db_url[:50] if db_url else 'None'}...")
+        
         if db_url and "supabase" in db_url:
-            auth_logger.info("🔵 Calling profile_update_service")
+            auth_logger.info("🔵 Using Supabase - Calling profile_update_service")
             result = profile_update_service(profile_data)
             auth_logger.info(f"🔵 Service returned: {result.get('status')}")
             return result
+        
+        auth_logger.info("🔵 No Supabase URL - using demo mode")
         return {
             "status": "success",
             "message": "Profile updated successfully (demo mode)",
