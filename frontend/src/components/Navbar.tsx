@@ -21,9 +21,48 @@ const premiumFeatures = [
   { name: 'Smart Home', href: '/smart-home', icon: '🏠' },
 ];
 
+const PRESET_AVATARS = [
+  { id: 'avatar-1', emoji: '😊' },
+  { id: 'avatar-2', emoji: '🌟' },
+  { id: 'avatar-3', emoji: '🦋' },
+  { id: 'avatar-4', emoji: '🌸' },
+  { id: 'avatar-5', emoji: '💚' },
+];
+
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+
+  const renderAvatar = (size: 'sm' | 'md' = 'sm') => {
+    const sizeClasses = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
+    
+    if (!user?.avatar) {
+      return <UserCircleIcon className={`${sizeClasses} text-gray-400`} />;
+    }
+
+    // Check if it's a preset avatar
+    const preset = PRESET_AVATARS.find(a => a.id === user.avatar);
+    if (preset) {
+      return (
+        <div className={`${sizeClasses} rounded-full bg-gray-100 flex items-center justify-center text-2xl`}>
+          {preset.emoji}
+        </div>
+      );
+    }
+
+    // It's an uploaded image
+    if (user.avatar.startsWith('data:image')) {
+      return (
+        <img 
+          src={user.avatar} 
+          alt="Avatar" 
+          className={`${sizeClasses} rounded-full object-cover`} 
+        />
+      );
+    }
+
+    return <UserCircleIcon className={`${sizeClasses} text-gray-400`} />;
+  };
 
   return (
     <Disclosure as="nav" className="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
@@ -115,7 +154,7 @@ const Navbar: React.FC = () => {
                   <div>
                     <Menu.Button className="bg-white flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                       <span className="sr-only">Open user menu</span>
-                      <UserCircleIcon className="h-8 w-8 text-gray-400" />
+                      {renderAvatar('sm')}
                     </Menu.Button>
                   </div>
                   <Transition
@@ -245,7 +284,7 @@ const Navbar: React.FC = () => {
             <div className="pt-4 pb-3 border-t border-gray-200">
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
-                  <UserCircleIcon className="h-10 w-10 text-gray-400" />
+                  {renderAvatar('md')}
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium text-gray-800">
