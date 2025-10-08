@@ -15,12 +15,13 @@ def update_profile(payload: Dict[str, Any]) -> Dict[str, Any]:
     
     # Log avatar info
     avatar = payload.get("avatar")
-    logger.info(f"=== PROFILE UPDATE SERVICE CALLED ===")
-    logger.info(f"Payload keys: {list(payload.keys())}")
+    print(f"🟢 PROFILE SERVICE: Payload keys: {list(payload.keys())}")
     if avatar:
         avatar_preview = avatar[:100] if isinstance(avatar, str) else str(avatar)[:100]
+        print(f"🟢 PROFILE SERVICE: Avatar length: {len(avatar)}")
         logger.info(f"✅ Avatar FOUND in payload: {avatar_preview}... (length: {len(avatar)})")
     else:
+        print(f"🟢 PROFILE SERVICE: NO AVATAR")
         logger.info("❌ NO AVATAR in payload")
     
     first_name = payload.get("first_name", "").strip()
