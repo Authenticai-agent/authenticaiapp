@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const AirQualityGame: React.FC = () => {
+const AirDetective: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -17,14 +17,14 @@ const AirQualityGame: React.FC = () => {
             <ArrowLeft className="w-5 h-5" />
             Back
           </button>
-          <h1 className="text-xl font-bold text-white">What's in My Air? 🌬️</h1>
+          <h1 className="text-xl font-bold text-white">🔍 AirDetective</h1>
         </div>
       </div>
 
       {/* Game iframe - loads the complete standalone HTML game */}
       <iframe
-        src="/air-quality-game.html"
-        title="Air Quality Game"
+        src="/air-detective.html"
+        title="AirDetective Game"
         className="w-full"
         style={{ height: 'calc(100vh - 73px)', border: 'none' }}
       />
@@ -32,4 +32,4 @@ const AirQualityGame: React.FC = () => {
   );
 };
 
-export default AirQualityGame;
+export default AirDetective;

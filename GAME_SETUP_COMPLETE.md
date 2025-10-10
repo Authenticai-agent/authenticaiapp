@@ -1,4 +1,4 @@
-# ✅ Air Quality Game - Simple & Easy Setup Complete!
+# ✅ AirDetective - Simple & Easy Setup Complete!
 
 **Date:** October 6, 2025, 2:12 PM EST  
 **Status:** ✅ READY TO USE  
@@ -10,13 +10,13 @@
 
 ### **Simple 2-File Solution:**
 
-1. **`frontend/public/air-quality-game.html`** - Your complete game
+1. **`frontend/public/air-detective.html`** - Your complete game
    - Standalone HTML file with all 50 scenarios
    - All CSS styling included
    - All JavaScript game logic included
    - **Easy to edit and debug!**
 
-2. **`frontend/src/pages/AirQualityGame.tsx`** - Simple wrapper
+2. **`frontend/src/pages/AirDetective.tsx`** - Simple wrapper
    - Just loads the HTML file in an iframe
    - Adds back button
    - Clean and minimal (35 lines total)
@@ -27,7 +27,7 @@
 
 ### **Step 1: Open the HTML file**
 ```
-frontend/public/air-quality-game.html
+frontend/public/air-detective.html
 ```
 
 ### **Step 2: Find this section (around line 400)**
@@ -55,8 +55,8 @@ Just copy all 50 scenarios from your original HTML game and paste them into the 
 ## 🚀 **HOW TO USE**
 
 ### **Access the Game:**
-1. Click "🎮 Game" in top navigation
-2. Or go to: `http://localhost:3000/air-quality-game`
+1. Click "🔍 AirDetective" in top navigation
+2. Or go to: `http://localhost:3000/air-detective`
 
 ### **The game will:**
 - ✅ Show intro screen
@@ -98,10 +98,10 @@ Just copy all 50 scenarios from your original HTML game and paste them into the 
 ```
 frontend/
 ├── public/
-│   └── air-quality-game.html  ← YOUR COMPLETE GAME (edit this!)
+│   └── air-detective.html  ← YOUR COMPLETE GAME (edit this!)
 └── src/
     └── pages/
-        └── AirQualityGame.tsx  ← Simple wrapper (don't need to touch)
+        └── AirDetective.tsx  ← Simple wrapper (don't need to touch)
 ```
 
 ---
@@ -193,7 +193,7 @@ frontend/
 ## 🔄 **TESTING**
 
 ### **To test your changes:**
-1. Edit `frontend/public/air-quality-game.html`
+1. Edit `frontend/public/air-detective.html`
 2. Save the file
 3. Refresh browser (Cmd+R or F5)
 4. Changes appear instantly!
@@ -221,7 +221,7 @@ The game automatically adapts to:
 - ✅ Easy to maintain
 
 **What you need to do:**
-1. Open `frontend/public/air-quality-game.html`
+1. Open `frontend/public/air-detective.html`
 2. Find the `gameData.scenes` array
 3. Paste your 50 scenarios
 4. Save and refresh!

@@ -70,8 +70,8 @@ const Footer: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/air-quality-game" className="hover:text-emerald-400 transition-colors">
-                  🎮 Air Quality Game
+                <Link to="/air-detective" className="hover:text-emerald-400 transition-colors">
+                  🔍 AirDetective
                 </Link>
               </li>
               <li>

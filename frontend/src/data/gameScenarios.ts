@@ -30,7 +30,7 @@ export const gameScenes: Scene[] = [
   // Introduction
   {
     type: 'intro',
-    title: "Welcome to What's in My Air? 🌬️",
+    title: "Welcome to AirDetective 🔍",
     description: "Air quality varies dramatically in different environments, yet most of us can't see the invisible threats.\n\nYour mission: Spot the hidden pollutants lurking in everyday spaces - from homes to workplaces, vehicles to public venues.\n\nThink you've got a clean-air sixth sense? Let's find out!",
   },
   

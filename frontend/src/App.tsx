@@ -41,7 +41,7 @@ const AcceptableUsePolicy = lazy(() => import('./pages/AcceptableUsePolicy'));
 const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy'));
 const AccessibilityStatement = lazy(() => import('./pages/AccessibilityStatement'));
 const APIMonitoring = lazy(() => import('./pages/APIMonitoring'));
-const AirQualityGame = lazy(() => import('./pages/AirQualityGame'));
+const AirDetective = lazy(() => import('./pages/AirDetective'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -206,8 +206,8 @@ const routes = [
     element: <ProtectedRoute><APIMonitoring /></ProtectedRoute>
   },
   {
-    path: '/air-quality-game',
-    element: <AirQualityGame />
+    path: '/air-detective',
+    element: <AirDetective />
   },
   // Add a catch-all route for 404s
   { 

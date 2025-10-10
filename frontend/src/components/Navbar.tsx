@@ -10,7 +10,7 @@ const activeNavigation = [
   { name: 'Air Quality', href: '/air-quality' },
   { name: 'Privacy', href: '/privacy' },
   { name: 'FAQ', href: '/faq' },
-  { name: '🎮 Game', href: '/air-quality-game' },
+  { name: '🔍 AirDetective', href: '/air-detective' },
 ];
 
 const premiumFeatures = [
