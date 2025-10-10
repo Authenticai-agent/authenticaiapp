@@ -14,12 +14,12 @@ const activeNavigation = [
 
 const games = [
   { name: 'AirDetective', href: '/air-detective', icon: '🔍', available: true, description: 'Spot hidden air pollutants' },
+  { name: 'PollutionDetective', href: '/pollution-detective', icon: '🕵️', available: true, description: 'Solve pollution mysteries' },
   { name: 'Water Quality Quest', href: '/water-quest', icon: '💧', available: false, description: 'Coming Soon' },
   { name: 'Energy Saver', href: '/energy-saver', icon: '⚡', available: false, description: 'Coming Soon' },
   { name: 'Waste Warrior', href: '/waste-warrior', icon: '♻️', available: false, description: 'Coming Soon' },
   { name: 'Climate Challenge', href: '/climate-challenge', icon: '🌍', available: false, description: 'Coming Soon' },
   { name: 'Eco Builder', href: '/eco-builder', icon: '🏗️', available: false, description: 'Coming Soon' },
-  { name: 'Green Transport', href: '/green-transport', icon: '🚲', available: false, description: 'Coming Soon' },
 ];
 
 const premiumFeatures = [

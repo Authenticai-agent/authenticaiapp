@@ -69,14 +69,16 @@ const Footer: React.FC = () => {
                   🔍 AirDetective
                 </Link>
               </li>
+              <li>
+                <Link to="/pollution-detective" className="hover:text-emerald-400 transition-colors">
+                  🕵️ PollutionDetective
+                </Link>
+              </li>
               <li className="text-gray-500">
                 💧 Water Quality Quest (Coming Soon)
               </li>
               <li className="text-gray-500">
                 ⚡ Energy Saver (Coming Soon)
-              </li>
-              <li className="text-gray-500">
-                ♻️ Waste Warrior (Coming Soon)
               </li>
             </ul>
           </div>

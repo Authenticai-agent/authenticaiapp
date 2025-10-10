@@ -42,6 +42,7 @@ const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy'));
 const AccessibilityStatement = lazy(() => import('./pages/AccessibilityStatement'));
 const APIMonitoring = lazy(() => import('./pages/APIMonitoring'));
 const AirDetective = lazy(() => import('./pages/AirDetective'));
+const PollutionDetective = lazy(() => import('./pages/PollutionDetective'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -208,6 +209,10 @@ const routes = [
   {
     path: '/air-detective',
     element: <AirDetective />
+  },
+  {
+    path: '/pollution-detective',
+    element: <PollutionDetective />
   },
   // Add a catch-all route for 404s
   { 

@@ -370,10 +370,6 @@ class DynamicDailyBriefingEngine:
         elif wind_speed < 8:
             parts.append(f"CALM CONDITIONS ({wind_speed:.0f} km/h / {wind_mph:.0f} mph) - very light wind today. Pollutants may linger longer than usual.")
         
-        # Pressure effects (weather patterns)
-        if pressure > 1020 and (pm25 > 25 or ozone > 80):
-            parts.append(f"High air pressure ({pressure:.0f} mb) - creates temperature inversion that traps pollution at ground level. Pollutants can't disperse upward, making concentrations higher than normal.")
-        
         # Rain effects (natural air cleaner)
         if precipitation > 5:
             parts.append(f"RAIN ({precipitation:.0f} mm) - great news! Rain washes pollution out of the air. Air quality gets 40-60% better within 30 minutes.")
@@ -426,10 +422,6 @@ class DynamicDailyBriefingEngine:
         # Cold + humid (with F conversion)
         if temperature < 10 and humidity > 60:
             synergies.append(f"⚠️ Cold ({temperature:.0f}°C / {temp_f:.0f}°F) + Humidity ({humidity:.0f}%) INTERACTION: Cold air constricts airways while moisture triggers bronchospasm. Health effects: Double trigger causes rapid airway narrowing, wheezing, shortness of breath within minutes. Breathe through warm scarf to pre-warm air.")
-        
-        # High pressure + pollution (temperature inversion)
-        if pressure > 1015 and pm25 > 15:
-            synergies.append(f"⚠️ High pressure ({pressure:.0f} mb) + PM2.5 ({pm25:.1f}) INTERACTION: Temperature inversion traps polluted air under cool air layer. Health effects: Pollutants can't escape upward, concentrating at ground level. Creates 'pollution dome' - prolonged exposure worsens respiratory symptoms throughout the day.")
         
         # Solar radiation + ozone
         if uv_index > 3 and ozone > 30:
