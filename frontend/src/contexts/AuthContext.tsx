@@ -222,7 +222,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       const payload = { ...userData, email: user.email };
-      const resp = await api.put('/users/profile-update', payload);
+      const resp = await api.put('/users/profile', payload);
 
       // Backend returns { status, message, user_id, email, profile_data, ... }
       const updated = resp.data?.profile_data ?? {};
@@ -252,10 +252,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await api.get('/auth/me');
       let mergedUser = response.data;
       try {
-        const profileResp = await api.put('/users/profile-update', { email: mergedUser?.email }, {
+        const profileResp = await api.get('/users/profile', {
           headers: { 'X-Suppress-Api-Error': 'true' }
         } as any);
-        const profileData = profileResp.data?.profile_data || {};
+        // GET /users/profile returns the User object directly
+        const profileData = profileResp.data || {};
         const normalized = {
           ...profileData,
           location: profileData.location || (
