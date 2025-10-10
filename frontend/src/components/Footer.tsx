@@ -5,7 +5,7 @@ const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-800 text-white py-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-5 gap-8">
           {/* Legal Column */}
           <div>
             <h3 className="font-semibold mb-4">Legal</h3>
@@ -60,6 +60,27 @@ const Footer: React.FC = () => {
             </ul>
           </div>
 
+          {/* Games Column */}
+          <div>
+            <h3 className="font-semibold mb-4">🎮 Games</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/air-detective" className="hover:text-emerald-400 transition-colors">
+                  🔍 AirDetective
+                </Link>
+              </li>
+              <li className="text-gray-500">
+                💧 Water Quality Quest (Coming Soon)
+              </li>
+              <li className="text-gray-500">
+                ⚡ Energy Saver (Coming Soon)
+              </li>
+              <li className="text-gray-500">
+                ♻️ Waste Warrior (Coming Soon)
+              </li>
+            </ul>
+          </div>
+
           {/* Support Column */}
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
@@ -67,11 +88,6 @@ const Footer: React.FC = () => {
               <li>
                 <Link to="/faq" className="hover:text-emerald-400 transition-colors">
                   FAQ
-                </Link>
-              </li>
-              <li>
-                <Link to="/air-detective" className="hover:text-emerald-400 transition-colors">
-                  🔍 AirDetective
                 </Link>
               </li>
               <li>
