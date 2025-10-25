@@ -48,7 +48,7 @@ class GeminiService:
         risk_score: float
     ) -> str:
         """
-        Generate daily briefing with knowledge base priority
+        Generate daily briefing with Gemini API priority for professional tone
         
         Args:
             environmental_data: PM2.5, ozone, pollen, weather data
@@ -58,7 +58,22 @@ class GeminiService:
         Returns:
             Personalized daily briefing string
         """
-        # Step 1: Try knowledge base first
+        # Step 1: Try Gemini API FIRST for professional wellness coach tone
+        if self.model:
+            try:
+                logger.info("🔄 Using Gemini API for professional daily briefing")
+                return await self._query_gemini_daily_briefing(
+                    environmental_data, user_profile, risk_score
+                )
+            except Exception as e:
+                # Sanitize error to prevent API key leakage
+                safe_error = SecurityValidator.sanitize_api_keys(str(e))
+                logger.warning(f"⚠️ Gemini API failed, falling back to knowledge base: {safe_error}")
+                # Fall through to knowledge base
+        else:
+            logger.warning("⚠️ Gemini not configured, using knowledge base")
+        
+        # Step 2: Fall back to knowledge base if Gemini unavailable
         kb_briefing = self._generate_from_knowledge_base(
             environmental_data, user_profile, risk_score, briefing_type='daily'
         )
@@ -67,22 +82,9 @@ class GeminiService:
             logger.info("✅ Daily briefing generated from knowledge base")
             return kb_briefing
         
-        # Step 2: Fall back to Gemini API if knowledge base insufficient
-        if self.model:
-            try:
-                logger.info("🔄 Falling back to Gemini API for daily briefing")
-                return await self._query_gemini_daily_briefing(
-                    environmental_data, user_profile, risk_score
-                )
-            except Exception as e:
-                # Sanitize error to prevent API key leakage
-                safe_error = SecurityValidator.sanitize_api_keys(str(e))
-                logger.error(f"❌ Gemini API failed: {safe_error}")
-                # Return basic knowledge base response as final fallback
-                return self._generate_basic_fallback(environmental_data, user_profile, risk_score)
-        else:
-            logger.warning("⚠️ Gemini not available, using basic fallback")
-            return self._generate_basic_fallback(environmental_data, user_profile, risk_score)
+        # Step 3: Final fallback to basic response
+        logger.warning("⚠️ Using basic fallback for daily briefing")
+        return self._generate_basic_fallback(environmental_data, user_profile, risk_score)
     
     async def generate_wellness_boost(
         self,
@@ -91,27 +93,29 @@ class GeminiService:
         environmental_data: Dict[str, Any]
     ) -> str:
         """
-        Generate wellness boost with knowledge base priority
+        Generate wellness boost with Gemini API priority for professional tone
         """
-        # Step 1: Try knowledge base first
+        # Step 1: Try Gemini API FIRST for professional wellness coach tone
+        if self.model:
+            try:
+                logger.info("🔄 Using Gemini API for professional wellness boost")
+                return await self._query_gemini_wellness(user_profile, risk_score, environmental_data)
+            except Exception as e:
+                # Sanitize error to prevent API key leakage
+                safe_error = SecurityValidator.sanitize_api_keys(str(e))
+                logger.warning(f"⚠️ Gemini API failed, falling back to knowledge base: {safe_error}")
+        else:
+            logger.warning("⚠️ Gemini not configured, using knowledge base")
+        
+        # Step 2: Fall back to knowledge base
         kb_wellness = self._generate_wellness_from_kb(user_profile, risk_score, environmental_data)
         
         if kb_wellness:
             logger.info("✅ Wellness boost generated from knowledge base")
             return kb_wellness
         
-        # Step 2: Fall back to Gemini API
-        if self.model:
-            try:
-                logger.info("🔄 Falling back to Gemini API for wellness boost")
-                return await self._query_gemini_wellness(user_profile, risk_score, environmental_data)
-            except Exception as e:
-                # Sanitize error to prevent API key leakage
-                safe_error = SecurityValidator.sanitize_api_keys(str(e))
-                logger.error(f"❌ Gemini API failed: {safe_error}")
-                return self._generate_basic_wellness_fallback(user_profile, risk_score)
-        else:
-            return self._generate_basic_wellness_fallback(user_profile, risk_score)
+        # Step 3: Final fallback
+        return self._generate_basic_wellness_fallback(user_profile, risk_score)
     
     async def generate_action_plan(
         self,
@@ -120,27 +124,29 @@ class GeminiService:
         user_profile: Dict[str, Any]
     ) -> list:
         """
-        Generate action plan with knowledge base priority
+        Generate action plan with Gemini API priority for professional tone
         """
-        # Step 1: Try knowledge base first
+        # Step 1: Try Gemini API FIRST for professional wellness coach tone
+        if self.model:
+            try:
+                logger.info("🔄 Using Gemini API for professional action plan")
+                return await self._query_gemini_actions(primary_risk, environmental_data, user_profile)
+            except Exception as e:
+                # Sanitize error to prevent API key leakage
+                safe_error = SecurityValidator.sanitize_api_keys(str(e))
+                logger.warning(f"⚠️ Gemini API failed, falling back to knowledge base: {safe_error}")
+        else:
+            logger.warning("⚠️ Gemini not configured, using knowledge base")
+        
+        # Step 2: Fall back to knowledge base
         kb_actions = self._generate_actions_from_kb(primary_risk, environmental_data, user_profile)
         
         if kb_actions:
             logger.info("✅ Action plan generated from knowledge base")
             return kb_actions
         
-        # Step 2: Fall back to Gemini API
-        if self.model:
-            try:
-                logger.info("🔄 Falling back to Gemini API for action plan")
-                return await self._query_gemini_actions(primary_risk, environmental_data, user_profile)
-            except Exception as e:
-                # Sanitize error to prevent API key leakage
-                safe_error = SecurityValidator.sanitize_api_keys(str(e))
-                logger.error(f"❌ Gemini API failed: {safe_error}")
-                return self._generate_basic_actions_fallback(primary_risk, environmental_data)
-        else:
-            return self._generate_basic_actions_fallback(primary_risk, environmental_data)
+        # Step 3: Final fallback
+        return self._generate_basic_actions_fallback(primary_risk, environmental_data)
     
     def _generate_from_knowledge_base(
         self,
