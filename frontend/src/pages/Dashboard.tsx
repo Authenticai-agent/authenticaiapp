@@ -8,15 +8,9 @@ import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 import { 
-  MapPinIcon, 
   ExclamationTriangleIcon, 
-  CheckCircleIcon,
   CloudIcon,
-  SunIcon,
-  FireIcon,
-  SparklesIcon,
-  LightBulbIcon,
-  HeartIcon
+  SparklesIcon
 } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import TomorrowOutlook from '../components/TomorrowOutlook';
@@ -628,14 +622,14 @@ const Dashboard: React.FC = () => {
                 <ReactMarkdown
                   className="text-gray-700 leading-relaxed"
                   components={{
-                    h1: ({node, ...props}) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2" {...props} />,
-                    h2: ({node, ...props}) => <h2 className="text-lg font-semibold text-gray-800 mt-3 mb-2" {...props} />,
-                    h3: ({node, ...props}) => <h3 className="text-base font-semibold text-gray-800 mt-2 mb-1" {...props} />,
-                    p: ({node, ...props}) => <p className="text-gray-700 mb-3 leading-relaxed" {...props} />,
-                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1 mb-3" {...props} />,
-                    ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-1 mb-3" {...props} />,
-                    li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
-                    strong: ({node, ...props}) => <strong className="font-semibold text-gray-900" {...props} />,
+                    h1: ({...props}) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2" {...props} />,
+                    h2: ({...props}) => <h2 className="text-lg font-semibold text-gray-800 mt-3 mb-2" {...props} />,
+                    h3: ({...props}) => <h3 className="text-base font-semibold text-gray-800 mt-2 mb-1" {...props} />,
+                    p: ({...props}) => <p className="text-gray-700 mb-3 leading-relaxed" {...props} />,
+                    ul: ({...props}) => <ul className="list-disc list-inside space-y-1 mb-3" {...props} />,
+                    ol: ({...props}) => <ol className="list-decimal list-inside space-y-1 mb-3" {...props} />,
+                    li: ({...props}) => <li className="text-gray-700" {...props} />,
+                    strong: ({...props}) => <strong className="font-semibold text-gray-900" {...props} />,
                   }}
                 >
                   {dailyBriefing.content}
@@ -655,14 +649,14 @@ const Dashboard: React.FC = () => {
 
         {/* Right Column - Tomorrow Outlook & Trends */}
         <div className="space-y-6">
-          <TomorrowOutlook forecast={forecast} />
-          <SmartScoreTrend />
+          <TomorrowOutlook />
+          <SmartScoreTrend currentScore={riskPrediction?.risk_score || 0} />
         </div>
       </div>
 
       {/* Bottom Section - Additional Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <LungEnergyMeter riskScore={riskPrediction?.risk_score || 0} />
+        <LungEnergyMeter />
         <CommunityGoodDayChallenge />
         <EducationalMicroTips />
       </div>
