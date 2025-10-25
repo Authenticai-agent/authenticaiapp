@@ -223,10 +223,15 @@ Generate a comprehensive *Daily Air Quality and Wellbeing Briefing* for {name}.
 **Current Environmental Conditions:**
 - PM2.5: {pm25:.1f} µg/m³ (safe limit: 35 µg/m³)
 - Ozone: {ozone:.0f} ppb (safe limit: 70 ppb)
-- Pollen: {pollen}/100
+- Pollen: {pollen}/100 (0-20=low, 21-40=moderate, 41-100=high)
 - Temperature: {temperature}°C
 - Humidity: {humidity}%
 - Overall Risk Score: {risk_score:.0f}/100
+
+**IMPORTANT:** Accurately describe pollen levels:
+- 0-20: "low" or "minimal"
+- 21-40: "moderate" or "moderately elevated"
+- 41-100: "high" or "elevated"
 
 **Required Structure (300-400 words total):**
 
