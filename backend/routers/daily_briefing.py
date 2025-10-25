@@ -457,8 +457,8 @@ async def get_dynamic_briefing(
             'preferences': {'nutrition': True, 'sleep': True}
         }
         
-        # Generate dynamic briefing
-        briefing = dynamic_briefing_engine.generate_daily_briefing(
+        # Generate dynamic briefing (async)
+        briefing = await dynamic_briefing_engine.generate_daily_briefing(
             environmental_data, 
             user_profile
         )
@@ -617,8 +617,8 @@ async def get_dynamic_briefing_authenticated(
             'lon': lon
         }
         
-        # Generate dynamic briefing
-        briefing = dynamic_briefing_engine.generate_daily_briefing(
+        # Generate dynamic briefing (async)
+        briefing = await dynamic_briefing_engine.generate_daily_briefing(
             environmental_data,
             user_profile
         )
