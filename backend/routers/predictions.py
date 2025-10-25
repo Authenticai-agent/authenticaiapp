@@ -188,17 +188,47 @@ async def get_flareup_risk(
         if not comprehensive_data:
             raise HTTPException(status_code=503, detail="Environmental data unavailable")
         
-        # Extract environmental data from comprehensive response
+        # Extract ALL environmental data (same as daily-briefing endpoint for consistency)
         pollen_risk = comprehensive_data.get('pollen', {}).get('overall_risk', 'low')
         pollen_level = {'low': 10, 'moderate': 30, 'high': 60}.get(pollen_risk, 10)
         
         environmental_data = {
+            # Air Quality Pollutants
             'pm25': comprehensive_data.get('air_quality', {}).get('pm25', 0),
+            'pm10': comprehensive_data.get('air_quality', {}).get('pm10', 0),
             'ozone': comprehensive_data.get('air_quality', {}).get('ozone', 0),
             'no2': comprehensive_data.get('air_quality', {}).get('no2', 0),
-            'humidity': comprehensive_data.get('weather', {}).get('humidity', 0),
-            'temperature': comprehensive_data.get('weather', {}).get('temperature', 0),
-            'pollen_level': pollen_level
+            'so2': comprehensive_data.get('air_quality', {}).get('so2', 0),
+            'co': comprehensive_data.get('air_quality', {}).get('co', 0),
+            'nh3': comprehensive_data.get('air_quality', {}).get('nh3', 0),
+            
+            # Weather Conditions
+            'temperature': comprehensive_data.get('weather', {}).get('temperature', 20),
+            'humidity': comprehensive_data.get('weather', {}).get('humidity', 50),
+            'pressure': comprehensive_data.get('weather', {}).get('pressure', 1013),
+            'wind_speed': comprehensive_data.get('weather', {}).get('wind_speed', 0) * 3.6,  # Convert m/s to km/h
+            'wind_direction': comprehensive_data.get('weather', {}).get('wind_direction', 0),
+            'visibility': comprehensive_data.get('weather', {}).get('visibility', 10000),
+            
+            # Pollen
+            'pollen_level': pollen_level,
+            
+            # UV Index
+            'uv_index': comprehensive_data.get('uv_index', 0),
+            
+            # Precipitation
+            'precipitation': comprehensive_data.get('precipitation', {}).get('total_rain_24h_mm', 0),
+            
+            # Solar/Magnetic Activity
+            'solar_wind_speed': comprehensive_data.get('solar_magnetic', {}).get('solar_wind_speed', 0),
+            'kp_index': comprehensive_data.get('solar_magnetic', {}).get('kp_index', 0),
+            
+            # Fire Risk
+            'fires_nearby': comprehensive_data.get('forest_fires', {}).get('fires_within_100km', 0),
+            'fire_risk_level': comprehensive_data.get('forest_fires', {}).get('fire_risk_level', 'none'),
+            
+            # PurpleAir VOCs
+            'voc_level': comprehensive_data.get('purpleair', {}).get('avg_voc', 0)
         }
         
         risk_analysis = premium_lean_engine.calculate_daily_risk_score(environmental_data)
