@@ -1,16 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  CloudIcon, 
-  ExclamationTriangleIcon, 
-  SparklesIcon
-} from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { useGlobalLocation } from '../contexts/LocationContext';
 import { predictionsAPI, airQualityAPI, forecastAPI } from '../services/api';
 import { resolveEffectiveLocation } from '../utils/location';
+import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
+import { 
+  MapPinIcon, 
+  ExclamationTriangleIcon, 
+  CheckCircleIcon,
+  CloudIcon,
+  SunIcon,
+  FireIcon,
+  SparklesIcon,
+  LightBulbIcon,
+  HeartIcon
+} from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import TomorrowOutlook from '../components/TomorrowOutlook';
 import SmartScoreTrend from '../components/SmartScoreTrend';
@@ -617,319 +624,51 @@ const Dashboard: React.FC = () => {
               </button>
             </div>
             {dailyBriefing ? (
-              <div className="space-y-3">
-                {dailyBriefing.content.split('\n').filter(line => {
-                  // Only show main briefing - stop at action plan section
-                  const lowerLine = line.toLowerCase();
-                  
-                  // Stop at action plan or wellness sections
-                  if (lowerLine.includes('your action plan') || 
-                      lowerLine.includes('wellness boost') ||
-                      lowerLine.includes('stay resilient')) {
-                    return false;
-                  }
-                  
-                  // Exclude all action and wellness emojis (comprehensive list)
-                  const actionWellnessEmojis = ['⏰', '🚫', '🌳', '🏃', '🚗', '💊', '🎒', 
-                                                 '🥗', '😴', '🫐', '💧', '🪴', '💪', '🥶', '🌡️',
-                                                 '🍓', '🍅', '🛏️', '🥵', '🧘', '🚶', '🏊', '⛰️',
-                                                 '🚴', '🫁', '🐟', '🍵', '🥜', '🌿', '🍋', '🥤',
-                                                 '🎨', '🎵', '📚', '🌳', '🧘', '🎶', '📖', '✍️'];
-                  if (actionWellnessEmojis.some(emoji => line.includes(emoji))) {
-                    return false;
-                  }
-                  
-                  // Exclude WEATHER BENEFIT (appears in wellness section)
-                  if (line.includes('WEATHER BENEFIT') || line.includes('Best outdoor exercise window')) {
-                    return false;
-                  }
-                  
-                  // Exclude ALL wellness/action items - Daily Briefing should ONLY show environmental conditions
-                  const excludeKeywords = [
-                    // Actions
-                    'Take controller', 'Keep rescue', 'Best exercise', 'Limit outdoor', 
-                    'Choose routes', 'Pre-medicate', 'Layer clothing', 'Drink more water', 
-                    'AC removes', 'Wear scarf', 'Watch for heat', 'Dehumidifier', 'Humid weather',
-                    // Nutrition (comprehensive)
-                    'Blueberries', 'Tomatoes', 'Strawberries', 'Mango', 'Garlic', 'Peanuts',
-                    'Carrots', 'beta-carotene', 'lycopene', 'resveratrol', 'enzymes', 'allicin',
-                    'Walnuts', 'Citrus', 'Grapes', 'Avocado', 'Peppers', 'Cucumber',
-                    'Fish', 'Broccoli', 'Kale', 'Sweet potato', 'Apple', 'Lemon', 'Beans',
-                    'Dieffenbachia', 'Peaches', 'vitamin A', 'vitamin C', 'vitamin E',
-                    'antioxidants', 'omega-3', 'fiber', 'mucous membranes', 'Salmon',
-                    // Sleep/wellness
-                    'Deep sleep', 'Dust mite', 'Sleep', 'bedroom', 'pillow', 'mattress',
-                    // Generic wellness (comprehensive)
-                    'Electrolyte', 'Indoor plants', 'HEALTH IMPACT', 'strengthens', 'protects',
-                    'optimizes', 'inflammation', 'immunity', 'reduces', 'improves',
-                    'reduce anxiety', 'reduce stress', 'promote calm', 'lowers stress',
-                    'decreases stress', 'soothes', 'relaxation', 'mindfulness', 'meditation',
-                    'therapy', 'cortisol', 'hormones', 'tension', 'anxiety', 'calm',
-                    // Activities that are wellness not conditions
-                    'Birdwatching', 'nature observation', 'Tandem biking', 'swimming',
-                    'tai chi', 'qigong', 'photography', 'sketching', 'painting', 'gardening',
-                    'Creative activities', 'Nature sounds', 'Music', 'Reading', 'Journaling',
-                    'Coloring', 'Poetry', 'Beach walks', 'Gardening', 'Body scan',
-                    'Binaural beats', 'Nature exposure'
-                  ];
-                  if (excludeKeywords.some(keyword => line.includes(keyword))) {
-                    return false;
-                  }
-                  
-                  return true;
-                }).map((line, index) => {
-                  // Skip empty lines and separator lines
-                  if (!line.trim() || line.includes('====')) return null;
-                  
-                  // Color code based on keywords and pollutant levels
-                  let styles: React.CSSProperties = {};
-                  let textColor = '#1f2937'; // gray-800
-                  let isHeader = line.includes('📍') || line.includes('🎯') || line.includes('💪');
-                  
-                  // GREEN - Good/Excellent/Low/Minimal/Benefit
-                  if (line.includes('EXCELLENT') || line.includes('✓') || line.includes('BENEFIT') || 
-                      line.includes('Good conditions') || line.includes('low right now') ||
-                      (line.includes('low') && (line.includes('Minimal') || line.includes('ppb') || line.includes('μg/m³'))) ||
-                      line.includes('Minimal allergy') || line.includes('Minimal traffic') || 
-                      line.includes('Minimal industrial') || line.includes('Minimal agricultural') ||
-                      line.includes('Minimal impact')) {
-                    styles = { backgroundColor: '#f0fdf4', borderLeft: '3px solid #22c55e', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#166534';
-                  } 
-                  // RED - Unhealthy/Very Unhealthy/Hazardous
-                  else if (line.includes('UNHEALTHY') || line.includes('VERY') || line.includes('HAZARDOUS')) {
-                    styles = { backgroundColor: '#fef2f2', borderLeft: '3px solid #ef4444', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#991b1b';
-                  } 
-                  // YELLOW - Moderate
-                  else if (line.includes('MODERATE') || line.includes('Moderate') || 
-                           line.includes('elevated') || line.includes('slightly elevated')) {
-                    styles = { backgroundColor: '#fefce8', borderLeft: '3px solid #eab308', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#854d0e';
-                  } 
-                  // BLUE - Low levels (specific pollutants)
-                  else if ((line.includes('LOW') && line.includes('Pollen')) ||
-                           line.includes('CALM CONDITIONS') || line.includes('very light wind')) {
-                    styles = { backgroundColor: '#eff6ff', borderLeft: '3px solid #3b82f6', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#1e40af';
-                  } 
-                  // ORANGE - Warnings/Interactions/Inversions
-                  else if (line.includes('⚠️') || line.includes('INTERACTION') || 
-                           line.includes('High air pressure') || line.includes('Almost NO WIND') || 
-                           line.includes('temperature inversion') || line.includes('traps pollution') ||
-                           line.includes('amplify each other') || line.includes('Combined effect')) {
-                    styles = { backgroundColor: '#fff7ed', borderLeft: '3px solid #f97316', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#9a3412';
-                  }
-                  // LIGHT GREEN - Rain/Benefits
-                  else if (line.includes('☑️') || line.includes('Rain') || line.includes('BENEFIT')) {
-                    styles = { backgroundColor: '#f0fdf4', borderLeft: '3px solid #10b981', padding: '6px 10px', marginBottom: '3px', borderRadius: '0 3px 3px 0', fontSize: '13px', lineHeight: '1.4' };
-                    textColor = '#065f46';
-                  }
-                  
-                  // Section headers
-                  if (isHeader) {
-                    return (
-                      <div key={index} style={{ 
-                        fontSize: '15px', 
-                        fontWeight: 600, 
-                        color: '#111827',
-                        marginTop: index > 0 ? '16px' : '0',
-                        marginBottom: '8px',
-                        paddingBottom: '4px',
-                        borderBottom: '2px solid #e5e7eb'
-                      }}>
-                        {line}
-                      </div>
-                    );
-                  }
-                  
-                  // Colored condition lines
-                  if (line.trim().startsWith('•') && Object.keys(styles).length > 0) {
-                    return (
-                      <div key={index} style={styles}>
-                        <span style={{ color: textColor, fontWeight: 500 }}>{line}</span>
-                      </div>
-                    );
-                  } 
-                  
-                  // Regular text lines
-                  if (line.trim()) {
-                    return (
-                      <div key={index} style={{ 
-                        color: '#374151', 
-                        fontSize: '13px', 
-                        lineHeight: '1.5',
-                        marginBottom: '2px'
-                      }}>
-                        {line}
-                      </div>
-                    );
-                  }
-                  
-                  return null;
-                })}
-                <div style={{ 
-                  marginTop: '16px', 
-                  paddingTop: '12px', 
-                  borderTop: '1px solid #e5e7eb',
-                  fontSize: '11px',
-                  color: '#6b7280'
-                }}>
-                  Generated {dailyBriefing.created_at ? new Date(dailyBriefing.created_at).toLocaleString('en-US', { 
-                    month: 'numeric', 
-                    day: 'numeric', 
-                    year: 'numeric',
-                    hour: 'numeric', 
-                    minute: '2-digit',
-                    hour12: true 
-                  }) : 'just now'}
-                </div>
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown
+                  className="text-gray-700 leading-relaxed"
+                  components={{
+                    h1: ({node, ...props}) => <h1 className="text-xl font-bold text-gray-900 mt-4 mb-2" {...props} />,
+                    h2: ({node, ...props}) => <h2 className="text-lg font-semibold text-gray-800 mt-3 mb-2" {...props} />,
+                    h3: ({node, ...props}) => <h3 className="text-base font-semibold text-gray-800 mt-2 mb-1" {...props} />,
+                    p: ({node, ...props}) => <p className="text-gray-700 mb-3 leading-relaxed" {...props} />,
+                    ul: ({node, ...props}) => <ul className="list-disc list-inside space-y-1 mb-3" {...props} />,
+                    ol: ({node, ...props}) => <ol className="list-decimal list-inside space-y-1 mb-3" {...props} />,
+                    li: ({node, ...props}) => <li className="text-gray-700" {...props} />,
+                    strong: ({node, ...props}) => <strong className="font-semibold text-gray-900" {...props} />,
+                  }}
+                >
+                  {dailyBriefing.content}
+                </ReactMarkdown>
+                <p className="text-xs text-gray-500 mt-4">
+                  Generated {new Date(dailyBriefing.created_at).toLocaleString()}
+                </p>
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">
-                Click "Generate" to get your personalized daily health briefing.
-              </p>
+              <p className="text-gray-500 text-sm">Click "Generate" to get your personalized daily briefing</p>
             )}
           </div>
 
-          {/* Your Action Plan */}
-          <div className="card border-l-4 border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50">
-            <h3 className="text-lg font-semibold text-blue-900 mb-4 flex items-center">
-              <span className="text-2xl mr-2">🎯</span>
-              Your Action Plan
-            </h3>
-            {dailyBriefing ? (
-              <div className="space-y-2">
-                {(() => {
-                  const lines = dailyBriefing.content.split('\n');
-                  const actionPlanIndex = lines.findIndex(line => line.toLowerCase().includes('your action plan'));
-                  const wellnessIndex = lines.findIndex(line => line.toLowerCase().includes('wellness boost'));
-                  
-                  // Get lines between "YOUR ACTION PLAN" and "WELLNESS BOOST"
-                  if (actionPlanIndex !== -1 && wellnessIndex !== -1) {
-                    return lines.slice(actionPlanIndex + 1, wellnessIndex).filter(line => line.trim() && !line.includes('===='));
-                  }
-                  
-                  // Fallback: look for action emojis
-                  return lines.filter(line => 
-                    line.includes('⏰') || line.includes('🚫') || line.includes('🌳') || 
-                    line.includes('🏃') || line.includes('🚗') || line.includes('💊') ||
-                    line.includes('🎒')
-                  );
-                })().map((line, index) => {
-                  // Remove emoji from line for cleaner display
-                  const cleanLine = line.replace(/[⏰🚫🌳🏃🚗💊🎒]/g, '').trim();
-                  const emoji = line.match(/[⏰🚫🌳🏃🚗💊🎒]/)?.[0] || '•';
-                  
-                  return (
-                    <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-lg shadow-sm border border-blue-100 hover:shadow-md transition-shadow">
-                      <span className="text-xl flex-shrink-0">{emoji}</span>
-                      <span className="text-sm text-gray-800 leading-relaxed">{cleanLine}</span>
-                    </div>
-                  );
-                })}
-                {(() => {
-                  const lines = dailyBriefing.content.split('\n');
-                  const actionPlanIndex = lines.findIndex(line => line.toLowerCase().includes('your action plan'));
-                  const wellnessIndex = lines.findIndex(line => line.toLowerCase().includes('wellness boost'));
-                  
-                  if (actionPlanIndex !== -1 && wellnessIndex !== -1) {
-                    const actionLines = lines.slice(actionPlanIndex + 1, wellnessIndex).filter(line => line.trim() && !line.includes('===='));
-                    return actionLines.length === 0;
-                  }
-                  return false;
-                })() && (
-                  <p className="text-blue-600 text-sm italic">No specific actions needed today - conditions are favorable!</p>
-                )}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm">
-                Generate briefing to see your personalized action plan.
-              </p>
-            )}
-          </div>
+          {/* Action Plan and Wellness Boost are now included in the main briefing above */}
+          {/* No need for separate sections - everything renders with markdown */}
         </div>
 
-        {/* Wellness Boost - Full Width */}
-        <div className="card border-l-4 border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 mb-8">
-          <h3 className="text-lg font-semibold text-green-900 mb-4 flex items-center">
-            <span className="text-2xl mr-2">💪</span>
-            Wellness Boost
-          </h3>
-          {dailyBriefing ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(() => {
-                const lines = dailyBriefing.content.split('\n');
-                const wellnessIndex = lines.findIndex(line => line.toLowerCase().includes('wellness boost'));
-                const stayResilientIndex = lines.findIndex(line => line.toLowerCase().includes('stay resilient'));
-                
-                // Get lines between "WELLNESS BOOST" and "Stay resilient" (or end)
-                if (wellnessIndex !== -1) {
-                  const endIndex = stayResilientIndex !== -1 ? stayResilientIndex : lines.length;
-                  return lines.slice(wellnessIndex + 1, endIndex).filter(line => {
-                    if (!line.trim() || line.includes('====')) return false;
-                    
-                    // Exclude interaction warnings
-                    const isInteractionWarning = line.includes('INTERACTION') || 
-                                               line.includes('PM2.5 (64.3) + Ozone') ||
-                                               line.includes('PM2.5 (64.3) + PMD') ||
-                                               line.includes('Heat (28°C) + Ozone');
-                    
-                    return !isInteractionWarning;
-                  });
-                }
-                
-                // Fallback: look for wellness emojis
-                return lines.filter(line => {
-                  const hasWellnessEmoji = line.includes('🥗') || line.includes('😴') || 
-                                          line.includes('🫐') || line.includes('💧') || line.includes('🪴');
-                  const isInteractionWarning = line.includes('INTERACTION');
-                  return hasWellnessEmoji && !isInteractionWarning;
-                });
-              })().map((line, index) => {
-                // Remove emoji from line for cleaner display
-                const cleanLine = line.replace(/[🥗😴🫐💧🪴⚠️]/g, '').trim();
-                const emoji = line.match(/[🥗😴🫐💧🪴⚠️]/)?.[0] || '•';
-                
-                return (
-                  <div key={index} className="flex items-start space-x-3 p-3 bg-white rounded-lg shadow-sm border border-green-100 hover:shadow-md transition-shadow">
-                    <span className="text-xl flex-shrink-0">{emoji}</span>
-                    <span className="text-sm text-gray-800 leading-relaxed">{cleanLine}</span>
-                  </div>
-                );
-              })}
-              {(() => {
-                const lines = dailyBriefing.content.split('\n');
-                const wellnessIndex = lines.findIndex(line => line.toLowerCase().includes('wellness boost'));
-                const stayResilientIndex = lines.findIndex(line => line.toLowerCase().includes('stay resilient'));
-                
-                if (wellnessIndex !== -1) {
-                  const endIndex = stayResilientIndex !== -1 ? stayResilientIndex : lines.length;
-                  const wellnessLines = lines.slice(wellnessIndex + 1, endIndex).filter(line => {
-                    if (!line.trim() || line.includes('====')) return false;
-                    const isInteractionWarning = line.includes('INTERACTION');
-                    return !isInteractionWarning;
-                  });
-                  return wellnessLines.length === 0;
-                }
-                return false;
-              })() && (
-                <p className="text-green-600 text-sm italic col-span-2">No specific wellness tips for today.</p>
-              )}
-            </div>
-          ) : (
-            <p className="text-gray-500 text-sm">
-              Generate briefing to see your wellness recommendations.
-            </p>
-          )}
-        </div>
-
-        {/* Donation CTA - Last on page */}
-        <div className="mt-8">
-          <DonationCTA />
+        {/* Right Column - Tomorrow Outlook & Trends */}
+        <div className="space-y-6">
+          <TomorrowOutlook forecast={forecast} />
+          <SmartScoreTrend />
         </div>
       </div>
+
+      {/* Bottom Section - Additional Widgets */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <LungEnergyMeter riskScore={riskPrediction?.risk_score || 0} />
+        <CommunityGoodDayChallenge />
+        <EducationalMicroTips />
+      </div>
+
+      <IndoorWellnessTip />
+      <DonationCTA />
     </div>
   );
 };
