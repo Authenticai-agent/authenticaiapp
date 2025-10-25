@@ -236,28 +236,29 @@ class GeminiService:
         temperature = environmental_data.get('temperature', 20)
         humidity = environmental_data.get('humidity', 50)
         
-        prompt = f"""Generate a personalized daily air quality briefing for {name}.
+        prompt = f"""You are an empathetic and evidence-based wellness coach. 
+Generate a personalized *Daily Air Quality and Wellbeing Briefing* for {name}.
 
 User Profile:
-- Health condition: {condition}
+- Health Condition: {condition}
 - Age: {user_profile.get('age', 'adult')}
 - Triggers: {user_profile.get('triggers', [])}
 
-Current Conditions:
+Current Environmental Conditions:
 - PM2.5: {pm25:.1f} µg/m³ (safe limit: 35 µg/m³)
 - Ozone: {ozone:.0f} ppb (safe limit: 70 ppb)
 - Pollen: {pollen}/100
 - Temperature: {temperature}°C
 - Humidity: {humidity}%
-- Risk Score: {risk_score:.0f}/100
+- Overall Risk Score: {risk_score:.0f}/100
 
-Generate a brief, friendly briefing (150-200 words) that includes:
-1. Greeting with current conditions
-2. Health impact specific to their condition
-3. 3-4 specific actionable recommendations with times
-4. Encouraging closing
+Write a friendly, data-informed daily briefing (150–200 words) that includes:
+1. A warm, professional greeting that references today's conditions.
+2. A short explanation of how today's air and environmental factors may affect their specific condition or energy levels.
+3. 3–4 practical, time-specific wellness recommendations (e.g., when to ventilate, hydrate, exercise, rest, or avoid triggers).
+4. A confident, encouraging closing message focused on progress and resilience.
 
-Keep it conversational, data-driven, and actionable."""
+Tone: Calm, professional, motivating, and supportive — as if from a trusted wellness coach guiding healthy daily routines."""
 
         try:
             response = self.model.generate_content(prompt)
@@ -275,17 +276,17 @@ Keep it conversational, data-driven, and actionable."""
         environmental_data: Dict[str, Any]
     ) -> str:
         """Query Gemini API for wellness boost"""
-        prompt = f"""Generate a wellness boost message for someone managing respiratory health.
+        prompt = f"""You are a professional wellness coach supporting someone managing respiratory and emotional wellbeing.
 
 Risk Score: {risk_score:.0f}/100
 Condition: {user_profile.get('condition', 'respiratory health')}
 
-Provide 2-3 encouraging wellness tips (50-75 words) that:
-1. Acknowledge their health management efforts
-2. Provide science-based encouragement
-3. Include one actionable wellness tip
+Write a concise (50–75 words) *Wellness Boost Message* that includes:
+1. Acknowledge their consistent efforts in managing their wellbeing.
+2. Offer science-based encouragement related to breathing, rest, or stress recovery.
+3. Include one actionable tip they can do today (e.g., mindful breathing, hydration, light movement).
 
-Keep it uplifting and supportive."""
+Tone: Compassionate, empowering, and informed — balancing science with motivation to help them feel capable and cared for."""
 
         try:
             response = self.model.generate_content(prompt)
@@ -306,19 +307,21 @@ Keep it uplifting and supportive."""
         pm25 = environmental_data.get('pm25', 0)
         ozone = environmental_data.get('ozone', 0)
         
-        prompt = f"""Generate 3-4 specific action recommendations for managing {primary_risk} exposure.
+        prompt = f"""You are a wellness coach creating a *Personalized Action Plan* to help the user reduce exposure to {primary_risk}.
 
-Current Conditions:
+Current Environmental Data:
 - Primary Risk: {primary_risk}
 - PM2.5: {pm25:.1f} µg/m³
 - Ozone: {ozone:.0f} ppb
 
-Provide actionable steps with:
-- Specific times (e.g., "before 9 AM")
-- Specific durations (e.g., "limit to 20 minutes")
-- Quantified benefits where possible (e.g., "reduces exposure by 60%")
+Generate 3–4 clear, science-backed action items that:
+- Include specific timing (e.g., "before 9 AM" or "after sunset")
+- Include specific duration or limit (e.g., "20 minutes outdoors")
+- Quantify benefits where possible (e.g., "reduces exposure by ~60%")
+- Reflect both physical and mental wellness balance (e.g., rest, activity, air care)
 
-Return as a list of 3-4 action items, each 1-2 sentences."""
+Return as a numbered list (1–4), each 1–2 sentences long.
+Tone: Expert, concise, and motivating — like a trusted daily coach guiding safe, mindful choices."""
 
         try:
             response = self.model.generate_content(prompt)
