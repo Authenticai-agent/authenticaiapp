@@ -647,22 +647,8 @@ const Dashboard: React.FC = () => {
           {/* No need for separate sections - everything renders with markdown */}
         </div>
 
-        {/* Right Column - Tomorrow Outlook & Trends */}
-        <div className="space-y-6">
-          <TomorrowOutlook />
-          <SmartScoreTrend currentScore={riskPrediction?.risk_score || 0} />
-        </div>
+        <DonationCTA />
       </div>
-
-      {/* Bottom Section - Additional Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <LungEnergyMeter />
-        <CommunityGoodDayChallenge />
-        <EducationalMicroTips />
-      </div>
-
-      <IndoorWellnessTip />
-      <DonationCTA />
     </div>
   );
 };
