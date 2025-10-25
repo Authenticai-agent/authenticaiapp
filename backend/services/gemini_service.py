@@ -28,8 +28,8 @@ class GeminiService:
         if self.api_key:
             try:
                 genai.configure(api_key=self.api_key)
-                # Use Gemini 1.5 Flash-8B (Flash-Lite) - fastest and cheapest
-                self.model = genai.GenerativeModel('gemini-1.5-flash-8b')
+                # Use Gemini 1.5 Flash - fastest and cheapest
+                self.model = genai.GenerativeModel('gemini-1.5-flash')
                 # Log success without exposing key (use security utility)
                 masked_key = SecurityValidator.mask_api_key(self.api_key)
                 logger.info(f"✅ Gemini Flash-Lite initialized successfully (key: {masked_key})")
