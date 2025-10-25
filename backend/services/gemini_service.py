@@ -61,17 +61,30 @@ class GeminiService:
         # Step 1: Try Gemini API FIRST for professional wellness coach tone
         if self.model:
             try:
-                logger.info("🔄 Using Gemini API for professional daily briefing")
-                return await self._query_gemini_daily_briefing(
+                logger.info("🔄 ATTEMPTING Gemini API for professional daily briefing")
+                logger.info(f"🔄 Model type: {type(self.model)}")
+                logger.info(f"🔄 User: {user_profile.get('name', 'unknown')}")
+                logger.info(f"🔄 Risk score: {risk_score}")
+                
+                result = await self._query_gemini_daily_briefing(
                     environmental_data, user_profile, risk_score
                 )
+                
+                logger.info(f"✅ Gemini API SUCCESS! Response length: {len(result)} chars")
+                return result
+                
             except Exception as e:
                 # Sanitize error to prevent API key leakage
                 safe_error = SecurityValidator.sanitize_api_keys(str(e))
-                logger.warning(f"⚠️ Gemini API failed, falling back to knowledge base: {safe_error}")
+                logger.error(f"❌❌❌ Gemini API FAILED: {safe_error}")
+                logger.error(f"❌ Exception type: {type(e).__name__}")
+                import traceback
+                logger.error(f"❌ Traceback: {traceback.format_exc()}")
                 # Fall through to knowledge base
         else:
-            logger.warning("⚠️ Gemini not configured, using knowledge base")
+            logger.error("❌❌❌ Gemini model is NULL! API key not configured properly!")
+            logger.error(f"❌ API key exists: {bool(self.api_key)}")
+            logger.error(f"❌ API key length: {len(self.api_key) if self.api_key else 0}")
         
         # Step 2: Fall back to knowledge base if Gemini unavailable
         kb_briefing = self._generate_from_knowledge_base(
