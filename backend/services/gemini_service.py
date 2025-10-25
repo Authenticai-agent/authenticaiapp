@@ -157,41 +157,11 @@ class GeminiService:
     ) -> Optional[str]:
         """
         Generate briefing from knowledge base
-        Returns None if knowledge base doesn't have sufficient info
+        DISABLED: Always return None to force Gemini API usage for professional tone
         """
-        pm25 = environmental_data.get('pm25', 0)
-        ozone = environmental_data.get('ozone', 0)
-        pollen = environmental_data.get('pollen_level', 0)
-        humidity = environmental_data.get('humidity', 50)
-        
-        # Check if we have relevant knowledge base entries
-        pm25_category = self._get_pm25_category(pm25)
-        ozone_category = self._get_ozone_category(ozone)
-        
-        if pm25_category in health_kb.pm25_facts and ozone_category in health_kb.ozone_facts:
-            # We have sufficient knowledge base data
-            pm25_info = health_kb.pm25_facts[pm25_category]
-            ozone_info = health_kb.ozone_facts[ozone_category]
-            
-            # Build briefing from knowledge base
-            name = user_profile.get('name', 'there')
-            condition = user_profile.get('condition', 'respiratory health')
-            
-            briefing_parts = []
-            briefing_parts.append(f"Good morning {name}!")
-            briefing_parts.append(f"\n\n**Current Conditions:**")
-            briefing_parts.append(f"PM2.5: {pm25:.1f} µg/m³ - {pm25_info['impact']}")
-            briefing_parts.append(f"Ozone: {ozone:.0f} ppb - {ozone_info['impact']}")
-            
-            if 'health_effect' in pm25_info:
-                briefing_parts.append(f"\n\n**Health Impact:** {pm25_info['health_effect']}")
-            
-            if 'action' in pm25_info:
-                briefing_parts.append(f"\n\n**Recommended Actions:** {pm25_info['action']}")
-            
-            return "".join(briefing_parts)
-        
-        return None  # Not enough knowledge base data
+        # Always return None to prioritize Gemini API
+        # Knowledge base is too basic - lacks interaction analysis and professional tone
+        return None
     
     def _generate_wellness_from_kb(
         self,
@@ -199,15 +169,8 @@ class GeminiService:
         risk_score: float,
         environmental_data: Dict[str, Any]
     ) -> Optional[str]:
-        """Generate wellness boost from knowledge base"""
-        # Use wellness_variations service
-        wellness_items = wellness_variations.get_wellness_boost(
-            user_profile, risk_score, environmental_data
-        )
-        
-        if wellness_items and len(wellness_items) > 0:
-            return "\n\n".join(wellness_items)
-        
+        """Generate wellness boost from knowledge base - DISABLED for Gemini"""
+        # Always return None to force Gemini API usage
         return None
     
     def _generate_actions_from_kb(
@@ -216,15 +179,8 @@ class GeminiService:
         environmental_data: Dict[str, Any],
         user_profile: Dict[str, Any]
     ) -> Optional[list]:
-        """Generate action plan from knowledge base"""
-        # Use action_variations service
-        actions = action_variations.get_action_plan(
-            primary_risk, environmental_data, user_profile
-        )
-        
-        if actions and len(actions) > 0:
-            return actions
-        
+        """Generate action plan from knowledge base - DISABLED for Gemini"""
+        # Always return None to force Gemini API usage
         return None
     
     async def _query_gemini_daily_briefing(
