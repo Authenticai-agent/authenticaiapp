@@ -211,15 +211,16 @@ class GeminiService:
         temperature = environmental_data.get('temperature', 20)
         humidity = environmental_data.get('humidity', 50)
         
-        prompt = f"""You are an empathetic and evidence-based wellness coach. 
-Generate a personalized *Daily Air Quality and Wellbeing Briefing* for {name}.
+        prompt = f"""You are an empathetic and evidence-based wellness coach specializing in respiratory health and environmental medicine.
 
-User Profile:
+Generate a comprehensive *Daily Air Quality and Wellbeing Briefing* for {name}.
+
+**User Profile:**
 - Health Condition: {condition}
 - Age: {user_profile.get('age', 'adult')}
 - Triggers: {user_profile.get('triggers', [])}
 
-Current Environmental Conditions:
+**Current Environmental Conditions:**
 - PM2.5: {pm25:.1f} µg/m³ (safe limit: 35 µg/m³)
 - Ozone: {ozone:.0f} ppb (safe limit: 70 ppb)
 - Pollen: {pollen}/100
@@ -227,13 +228,32 @@ Current Environmental Conditions:
 - Humidity: {humidity}%
 - Overall Risk Score: {risk_score:.0f}/100
 
-Write a friendly, data-informed daily briefing (150–200 words) that includes:
-1. A warm, professional greeting that references today's conditions.
-2. A short explanation of how today's air and environmental factors may affect their specific condition or energy levels.
-3. 3–4 practical, time-specific wellness recommendations (e.g., when to ventilate, hydrate, exercise, rest, or avoid triggers).
-4. A confident, encouraging closing message focused on progress and resilience.
+**Required Structure (300-400 words total):**
 
-Tone: Calm, professional, motivating, and supportive — as if from a trusted wellness coach guiding healthy daily routines."""
+**1. Daily Briefing (100-150 words):**
+- Warm, professional greeting referencing today's conditions
+- Explain how today's air quality affects their specific condition
+- Include the actual risk score: {risk_score:.0f}/100
+
+**2. Chemical Interactions & Health Impact (75-100 words):**
+- Explain how PM2.5 and ozone interact synergistically (when both elevated, inflammation increases 30-40%)
+- Describe specific physiological effects on airways and respiratory system
+- Mention how temperature and humidity modulate these effects
+- Use scientific terminology but keep it accessible
+
+**3. 🎯 Your Action Plan (3-4 items):**
+- Time-specific recommendations (e.g., "6-9 AM: outdoor exercise")
+- Quantified benefits (e.g., "reduces exposure by 60%")
+- Include: ventilation timing, hydration, exercise windows, trigger avoidance
+- Format as numbered list with specific durations/limits
+
+**4. 💪 Wellness Boost (50-75 words):**
+- Acknowledge their health awareness and consistent efforts
+- Provide science-based encouragement (e.g., "monitoring air quality reduces symptoms by 25%")
+- Include one actionable wellness tip (breathing exercises, stress management, etc.)
+- End with motivating, resilient closing
+
+**Tone:** Professional, scientific yet accessible, empowering, and supportive — like a trusted medical wellness coach providing evidence-based daily guidance."""
 
         try:
             response = self.model.generate_content(prompt)
