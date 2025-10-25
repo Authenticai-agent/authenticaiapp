@@ -1,8 +1,10 @@
 """
 Security utilities for input validation, sanitization, and protection against common attacks
+Includes API key protection to prevent accidental disclosure
 """
 import re
 import html
+import os
 from typing import Any, Dict, List, Optional
 from fastapi import HTTPException, status
 import bleach
@@ -236,6 +238,94 @@ class SecurityValidator:
             if re.search(pattern, text, re.IGNORECASE):
                 return True
         return False
+    
+    @classmethod
+    def sanitize_api_keys(cls, text: str) -> str:
+        """
+        Sanitize text to remove any API keys that might have been accidentally included
+        
+        Protects against:
+        - Gemini API keys
+        - OpenAI API keys
+        - Supabase keys
+        - Any other sensitive keys
+        
+        Args:
+            text: Text that might contain API keys
+            
+        Returns:
+            Text with API keys replaced by masked versions
+        """
+        if not text:
+            return text
+        
+        # Get all environment variables that might be API keys
+        sensitive_env_vars = [
+            'GEMINI_API_KEY',
+            'OPENAI_API_KEY',
+            'SUPABASE_KEY',
+            'SUPABASE_SERVICE_KEY',
+            'STRIPE_SECRET_KEY',
+            'STRIPE_WEBHOOK_SECRET',
+            'JWT_SECRET_KEY',
+            'DATABASE_URL'
+        ]
+        
+        sanitized = text
+        
+        # Replace actual API key values with masked versions
+        for env_var in sensitive_env_vars:
+            key_value = os.getenv(env_var)
+            if key_value and key_value in sanitized:
+                # Mask the key: show first 8 and last 4 characters
+                if len(key_value) > 12:
+                    masked = key_value[:8] + "..." + key_value[-4:]
+                else:
+                    masked = "***REDACTED***"
+                sanitized = sanitized.replace(key_value, f"[{env_var}:{masked}]")
+        
+        # Also catch common API key patterns even if not in env
+        # Pattern: AIza... (Google API keys)
+        sanitized = re.sub(
+            r'AIza[0-9A-Za-z\-_]{35}',
+            '[GOOGLE_API_KEY:***REDACTED***]',
+            sanitized
+        )
+        
+        # Pattern: sk-... (OpenAI API keys)
+        sanitized = re.sub(
+            r'sk-[0-9A-Za-z]{48}',
+            '[OPENAI_API_KEY:***REDACTED***]',
+            sanitized
+        )
+        
+        # Pattern: eyJ... (JWT tokens)
+        sanitized = re.sub(
+            r'eyJ[A-Za-z0-9\-_=]+\.eyJ[A-Za-z0-9\-_=]+\.[A-Za-z0-9\-_.+/=]+',
+            '[JWT_TOKEN:***REDACTED***]',
+            sanitized
+        )
+        
+        return sanitized
+    
+    @classmethod
+    def mask_api_key(cls, api_key: str) -> str:
+        """
+        Mask an API key for safe logging
+        
+        Args:
+            api_key: Full API key
+            
+        Returns:
+            Masked version showing only first 8 and last 4 characters
+        """
+        if not api_key:
+            return "***NONE***"
+        
+        if len(api_key) > 12:
+            return api_key[:8] + "..." + api_key[-4:]
+        else:
+            return "***"
 
 
 class RateLimiter:

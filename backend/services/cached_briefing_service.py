@@ -45,7 +45,7 @@ class CachedBriefingService:
         profile_str = json.dumps(profile_key, sort_keys=True)
         return hashlib.md5(profile_str.encode()).hexdigest()[:8]
     
-    def generate_daily_briefing(
+    async def generate_daily_briefing(
         self,
         environmental_data: Dict[str, Any],
         user_profile: Dict[str, Any],
@@ -78,10 +78,10 @@ class CachedBriefingService:
             # Personalize name
             return self._personalize_briefing(cached, user_profile.get('name', 'there'))
         
-        # Cache miss - generate new briefing
+        # Cache miss - generate new briefing (now async with Gemini)
         logger.info(f"❌ Cache MISS: Generating briefing for ({lat_rounded}, {lon_rounded}) profile {profile_hash}")
         
-        briefing = self.engine.generate_daily_briefing(
+        briefing = await self.engine.generate_daily_briefing(
             environmental_data,
             user_profile
         )

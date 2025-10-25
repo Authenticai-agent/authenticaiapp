@@ -16,6 +16,7 @@ import logging
 from services.health_knowledge_base import health_kb
 from services.wellness_variations import wellness_variations
 from services.action_variations import action_variations
+from services.gemini_service import gemini_service
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class DynamicDailyBriefingEngine:
             }
         }
     
-    def generate_daily_briefing(self, environmental_data: Dict, user_profile: Dict) -> str:
+    async def generate_daily_briefing(self, environmental_data: Dict, user_profile: Dict) -> str:
         """
         Generate comprehensive dynamic daily briefing
         
@@ -87,13 +88,13 @@ class DynamicDailyBriefingEngine:
             # Step 4: Build scientific explanation
             explanation = self._build_explanation(environmental_data, user_profile)
             
-            # Step 5: Build personalized action plan
+            # Step 5: Build personalized action plan (now async with Gemini)
             logger.info(f"📝 About to call _build_action_plan with condition: '{user_profile.get('condition')}'")
-            action_plan = self._build_action_plan(primary_risk, environmental_data, user_profile)
+            action_plan = await self._build_action_plan(primary_risk, environmental_data, user_profile)
             logger.info(f"✅ _build_action_plan returned {len(action_plan)} actions")
             
-            # Step 6: Build wellness boost
-            wellness = self._build_wellness_boost(user_profile, score, environmental_data)
+            # Step 6: Build wellness boost (now async with Gemini)
+            wellness = await self._build_wellness_boost(user_profile, score, environmental_data)
             
             # Step 7: Assemble final briefing
             user_name = user_profile.get('name', 'there')
@@ -559,29 +560,38 @@ class DynamicDailyBriefingEngine:
         primary = risks[0][0]
         return risk_names.get(primary, primary)
     
-    def _build_action_plan(self, primary_risk: str, data: Dict, user_profile: Dict) -> List[str]:
+    async def _build_action_plan(self, primary_risk: str, data: Dict, user_profile: Dict) -> List[str]:
         """Build personalized action plan based on primary risk and user profile"""
         logger.info(f"🎯 _build_action_plan - primary_risk: '{primary_risk}'")
         
-        # Use the comprehensive action variations system (300+ unique actions)
+        # Try Gemini service (knowledge base first, then API)
+        try:
+            actions = await gemini_service.generate_action_plan(primary_risk, data, user_profile)
+            if actions and len(actions) > 0:
+                logger.info(f"✅ Generated {len(actions)} actions via Gemini service")
+                
+                # Add medication reminders for asthma users
+                condition = user_profile.get('condition', '')
+                has_asthma = bool(condition and condition.strip())
+                
+                if has_asthma and ('severe' in condition.lower() or 'moderate' in condition.lower()):
+                    from services.premium_lean_engine import premium_lean_engine
+                    risk_analysis = premium_lean_engine.calculate_daily_risk_score(data)
+                    score = risk_analysis['risk_score']
+                    
+                    if score > 75:
+                        kb_guidance = health_kb.get_exercise_guidance(score)
+                        actions.append(f"💊 {kb_guidance['medication']}")
+                    elif score > 40:
+                        med_facts = health_kb.medication_facts['preventive']
+                        actions.append(f"💊 {med_facts['timing']} — {med_facts['effectiveness']}")
+                
+                return actions
+        except Exception as e:
+            logger.error(f"❌ Gemini service failed for actions: {e}")
+        
+        # Fallback to action_variations
         actions = action_variations.get_action_plan(primary_risk, data, user_profile)
-        
-        # Add medication reminders for asthma users
-        condition = user_profile.get('condition', '')
-        has_asthma = bool(condition and condition.strip())
-        
-        if has_asthma and ('severe' in condition.lower() or 'moderate' in condition.lower()):
-            from services.premium_lean_engine import premium_lean_engine
-            risk_analysis = premium_lean_engine.calculate_daily_risk_score(data)
-            score = risk_analysis['risk_score']
-            
-            if score > 75:
-                kb_guidance = health_kb.get_exercise_guidance(score)
-                actions.append(f"💊 {kb_guidance['medication']}")
-            elif score > 40:
-                med_facts = health_kb.medication_facts['preventive']
-                actions.append(f"💊 {med_facts['timing']} — {med_facts['effectiveness']}")
-        
         return actions if actions else ["✅ Conditions are good — enjoy your day with normal precautions"]
         
         # Adapt actions to primary risk with variations
@@ -748,11 +758,21 @@ class DynamicDailyBriefingEngine:
         
         return actions if actions else ["✅ Conditions are good — enjoy your day with normal precautions"]
     
-    def _build_wellness_boost(self, user_profile: Dict, score: float, data: Dict) -> List[str]:
+    async def _build_wellness_boost(self, user_profile: Dict, score: float, data: Dict) -> List[str]:
         """Build personalized wellness tips with daily variation (300+ variations)"""
         logger.info(f"🎯 _build_wellness_boost - score: {score}")
         
-        # Use the comprehensive wellness variations system (300+ unique tips)
+        # Try Gemini service (knowledge base first, then API)
+        try:
+            wellness_text = await gemini_service.generate_wellness_boost(user_profile, score, data)
+            if wellness_text:
+                logger.info("✅ Generated wellness boost via Gemini service")
+                # Return as list of tips
+                return wellness_text.split('\n') if wellness_text else []
+        except Exception as e:
+            logger.error(f"❌ Gemini service failed for wellness: {e}")
+        
+        # Fallback to wellness_variations
         risk_level = 'high' if score > 60 else 'moderate' if score > 30 else 'low'
         wellness_text = wellness_variations.get_wellness_boost(risk_level, user_profile)
         
