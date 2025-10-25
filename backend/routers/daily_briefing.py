@@ -14,10 +14,14 @@ from services.daily_briefing_engine import daily_briefing_engine
 from services.education_engine import education_engine
 from services.personalized_action_engine import personalized_action_engine
 from services.dynamic_daily_briefing_engine import dynamic_briefing_engine
+from services.gemini_service import GeminiService  # NEW: Gemini Flash-Lite integration
 from services.premium_lean_engine import premium_lean_engine
 from services.briefing_history_service import briefing_history_service
 from routers.air_quality import AirQualityService, get_air_quality_service
 # from services.unified_environmental_engine import unified_environmental_engine  # Temporary disable
+
+# Initialize Gemini service for professional wellness coach tone
+gemini_service = GeminiService()
 
 logger = setup_logger()
 router = APIRouter()
@@ -457,10 +461,14 @@ async def get_dynamic_briefing(
             'preferences': {'nutrition': True, 'sleep': True}
         }
         
-        # Generate dynamic briefing (async)
-        briefing = await dynamic_briefing_engine.generate_daily_briefing(
+        # Calculate risk score for Gemini
+        risk_score = dynamic_briefing_engine._calculate_daily_risk_score(environmental_data)
+        
+        # Generate professional briefing with Gemini (async)
+        briefing = await gemini_service.generate_daily_briefing(
             environmental_data, 
-            user_profile
+            user_profile,
+            risk_score
         )
         
         # Get metadata
@@ -617,10 +625,14 @@ async def get_dynamic_briefing_authenticated(
             'lon': lon
         }
         
-        # Generate dynamic briefing (async)
-        briefing = await dynamic_briefing_engine.generate_daily_briefing(
+        # Calculate risk score for Gemini
+        risk_score = dynamic_briefing_engine._calculate_daily_risk_score(environmental_data)
+        
+        # Generate professional briefing with Gemini (async)
+        briefing = await gemini_service.generate_daily_briefing(
             environmental_data,
-            user_profile
+            user_profile,
+            risk_score
         )
         
         # Get metadata

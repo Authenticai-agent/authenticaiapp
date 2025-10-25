@@ -2,6 +2,7 @@
 Cached Briefing Service
 Batch generates briefings for same location/profile combinations
 Reduces compute costs by sharing briefings across similar users
+Now uses Gemini Flash-Lite for professional wellness coach tone
 """
 from typing import Dict, Any
 from datetime import datetime
@@ -10,6 +11,7 @@ import json
 import logging
 from utils.cache_manager import cache_manager
 from services.dynamic_daily_briefing_engine import dynamic_briefing_engine
+from services.gemini_service import GeminiService
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +24,12 @@ class CachedBriefingService:
     - Users with same condition + triggers get same briefing
     - TTL: 60 minutes (briefings change with environmental data)
     - Reduces compute by ~70%
+    - Uses Gemini Flash-Lite for professional tone
     """
     
     def __init__(self):
-        self.engine = dynamic_briefing_engine
+        self.engine = dynamic_briefing_engine  # For risk calculation and metadata
+        self.gemini = GeminiService()  # For professional briefing generation
     
     def _create_profile_hash(self, user_profile: Dict[str, Any]) -> str:
         """
@@ -78,12 +82,17 @@ class CachedBriefingService:
             # Personalize name
             return self._personalize_briefing(cached, user_profile.get('name', 'there'))
         
-        # Cache miss - generate new briefing (now async with Gemini)
-        logger.info(f"❌ Cache MISS: Generating briefing for ({lat_rounded}, {lon_rounded}) profile {profile_hash}")
+        # Cache miss - generate new briefing with Gemini Flash-Lite
+        logger.info(f"❌ Cache MISS: Generating professional briefing for ({lat_rounded}, {lon_rounded}) profile {profile_hash}")
         
-        briefing = await self.engine.generate_daily_briefing(
+        # Calculate risk score
+        risk_score = self.engine._calculate_daily_risk_score(environmental_data)
+        
+        # Generate with Gemini for professional wellness coach tone
+        briefing = await self.gemini.generate_daily_briefing(
             environmental_data,
-            user_profile
+            user_profile,
+            risk_score
         )
         
         # Cache for 60 minutes
