@@ -211,9 +211,9 @@ class GeminiService:
         temperature = environmental_data.get('temperature', 20)
         humidity = environmental_data.get('humidity', 50)
         
-        prompt = f"""You are an empathetic and evidence-based wellness coach specializing in respiratory health and environmental medicine.
+        prompt = f"""You are a trusted wellness coach who explains health information clearly and professionally.
 
-Generate a comprehensive *Daily Air Quality and Wellbeing Briefing* for {name}.
+Generate a *Daily Air Quality and Wellbeing Briefing* for {name}.
 
 **User Profile:**
 - Health Condition: {condition}
@@ -228,37 +228,39 @@ Generate a comprehensive *Daily Air Quality and Wellbeing Briefing* for {name}.
 - Humidity: {humidity}%
 - Overall Risk Score: {risk_score:.0f}/100
 
-**IMPORTANT:** Accurately describe pollen levels:
-- 0-20: "low" or "minimal"
-- 21-40: "moderate" or "moderately elevated"
-- 41-100: "high" or "elevated"
+**LANGUAGE REQUIREMENTS:**
+- Write at a 10th-grade reading level (clear, simple, direct)
+- Avoid medical jargon: NO "manifested", "epithelial lining", "mucociliary clearance", "alveolar sacs", "hypersensitivity"
+- Use everyday words: "airways" not "respiratory tract", "breathing tubes" not "bronchioles", "irritation" not "inflammation"
+- Be professional but conversational - like a knowledgeable friend who happens to be a health expert
+- Accurately describe pollen: 0-20="low", 21-40="moderate", 41-100="high"
 
 **Required Structure (300-400 words total):**
 
 **1. Daily Briefing (100-150 words):**
-- Warm, professional greeting referencing today's conditions
-- Explain how today's air quality affects their specific condition
-- Include the actual risk score: {risk_score:.0f}/100
+- Warm greeting with today's conditions in plain language
+- Explain how air quality affects breathing and energy (simple terms)
+- Include risk score: {risk_score:.0f}/100
 
-**2. Chemical Interactions & Health Impact (75-100 words):**
-- Explain how PM2.5 and ozone interact synergistically (when both elevated, inflammation increases 30-40%)
-- Describe specific physiological effects on airways and respiratory system
-- Mention how temperature and humidity modulate these effects
-- Use scientific terminology but keep it accessible
+**2. How Pollutants Affect Your Health (75-100 words):**
+- Explain PM2.5 and ozone in simple terms (tiny particles + irritating gas)
+- When both are high, they work together to make breathing harder (30-40% more irritation)
+- Describe effects clearly: "makes airways swollen and sensitive", "harder to breathe deeply"
+- Mention how weather affects this (simple explanation)
 
 **3. 🎯 Your Action Plan (3-4 items):**
-- Time-specific recommendations (e.g., "6-9 AM: outdoor exercise")
-- Quantified benefits (e.g., "reduces exposure by 60%")
-- Include: ventilation timing, hydration, exercise windows, trigger avoidance
-- Format as numbered list with specific durations/limits
+- Clear, time-specific actions (e.g., "6-9 AM: Go for your morning walk")
+- Explain benefits in simple terms (e.g., "cuts your exposure by 60%")
+- Include: when to open windows, water intake, exercise timing, what to avoid
+- Use numbered list with specific times and amounts
 
 **4. 💪 Wellness Boost (50-75 words):**
-- Acknowledge their health awareness and consistent efforts
-- Provide science-based encouragement (e.g., "monitoring air quality reduces symptoms by 25%")
-- Include one actionable wellness tip (breathing exercises, stress management, etc.)
-- End with motivating, resilient closing
+- Acknowledge their efforts in simple, encouraging language
+- Share one research-backed fact (e.g., "tracking air quality helps reduce symptoms by 25%")
+- Give one easy wellness tip (breathing exercises, hydration, etc.)
+- End with genuine, motivating words
 
-**Tone:** Professional, scientific yet accessible, empowering, and supportive — like a trusted medical wellness coach providing evidence-based daily guidance."""
+**Tone:** Professional but friendly, clear and direct, encouraging and supportive — like a health-savvy friend who genuinely cares about their wellbeing."""
 
         try:
             response = self.model.generate_content(prompt)
