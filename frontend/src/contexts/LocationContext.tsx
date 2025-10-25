@@ -38,20 +38,11 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
   const [currentLocation, setCurrentLocationState] = useState<LocationData | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
-  // Load location from localStorage on mount
+  // ALWAYS detect current GPS location on mount (don't use saved location)
+  // This ensures users see their CURRENT location, not a previously selected one
   useEffect(() => {
-    const savedLocation = localStorage.getItem('currentLocation');
-    if (savedLocation) {
-      try {
-        const parsed = JSON.parse(savedLocation);
-        setCurrentLocationState(parsed);
-      } catch (error) {
-        console.error('Error parsing saved location:', error);
-      }
-    } else {
-      // Auto-detect location on first load
-      detectUserLocation();
-    }
+    // Always detect fresh location on login/page load
+    detectUserLocation();
   }, []);
 
   const detectUserLocation = async () => {
