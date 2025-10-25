@@ -625,8 +625,11 @@ async def get_dynamic_briefing_authenticated(
             'lon': lon
         }
         
-        # Calculate risk score for Gemini
-        risk_score = dynamic_briefing_engine._calculate_daily_risk_score(environmental_data)
+        # Calculate risk score using the SAME method as flareup-risk endpoint for consistency
+        risk_analysis = premium_lean_engine.calculate_daily_risk_score(environmental_data)
+        risk_score = risk_analysis['risk_score']
+        
+        logger.info(f"📊 Calculated risk score: {risk_score:.1f}/100 (level: {risk_analysis.get('risk_level', 'unknown')})")
         
         # Generate professional briefing with Gemini (async)
         briefing = await gemini_service.generate_daily_briefing(
