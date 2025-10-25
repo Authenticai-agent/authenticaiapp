@@ -530,6 +530,8 @@ async def get_dynamic_briefing_authenticated(
                 return {
                     "briefing": cached_data['briefing'],
                     "metadata": cached_data['metadata'],
+                    "risk_score": cached_data['risk_score'],
+                    "risk_level": cached_data['risk_level'],
                     "location": {"lat": lat, "lon": lon},
                     "user_id": str(current_user.id),
                     "generated_at": cached_data['generated_at'],
@@ -683,6 +685,8 @@ async def get_dynamic_briefing_authenticated(
         briefing_cache[cache_key] = {
             'briefing': briefing,
             'metadata': metadata,
+            'risk_score': risk_score,
+            'risk_level': risk_analysis.get('risk_level', 'unknown'),
             'generated_at': generated_at,
             'timestamp': datetime.utcnow()
         }
@@ -702,6 +706,8 @@ async def get_dynamic_briefing_authenticated(
         return {
             "briefing": briefing,
             "metadata": metadata,
+            "risk_score": risk_score,
+            "risk_level": risk_analysis.get('risk_level', 'unknown'),
             "location": {"lat": lat, "lon": lon},
             "user_id": str(current_user.id),
             "generated_at": generated_at,

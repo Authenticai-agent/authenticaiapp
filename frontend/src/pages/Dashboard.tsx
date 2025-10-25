@@ -368,11 +368,26 @@ const Dashboard: React.FC = () => {
         content: data.briefing || 'No briefing available',
         session_type: 'daily_briefing',
         created_at: data.generated_at || new Date().toISOString(),
-        risk_score: data.metadata?.risk_score || 0,
-        risk_level: data.metadata?.risk_level || 'unknown'
+        risk_score: data.risk_score || data.metadata?.risk_score || 0,
+        risk_level: data.risk_level || data.metadata?.risk_level || 'unknown'
       };
       console.log('Formatted daily briefing:', newDailyBriefing);
       setDailyBriefing(newDailyBriefing);
+      
+      // Update the dashboard risk score to match the briefing (ensures consistency)
+      if (data.risk_score) {
+        const updatedRiskPrediction = {
+          id: `risk_${Date.now()}`,
+          risk_score: data.risk_score,
+          risk_level: data.risk_level || 'unknown',
+          factors: riskPrediction?.factors || {},
+          recommendations: riskPrediction?.recommendations || [],
+          prediction_date: new Date().toISOString()
+        };
+        setRiskPrediction(updatedRiskPrediction);
+        console.log('✅ Updated dashboard risk score to match briefing:', data.risk_score);
+      }
+      
       // Save to localStorage for persistence
       saveCachedData(riskPrediction, airQuality, newDailyBriefing);
       toast.success('Daily briefing generated!');
