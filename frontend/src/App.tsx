@@ -102,6 +102,36 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return <Suspense fallback={<LoadingSpinner fullScreen={true} />}>{children}</Suspense>;
 }
 
+function PremiumRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <LoadingSpinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Check if user has premium subscription
+  const isPremium = user.subscription_tier === 'premium' || user.subscription_tier === 'enterprise';
+
+  if (!isPremium) {
+    // Redirect to subscription page with message
+    return <Navigate to="/subscription" state={{ message: 'This feature requires a premium subscription' }} replace />;
+  }
+
+  return <Suspense fallback={<LoadingSpinner fullScreen={true} />}>{children}</Suspense>;
+}
+
 // Define route configuration
 const routes = [
   { 
@@ -134,11 +164,11 @@ const routes = [
   },
   {
     path: '/premium',
-    element: <ProtectedRoute><PremiumDashboard /></ProtectedRoute>
+    element: <PremiumRoute><PremiumDashboard /></PremiumRoute>
   },
   {
     path: '/smart-home',
-    element: <ProtectedRoute><SmartHome /></ProtectedRoute>
+    element: <PremiumRoute><SmartHome /></PremiumRoute>
   },
   {
     path: '/subscription',
@@ -162,7 +192,7 @@ const routes = [
   },
   {
     path: '/faq',
-    element: <FAQ />
+    element: <ProtectedRoute><FAQ /></ProtectedRoute>
   },
   {
     path: '/manage-donation',
@@ -207,7 +237,7 @@ const routes = [
   },
   {
     path: '/air-detective',
-    element: <AirDetective />
+    element: <ProtectedRoute><AirDetective /></ProtectedRoute>
   },
   // Add a catch-all route for 404s
   { 
