@@ -9,29 +9,29 @@ const Footer: React.FC = () => {
           {/* Legal Column */}
           <div>
             <h3 className="font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/terms" className="hover:text-emerald-400 transition-colors">
+                <Link to="/terms" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/privacy-policy" className="hover:text-emerald-400 transition-colors">
+                <Link to="/privacy-policy" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/cookie-policy" className="hover:text-emerald-400 transition-colors">
+                <Link to="/cookie-policy" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Cookie Policy
                 </Link>
               </li>
               <li>
-                <Link to="/refund-policy" className="hover:text-emerald-400 transition-colors">
+                <Link to="/refund-policy" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Refund Policy
                 </Link>
               </li>
               <li>
-                <Link to="/hipaa-notice" className="hover:text-emerald-400 transition-colors">
+                <Link to="/hipaa-notice" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   HIPAA Notice
                 </Link>
               </li>
@@ -41,19 +41,19 @@ const Footer: React.FC = () => {
           {/* Policies Column */}
           <div>
             <h3 className="font-semibold mb-4">Policies</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/acceptable-use" className="hover:text-emerald-400 transition-colors">
+                <Link to="/acceptable-use" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Acceptable Use
                 </Link>
               </li>
               <li>
-                <Link to="/security-policy" className="hover:text-emerald-400 transition-colors">
+                <Link to="/security-policy" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Security
                 </Link>
               </li>
               <li>
-                <Link to="/accessibility" className="hover:text-emerald-400 transition-colors">
+                <Link to="/accessibility" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Accessibility
                 </Link>
               </li>
@@ -63,19 +63,19 @@ const Footer: React.FC = () => {
           {/* Games Column */}
           <div>
             <h3 className="font-semibold mb-4">🎮 Games</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/air-detective" className="hover:text-emerald-400 transition-colors">
+                <Link to="/air-detective" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   🔍 AirDetective
                 </Link>
               </li>
-              <li className="text-gray-500">
+              <li className="text-gray-400 py-1">
                 💧 Water Quality Quest (Coming Soon)
               </li>
-              <li className="text-gray-500">
+              <li className="text-gray-400 py-1">
                 ⚡ Energy Saver (Coming Soon)
               </li>
-              <li className="text-gray-500">
+              <li className="text-gray-400 py-1">
                 ♻️ Waste Warrior (Coming Soon)
               </li>
             </ul>
@@ -84,22 +84,22 @@ const Footer: React.FC = () => {
           {/* Support Column */}
           <div>
             <h3 className="font-semibold mb-4">Support</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/faq" className="hover:text-emerald-400 transition-colors">
+                <Link to="/faq" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   FAQ
                 </Link>
               </li>
               <li>
                 <a 
                   href="mailto:jura@authenticai.ai" 
-                  className="hover:text-emerald-400 transition-colors"
+                  className="hover:text-emerald-400 transition-colors inline-block py-1"
                 >
                   Contact Us
                 </a>
               </li>
               <li>
-                <Link to="/manage-donation" className="hover:text-emerald-400 transition-colors">
+                <Link to="/manage-donation" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Manage Donations
                 </Link>
               </li>
@@ -109,14 +109,14 @@ const Footer: React.FC = () => {
           {/* Company Column */}
           <div>
             <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-2 text-sm">
+            <ul className="space-y-3 text-sm">
               <li>
-                <Link to="/dashboard" className="hover:text-emerald-400 transition-colors">
+                <Link to="/dashboard" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Dashboard
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="hover:text-emerald-400 transition-colors">
+                <Link to="/privacy" className="hover:text-emerald-400 transition-colors inline-block py-1">
                   Privacy Dashboard
                 </Link>
               </li>

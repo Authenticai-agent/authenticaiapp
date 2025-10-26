@@ -4,14 +4,22 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#10b981" />
+    
+    <!-- Preconnect to Google Fonts for faster loading (saves ~280ms) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.openweathermap.org https://api.waqi.org https://generativelanguage.googleapis.com;" />
+    
     <meta
       name="description"
-      content="AI-powered prevention coach for asthma and allergies"
+      content="AI-powered prevention coach for asthma and allergies. Get personalized daily briefings based on air quality, pollen, and weather conditions."
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Authenticai - AI Prevention Coach</title>
+    <title>Authenticai - AI Prevention Coach for Asthma & Allergies</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

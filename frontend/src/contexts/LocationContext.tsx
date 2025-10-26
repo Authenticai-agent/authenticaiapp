@@ -38,11 +38,19 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children }) 
   const [currentLocation, setCurrentLocationState] = useState<LocationData | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
 
-  // ALWAYS detect current GPS location on mount (don't use saved location)
-  // This ensures users see their CURRENT location, not a previously selected one
+  // Don't request location on page load - wait for user action
+  // This improves user trust and follows best practices
   useEffect(() => {
-    // Always detect fresh location on login/page load
-    detectUserLocation();
+    // Check if user has previously granted location permission
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          // Only auto-detect if permission already granted
+          detectUserLocation();
+        }
+        // If 'prompt' or 'denied', wait for user to click "Detect Location" button
+      });
+    }
   }, []);
 
   const detectUserLocation = async () => {
