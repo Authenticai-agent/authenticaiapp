@@ -105,6 +105,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const login = async (email: string, password: string) => {
+    setLoading(true); // Set loading to prevent premature redirect
     try {
       const response = await api.post('/auth/login', { email, password });
       const { access_token } = response.data;
@@ -140,6 +141,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch (e) {
         console.log('Profile merge error:', e);
       }
+      
+      // Set user and loading state together to prevent race condition
       setUser(mergedUser);
       setLoading(false);
       
