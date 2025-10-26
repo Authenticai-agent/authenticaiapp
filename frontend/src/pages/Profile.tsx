@@ -25,17 +25,18 @@ const Profile: React.FC = () => {
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
-    age: '',
+    age_range: '',
     location: {
       lat: '',
       lon: '',
       address: '',
     },
-    allergies: [] as string[],
-    health_conditions: [] as string[],
-    medications: [] as string[],
-    asthma_severity: '',
-    triggers: [] as string[],
+    environmental_sensitivities: [] as string[],
+    respiratory_sensitivity: '',
+    known_triggers: [] as string[],
+    uses_air_purifier: false,
+    uses_rescue_inhaler: false,
+    outdoor_activity_level: '',
     household_info: {
       pets: false,
       smoking: false,
@@ -45,10 +46,8 @@ const Profile: React.FC = () => {
     avatar: '',
   });
 
-  const [newAllergy, setNewAllergy] = useState('');
+  const [newSensitivity, setNewSensitivity] = useState('');
   const [newTrigger, setNewTrigger] = useState('');
-  const [newCondition, setNewCondition] = useState('');
-  const [newMedication, setNewMedication] = useState('');
 
   const fetchDonations = useCallback(async () => {
     if (!user?.id) return;
@@ -89,17 +88,18 @@ const Profile: React.FC = () => {
       setFormData({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        age: user.age?.toString() || '',
+        age_range: (user as any).age_range || '',
         location: {
           lat: user.location?.lat?.toString() || '',
           lon: user.location?.lon?.toString() || '',
           address: user.location?.address || '',
         },
-        allergies: user.allergies || [],
-        health_conditions: (user as any).health_conditions || [],
-        medications: (user as any).medications || [],
-        asthma_severity: user.asthma_severity || '',
-        triggers: user.triggers || [],
+        environmental_sensitivities: (user as any).environmental_sensitivities || [],
+        respiratory_sensitivity: (user as any).respiratory_sensitivity || '',
+        known_triggers: (user as any).known_triggers || [],
+        uses_air_purifier: (user as any).uses_air_purifier || false,
+        uses_rescue_inhaler: (user as any).uses_rescue_inhaler || false,
+        outdoor_activity_level: (user as any).outdoor_activity_level || '',
         household_info: {
           pets: user.household_info?.pets || false,
           smoking: user.household_info?.smoking || false,
@@ -124,8 +124,11 @@ const Profile: React.FC = () => {
       // Basic fields
       if (formData.first_name.trim()) updateData.first_name = formData.first_name.trim();
       if (formData.last_name.trim()) updateData.last_name = formData.last_name.trim();
-      if (formData.age && parseInt(formData.age) > 0) updateData.age = parseInt(formData.age);
-      if (formData.asthma_severity) updateData.asthma_severity = formData.asthma_severity;
+      if (formData.age_range) updateData.age_range = formData.age_range;
+      if (formData.respiratory_sensitivity) updateData.respiratory_sensitivity = formData.respiratory_sensitivity;
+      if (formData.outdoor_activity_level) updateData.outdoor_activity_level = formData.outdoor_activity_level;
+      updateData.uses_air_purifier = formData.uses_air_purifier;
+      updateData.uses_rescue_inhaler = formData.uses_rescue_inhaler;
       
       // Location - only include if we have coordinates or address
       if (formData.location.lat || formData.location.lon || formData.location.address) {
@@ -137,10 +140,8 @@ const Profile: React.FC = () => {
       }
       
       // Arrays (always send, even if empty, so backend can update them)
-      updateData.allergies = formData.allergies;
-      updateData.triggers = formData.triggers;
-      updateData.health_conditions = formData.health_conditions;
-      updateData.medications = formData.medications;
+      updateData.environmental_sensitivities = formData.environmental_sensitivities;
+      updateData.known_triggers = formData.known_triggers;
       
       // Household info
       updateData.household_info = formData.household_info;
@@ -154,10 +155,9 @@ const Profile: React.FC = () => {
       }
 
       console.log('Profile form submission - prepared update data:', updateData);
-      console.log('🔵 FRONTEND: health_conditions:', updateData.health_conditions);
-      console.log('🔵 FRONTEND: medications:', updateData.medications);
-      console.log('🔵 FRONTEND: allergies:', updateData.allergies);
-      console.log('🔵 FRONTEND: triggers:', updateData.triggers);
+      console.log('🔵 FRONTEND: environmental_sensitivities:', updateData.environmental_sensitivities);
+      console.log('🔵 FRONTEND: known_triggers:', updateData.known_triggers);
+      console.log('🔵 FRONTEND: respiratory_sensitivity:', updateData.respiratory_sensitivity);
       await updateUser(updateData);
       
       // Show success message
@@ -315,7 +315,7 @@ const Profile: React.FC = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-xl font-semibold text-gray-900">Profile Settings</h1>
             <p className="mt-1 text-sm text-gray-600">
-              Complete your profile to get personalized health recommendations.
+              Complete your profile to get personalized environmental wellness coaching.
             </p>
           </div>
 
@@ -359,19 +359,23 @@ const Profile: React.FC = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="age" className="label">
-                    Age
+                  <label htmlFor="age_range" className="label">
+                    Age Range
                   </label>
-                  <input
-                    type="number"
-                    name="age"
-                    id="age"
-                    min="1"
-                    max="120"
+                  <select
+                    name="age_range"
+                    id="age_range"
                     className="input"
-                    value={formData.age}
+                    value={formData.age_range}
                     onChange={handleChange}
-                  />
+                  >
+                    <option value="">Select age range</option>
+                    <option value="18-25">18-25</option>
+                    <option value="26-35">26-35</option>
+                    <option value="36-50">36-50</option>
+                    <option value="51-65">51-65</option>
+                    <option value="65+">65+</option>
+                  </select>
                 </div>
               </div>
             </div>
