@@ -72,7 +72,8 @@ def ensure_users_profile_columns() -> None:
         ADD COLUMN IF NOT EXISTS health_conditions text[],
         ADD COLUMN IF NOT EXISTS medications text[],
         ADD COLUMN IF NOT EXISTS household_info jsonb,
-        ADD COLUMN IF NOT EXISTS profile jsonb
+        ADD COLUMN IF NOT EXISTS profile jsonb,
+        ADD COLUMN IF NOT EXISTS avatar text
         """
     )
     conn.commit()
