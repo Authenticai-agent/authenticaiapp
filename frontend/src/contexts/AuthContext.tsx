@@ -16,6 +16,8 @@ interface User {
   allergies?: string[];
   asthma_severity?: string;
   triggers?: string[];
+  health_conditions?: string[];
+  medications?: string[];
   household_info?: any;
   avatar?: string;
   subscription_tier: string;
