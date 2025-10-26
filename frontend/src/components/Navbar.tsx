@@ -14,7 +14,7 @@ const activeNavigation = [
 
 const games = [
   { name: 'AirDetective', href: '/air-detective', icon: '🔍', available: true, description: 'Spot hidden air pollutants' },
-  { name: 'Water Quality Quest', href: '/water-quest', icon: '💧', available: false, description: 'Coming Soon' },
+  { name: 'Water Quality Quest', href: '/games/water-quality-quest.html', icon: '🌊', available: true, description: '30-chapter environmental adventure' },
   { name: 'Energy Saver', href: '/energy-saver', icon: '⚡', available: false, description: 'Coming Soon' },
   { name: 'Waste Warrior', href: '/waste-warrior', icon: '♻️', available: false, description: 'Coming Soon' },
   { name: 'Climate Challenge', href: '/climate-challenge', icon: '🌍', available: false, description: 'Coming Soon' },
