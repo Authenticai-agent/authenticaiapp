@@ -134,11 +134,11 @@ const Profile: React.FC = () => {
         };
       }
       
-      // Arrays
-      if (formData.allergies.length > 0) updateData.allergies = formData.allergies;
-      if (formData.triggers.length > 0) updateData.triggers = formData.triggers;
-      if (formData.health_conditions.length > 0) updateData.health_conditions = formData.health_conditions;
-      if (formData.medications.length > 0) updateData.medications = formData.medications;
+      // Arrays (always send, even if empty, so backend can update them)
+      updateData.allergies = formData.allergies;
+      updateData.triggers = formData.triggers;
+      updateData.health_conditions = formData.health_conditions;
+      updateData.medications = formData.medications;
       
       // Household info
       updateData.household_info = formData.household_info;
