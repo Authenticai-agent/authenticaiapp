@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Quality Quest</title>
+    <link rel="stylesheet" href="water-quest-styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🌊 Water Quality Quest</h1>
+            <p class="subtitle">Environmental Adventure | Strategy | Puzzle-Quest</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">
+                    <span id="progressText">Chapter 1 of 30</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="label">Trust Level</div>
+                <div class="value" id="trustLevel">50</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Data Collected</div>
+                <div class="value" id="dataCollected">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Eco Points</div>
+                <div class="value" id="ecoPoints">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Water Quality</div>
+                <div class="value" id="waterQuality">25%</div>
+            </div>
+        </div>
+
+        <div class="game-content" id="gameContent"></div>
+    </div>
+
+    <script src="water-quest-game.js"></script>
+</body>
+</html>
