@@ -516,12 +516,13 @@ async def get_dynamic_briefing_authenticated(
     WITH CACHING: Reduces Gemini API calls by 80-90%
     """
     try:
-        # Check cache first (1-hour window for same location)
+        # Check cache first (1-hour window for same location AND user)
         # Round coordinates to 2 decimals (~1km precision) for cache key
+        # IMPORTANT: Include user_id in cache key so each user gets personalized briefing
         lat_rounded = round(lat, 2)
         lon_rounded = round(lon, 2)
         current_hour = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
-        cache_key = f"{lat_rounded}_{lon_rounded}_{current_hour.isoformat()}"
+        cache_key = f"{current_user.id}_{lat_rounded}_{lon_rounded}_{current_hour.isoformat()}"
         
         # Check if we have a cached briefing
         if cache_key in briefing_cache:
@@ -627,6 +628,7 @@ async def get_dynamic_briefing_authenticated(
                    f"triggers={getattr(current_user, 'triggers', None)}")
         
         # Check both asthma_severity and health_conditions array
+        # If user has no health conditions, assume they're healthy and focus on wellness
         condition = ''
         if hasattr(current_user, 'asthma_severity') and current_user.asthma_severity:
             condition = current_user.asthma_severity
@@ -634,12 +636,21 @@ async def get_dynamic_briefing_authenticated(
         elif hasattr(current_user, 'health_conditions') and current_user.health_conditions:
             # Check if asthma is in health_conditions array
             health_conditions = current_user.health_conditions
-            if isinstance(health_conditions, list):
+            if isinstance(health_conditions, list) and len(health_conditions) > 0:
                 for cond in health_conditions:
                     if 'asthma' in str(cond).lower():
                         condition = cond
                         logger.info(f"✅ Set condition from health_conditions: '{condition}'")
                         break
+                # If no asthma found but other conditions exist, use first condition
+                if not condition and health_conditions:
+                    condition = str(health_conditions[0])
+                    logger.info(f"✅ Set condition from first health_condition: '{condition}'")
+        
+        # If still no condition, user is healthy - focus on wellness
+        if not condition:
+            condition = 'wellness'
+            logger.info(f"✅ No health conditions found - setting to 'wellness' for healthy lifestyle focus")
         
         logger.info(f"📋 Final condition value being passed to engine: '{condition}'")
         
