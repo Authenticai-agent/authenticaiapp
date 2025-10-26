@@ -130,19 +130,37 @@ const Navbar: React.FC = () => {
                             <Menu.Item key={game.name} disabled={!game.available}>
                               {({ active }) => (
                                 game.available ? (
-                                  <Link
-                                    to={game.href}
-                                    className={clsx(
-                                      'px-4 py-2 text-sm flex items-center',
-                                      active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
-                                    )}
-                                  >
-                                    <span className="mr-2 text-lg">{game.icon}</span>
-                                    <div className="flex-1">
-                                      <div className="font-medium">{game.name}</div>
-                                      <div className="text-xs text-gray-500">{game.description}</div>
-                                    </div>
-                                  </Link>
+                                  game.href.endsWith('.html') ? (
+                                    <a
+                                      href={game.href}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={clsx(
+                                        'px-4 py-2 text-sm flex items-center',
+                                        active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                                      )}
+                                    >
+                                      <span className="mr-2 text-lg">{game.icon}</span>
+                                      <div className="flex-1">
+                                        <div className="font-medium">{game.name}</div>
+                                        <div className="text-xs text-gray-500">{game.description}</div>
+                                      </div>
+                                    </a>
+                                  ) : (
+                                    <Link
+                                      to={game.href}
+                                      className={clsx(
+                                        'px-4 py-2 text-sm flex items-center',
+                                        active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
+                                      )}
+                                    >
+                                      <span className="mr-2 text-lg">{game.icon}</span>
+                                      <div className="flex-1">
+                                        <div className="font-medium">{game.name}</div>
+                                        <div className="text-xs text-gray-500">{game.description}</div>
+                                      </div>
+                                    </Link>
+                                  )
                                 ) : (
                                   <div
                                     className={clsx(
@@ -347,25 +365,43 @@ const Navbar: React.FC = () => {
                 </div>
                 {games.map((game) => (
                   game.available ? (
-                    <Disclosure.Button
-                      key={game.name}
-                      as={Link}
-                      to={game.href}
-                      className={clsx(
-                        'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
-                        location.pathname === game.href
-                          ? 'bg-primary-50 border-primary-500 text-primary-700'
-                          : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
-                      )}
-                    >
-                      <div className="flex items-center">
-                        <span className="mr-2">{game.icon}</span>
-                        <div className="flex-1">
-                          <div>{game.name}</div>
-                          <div className="text-xs text-gray-500">{game.description}</div>
+                    game.href.endsWith('.html') ? (
+                      <a
+                        key={game.name}
+                        href={game.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 transition-colors duration-200"
+                      >
+                        <div className="flex items-center">
+                          <span className="mr-2">{game.icon}</span>
+                          <div className="flex-1">
+                            <div>{game.name}</div>
+                            <div className="text-xs text-gray-500">{game.description}</div>
+                          </div>
                         </div>
-                      </div>
-                    </Disclosure.Button>
+                      </a>
+                    ) : (
+                      <Disclosure.Button
+                        key={game.name}
+                        as={Link}
+                        to={game.href}
+                        className={clsx(
+                          'block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200',
+                          location.pathname === game.href
+                            ? 'bg-primary-50 border-primary-500 text-primary-700'
+                            : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                        )}
+                      >
+                        <div className="flex items-center">
+                          <span className="mr-2">{game.icon}</span>
+                          <div className="flex-1">
+                            <div>{game.name}</div>
+                            <div className="text-xs text-gray-500">{game.description}</div>
+                          </div>
+                        </div>
+                      </Disclosure.Button>
+                    )
                   ) : (
                     <div
                       key={game.name}
