@@ -154,8 +154,10 @@ const Profile: React.FC = () => {
       }
 
       console.log('Profile form submission - prepared update data:', updateData);
-      console.log('Avatar value being sent:', formData.avatar);
-      console.log('Avatar in updateData:', updateData.avatar);
+      console.log('🔵 FRONTEND: health_conditions:', updateData.health_conditions);
+      console.log('🔵 FRONTEND: medications:', updateData.medications);
+      console.log('🔵 FRONTEND: allergies:', updateData.allergies);
+      console.log('🔵 FRONTEND: triggers:', updateData.triggers);
       await updateUser(updateData);
       
       // Show success message

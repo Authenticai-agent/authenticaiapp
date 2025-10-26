@@ -155,6 +155,7 @@ async def update_user_profile(
             logger.info("No avatar in update data")
         
         logger.info("Updating user %s with data keys: %s", current_user.id, list(mapped_data.keys()))
+        logger.info("Mapped data values: %s", {k: v if k != 'avatar' else f'{str(v)[:50]}...' for k, v in mapped_data.items()})
         
         result = db.table("users").update(mapped_data).eq("id", current_user.id).execute()
         

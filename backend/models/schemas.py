@@ -31,6 +31,8 @@ class UserBase(BaseModel):
     allergies: Optional[List[str]] = []
     asthma_severity: Optional[str] = None
     triggers: Optional[List[str]] = []
+    health_conditions: Optional[List[str]] = []
+    medications: Optional[List[str]] = []
     household_info: Optional[Dict[str, Any]] = None
     avatar: Optional[str] = None
 
@@ -45,6 +47,8 @@ class UserUpdate(BaseModel):
     allergies: Optional[List[str]] = None
     asthma_severity: Optional[str] = None
     triggers: Optional[List[str]] = None
+    health_conditions: Optional[List[str]] = None
+    medications: Optional[List[str]] = None
     household_info: Optional[Dict[str, Any]] = None
     avatar: Optional[str] = None  # Can be preset ID or base64 image
 
