@@ -20,7 +20,7 @@ router = APIRouter(tags=["day_in_life"])
 async def get_morning_briefing(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
-    user_name: str = Query("Alex", description="User's name")
+    user_name: str = Query("there", description="User's name")
 ):
     """
     7:00 AM Morning Briefing - Premium personalized health coaching

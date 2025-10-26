@@ -119,6 +119,7 @@ async def get_daily_briefing(
 async def get_daily_briefing_test(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user),
     air_quality_service: AirQualityService = Depends(get_air_quality_service)
 ):
     """
@@ -419,6 +420,7 @@ async def get_notifications(
 async def get_dynamic_briefing(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user),
     air_quality_service: AirQualityService = Depends(get_air_quality_service)
 ):
     """
@@ -455,15 +457,17 @@ async def get_dynamic_briefing(
             'uv_index': comprehensive_data.get('uv_index', 0)
         }
         
-        # Create dynamic user profile (in production, this comes from database)
+        # Create generic user profile for public endpoint (unauthenticated users)
         user_profile = {
-            'name': 'Alex',  # Would come from authenticated user
-            'age': 34,
-            'condition': 'moderate asthma',
-            'triggers': ['pollen', 'ozone', 'pm25'],
-            'fitness_goal': 'daily outdoor run',
-            'medication': {'rescue': True, 'controller': True},
-            'preferences': {'nutrition': True, 'sleep': True}
+            'name': 'there',
+            'age': 30,
+            'condition': 'respiratory health',
+            'triggers': [],
+            'health_conditions': [],
+            'medications': [],
+            'allergies': [],
+            'lat': lat,
+            'lon': lon
         }
         
         # Calculate risk score for Gemini
@@ -655,15 +659,6 @@ async def get_dynamic_briefing_authenticated(
             'health_conditions': health_conditions,  # All health conditions
             'medications': medications,  # Current medications
             'allergies': allergies,  # Allergies
-            'fitness_goal': getattr(current_user, 'fitness_goal', 'daily exercise'),
-            'medication': {
-                'rescue': True,
-                'controller': True
-            },
-            'preferences': {
-                'nutrition': True,
-                'sleep': True
-            },
             'lat': lat,  # Add location for time-based greeting
             'lon': lon
         }
@@ -736,6 +731,7 @@ async def get_dynamic_briefing_authenticated(
 async def get_dynamic_briefing_with_history(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user),
     time_of_day: str = Query('morning', description="Time of day: morning, midday, or evening"),
     air_quality_service: AirQualityService = Depends(get_air_quality_service)
 ):
@@ -774,14 +770,17 @@ async def get_dynamic_briefing_with_history(
         }
         
         # Create user profile
+        # Generic user profile for public endpoint
         user_profile = {
-            'name': 'Alex',
-            'age': 34,
-            'condition': 'moderate asthma',
-            'triggers': ['pollen', 'ozone', 'pm25'],
-            'fitness_goal': 'daily outdoor run',
-            'medication': {'rescue': True, 'controller': True},
-            'preferences': {'nutrition': True, 'sleep': True}
+            'name': 'there',
+            'age': 30,
+            'condition': 'respiratory health',
+            'triggers': [],
+            'health_conditions': [],
+            'medications': [],
+            'allergies': [],
+            'lat': lat,
+            'lon': lon
         }
         
         # Generate time-specific briefing
@@ -835,6 +834,7 @@ async def get_dynamic_briefing_with_history(
 async def get_briefing_history(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user),
     days: int = Query(7, description="Number of days of history to retrieve")
 ):
     """

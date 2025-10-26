@@ -1558,7 +1558,8 @@ def get_air_quality_service():
 @router.get("/test", response_model=dict)
 async def test_air_quality_apis(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Test endpoint to verify API connectivity without authentication"""
     results = {}
@@ -1611,6 +1612,7 @@ async def test_air_quality_apis(
 async def get_current_air_quality_test(
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user),
     sources: Optional[str] = Query("all", description="Data sources (internal use only)")
 ):
     """Test endpoint for current air quality data without authentication"""
@@ -1814,7 +1816,8 @@ async def get_current_air_quality(
 @router.get("/comprehensive-test", response_model=Dict[str, Any])
 async def get_comprehensive_environmental_data_test_endpoint(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Test endpoint for comprehensive environmental data without authentication"""
     try:

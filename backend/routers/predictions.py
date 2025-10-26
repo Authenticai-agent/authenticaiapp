@@ -8,6 +8,8 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime, timedelta
 import logging
 from services.premium_lean_engine import premium_lean_engine
+from utils.auth_utils import get_current_user
+from models.schemas import User
 # Removed heavy dependency - using ultra-lean approach
 
 logger = logging.getLogger(__name__)
@@ -17,7 +19,8 @@ router = APIRouter(tags=["predictions"])
 async def get_daily_forecast_test(
     days: int = Query(7, description="Number of days to forecast"),
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Ultra-lean daily forecasting using premium lean engine with REAL data"""
     try:
@@ -129,7 +132,8 @@ async def get_daily_forecast_test(
 @router.get("/risk-factors", response_model=Dict[str, Any])
 async def get_risk_factors(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Get current risk factor analysis using real environmental data"""
     try:
@@ -176,7 +180,8 @@ async def get_risk_factors(
 @router.post("/flareup-risk", response_model=Dict[str, Any])
 async def get_flareup_risk(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Get flare-up risk prediction using real environmental data"""
     try:
@@ -257,7 +262,8 @@ async def get_flareup_risk(
 @router.get("/hourly-predictions", response_model=Dict[str, Any])
 async def get_hourly_predictions(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ):
     """Get specific time horizon predictions: 6h, 12h, 24h, 2d, 3d"""
     try:

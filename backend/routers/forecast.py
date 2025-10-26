@@ -2,12 +2,14 @@
 Air Quality Forecast API
 Provides 24-hour predictions for AQI, PM2.5, and Ozone
 """
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import Dict, Any
 import httpx
 import os
 from datetime import datetime, timedelta
 import logging
+from utils.auth_utils import get_current_user
+from models.schemas import User
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,8 @@ router = APIRouter()
 @router.get("/forecast/tomorrow")
 async def get_tomorrow_forecast(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Get tomorrow's air quality forecast
@@ -133,7 +136,8 @@ def _generate_forecast_fallback(lat: float, lon: float) -> Dict[str, Any]:
 @router.get("/forecast/week")
 async def get_week_forecast(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude")
+    lon: float = Query(..., description="Longitude"),
+    current_user: User = Depends(get_current_user)
 ) -> Dict[str, Any]:
     """
     Get 7-day air quality forecast
