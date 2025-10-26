@@ -58,7 +58,7 @@ def map_db_to_user_format(db_user_data: dict) -> dict:
     # Don't override them with None
     
     # Remove database-specific fields that frontend doesn't expect
-    fields_to_remove = ["full_name", "location_lat", "location_lon", "health_conditions", "hashed_password"]
+    fields_to_remove = ["full_name", "location_lat", "location_lon", "hashed_password"]
     for field in fields_to_remove:
         mapped_user.pop(field, None)
     
