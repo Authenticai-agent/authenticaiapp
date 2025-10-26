@@ -30,6 +30,26 @@ app = FastAPI(
     version="1.0.0-lean"
 )
 
+# CORS middleware - MUST BE FIRST (added first, runs last in FastAPI)
+# Configure for production
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://authenticai-app.netlify.app")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,  # Includes Netlify domain
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,  # Cache preflight requests for 1 hour
+)
+
+# Rate Limiting Middleware (protects against brute force and API abuse)
+from middleware.rate_limit import rate_limit_middleware
+app.middleware("http")(rate_limit_middleware)
+
 # Security Headers Middleware
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -47,25 +67,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 app.add_middleware(SecurityHeadersMiddleware)
-
-# Rate Limiting Middleware (protects against brute force and API abuse)
-from middleware.rate_limit import rate_limit_middleware
-app.middleware("http")(rate_limit_middleware)
-
-# CORS middleware - Configure for production
-allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://authenticai-app.netlify.app")
-allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
-logger.info(f"CORS allowed origins: {allowed_origins}")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,  # Includes Netlify domain
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=3600,  # Cache preflight requests for 1 hour
-)
 
 # Include routers
 from routers.air_quality import router as air_quality_router
