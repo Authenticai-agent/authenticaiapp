@@ -66,22 +66,21 @@ async def get_daily_briefing(
 
         # Get environmental data using the same source as dashboard
         environmental_data = await air_quality_service.get_comprehensive_environmental_data(
-            location["lat"], location["lon"]
         )
         
         if not environmental_data:
             raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Environmental data unavailable")
 
-        # Create user profile
+        # Create user wellness profile (NOT medical - wellness coaching only)
         user_profile = {
-            'age': current_user.age or 30,
-            'asthma_severity': current_user.asthma_severity or 'moderate',
-            'allergies': current_user.allergies or [],
-            'triggers': current_user.triggers or [],
-            'household_info': {
-                'risks': current_user.household_risks or [],
-                'medications': current_user.medications or []
-            }
+            'age_range': current_user.age_range or '26-35',
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'environmental_sensitivities': current_user.environmental_sensitivities or [],
+            'known_triggers': current_user.known_triggers or [],
+            'uses_air_purifier': current_user.uses_air_purifier or False,
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate',
+            'household_info': current_user.household_info or {}
         }
 
         # Generate daily briefing
@@ -141,12 +140,14 @@ async def get_daily_briefing_test(
         # Create test user profile
         user_profile = {
             'age': 30,
-            'asthma_severity': 'moderate',
-            'allergies': ['pollen', 'dust'],
-            'triggers': ['pm25', 'ozone', 'pollen'],
+            'respiratory_sensitivity': 'moderate',
+            'environmental_sensitivities': ['pollen', 'dust'],
+            'known_triggers': ['pm25', 'ozone', 'pollen'],
+            'uses_air_purifier': False,
+            'uses_rescue_inhaler': True,
+            'outdoor_activity_level': 'moderate',
             'household_info': {
-                'risks': ['pets', 'dust'],
-                'medications': ['inhaler']
+                'risks': ['pets', 'dust']
             }
         }
 
@@ -207,9 +208,12 @@ async def get_educational_content(
         # Get user profile
         user_profile = {
             'age': current_user.age or 30,
-            'asthma_severity': current_user.asthma_severity or 'moderate',
-            'allergies': current_user.allergies or [],
-            'triggers': current_user.triggers or []
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'environmental_sensitivities': current_user.environmental_sensitivities or [],
+            'known_triggers': current_user.known_triggers or [],
+            'uses_air_purifier': current_user.uses_air_purifier or False,
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate'
         }
 
         # Get educational content
@@ -259,9 +263,12 @@ async def log_symptom_checkin(
         # Create user profile
         user_profile = {
             'age': current_user.age or 30,
-            'asthma_severity': current_user.asthma_severity or 'moderate',
-            'allergies': current_user.allergies or [],
-            'triggers': current_user.triggers or []
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'environmental_sensitivities': current_user.environmental_sensitivities or [],
+            'known_triggers': current_user.known_triggers or [],
+            'uses_air_purifier': current_user.uses_air_purifier or False,
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate'
         }
 
         # Log symptom check-in
@@ -350,9 +357,12 @@ async def get_personalized_challenges(
         # Create user profile
         user_profile = {
             'age': current_user.age or 30,
-            'asthma_severity': current_user.asthma_severity or 'moderate',
-            'allergies': current_user.allergies or [],
-            'triggers': current_user.triggers or []
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'environmental_sensitivities': current_user.environmental_sensitivities or [],
+            'known_triggers': current_user.known_triggers or [],
+            'uses_air_purifier': current_user.uses_air_purifier or False,
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate'
         }
 
         # Get personalized challenges
@@ -391,9 +401,12 @@ async def get_notifications(
         # Create user profile
         user_profile = {
             'age': current_user.age or 30,
-            'asthma_severity': current_user.asthma_severity or 'moderate',
-            'allergies': current_user.allergies or [],
-            'triggers': current_user.triggers or []
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'environmental_sensitivities': current_user.environmental_sensitivities or [],
+            'known_triggers': current_user.known_triggers or [],
+            'uses_air_purifier': current_user.uses_air_purifier or False,
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate'
         }
 
         # Generate notifications
@@ -622,54 +635,43 @@ async def get_dynamic_briefing_authenticated(
         elif hasattr(current_user, 'email') and current_user.email:
             user_name = current_user.email.split('@')[0]
         
-        # Debug: Log user attributes to see what we have
-        logger.info(f"User attributes: asthma_severity={getattr(current_user, 'asthma_severity', None)}, "
-                   f"health_conditions={getattr(current_user, 'health_conditions', None)}, "
-                   f"triggers={getattr(current_user, 'triggers', None)}")
+        # Debug: Log user wellness attributes
+        logger.info(f"User wellness profile: respiratory_sensitivity={getattr(current_user, 'respiratory_sensitivity', None)}, "
+                   f"environmental_sensitivities={getattr(current_user, 'environmental_sensitivities', None)}, "
+                   f"known_triggers={getattr(current_user, 'known_triggers', None)}")
         
-        # Check both asthma_severity and health_conditions array
-        # If user has no health conditions, assume they're healthy and focus on wellness
-        condition = ''
-        if hasattr(current_user, 'asthma_severity') and current_user.asthma_severity:
-            condition = current_user.asthma_severity
-            logger.info(f"✅ Set condition from asthma_severity: '{condition}'")
-        elif hasattr(current_user, 'health_conditions') and current_user.health_conditions:
-            # Check if asthma is in health_conditions array
-            health_conditions = current_user.health_conditions
-            if isinstance(health_conditions, list) and len(health_conditions) > 0:
-                for cond in health_conditions:
-                    if 'asthma' in str(cond).lower():
-                        condition = cond
-                        logger.info(f"✅ Set condition from health_conditions: '{condition}'")
-                        break
-                # If no asthma found but other conditions exist, use first condition
-                if not condition and health_conditions:
-                    condition = str(health_conditions[0])
-                    logger.info(f"✅ Set condition from first health_condition: '{condition}'")
+        # WELLNESS COACHING ONLY - No medical conditions
+        # Determine wellness focus based on respiratory sensitivity
+        condition = 'wellness'  # Always wellness, never medical
         
-        # If still no condition, user is healthy - focus on wellness
-        if not condition:
-            condition = 'wellness'
-            logger.info(f"✅ No health conditions found - setting to 'wellness' for healthy lifestyle focus")
+        # Customize wellness messaging based on sensitivity level
+        if hasattr(current_user, 'respiratory_sensitivity') and current_user.respiratory_sensitivity:
+            sensitivity = current_user.respiratory_sensitivity
+            if sensitivity in ['moderate', 'high']:
+                condition = f'wellness_respiratory_{sensitivity}'
+                logger.info(f"✅ Wellness focus: respiratory sensitivity {sensitivity}")
+            else:
+                logger.info(f"✅ Wellness focus: general environmental health")
+        else:
+            logger.info(f"✅ Wellness focus: general environmental health (no specific sensitivities)")
         
-        logger.info(f"📋 Final condition value being passed to engine: '{condition}'")
+        logger.info(f"📋 Wellness coaching mode: '{condition}'")
         
-        # Only set triggers if user has them
-        triggers = current_user.triggers if hasattr(current_user, 'triggers') and current_user.triggers else []
+        # Environmental triggers (not medical triggers)
+        triggers = current_user.known_triggers if hasattr(current_user, 'known_triggers') and current_user.known_triggers else []
         
-        # Get all health information
-        health_conditions = current_user.health_conditions if hasattr(current_user, 'health_conditions') and current_user.health_conditions else []
-        medications = current_user.medications if hasattr(current_user, 'medications') and current_user.medications else []
-        allergies = current_user.allergies if hasattr(current_user, 'allergies') and current_user.allergies else []
+        # Environmental sensitivities (not medical allergies)
+        environmental_sensitivities = current_user.environmental_sensitivities if hasattr(current_user, 'environmental_sensitivities') and current_user.environmental_sensitivities else []
         
         user_profile = {
             'name': user_name,
-            'age': current_user.age or 30,
-            'condition': condition,  # Empty string if no condition
-            'triggers': triggers,  # Empty list if no triggers
-            'health_conditions': health_conditions,  # All health conditions
-            'medications': medications,  # Current medications
-            'allergies': allergies,  # Allergies
+            'age_range': current_user.age_range or '26-35',
+            'condition': condition,  # Always 'wellness' - never medical
+            'triggers': triggers,  # Environmental triggers only
+            'environmental_sensitivities': environmental_sensitivities,
+            'respiratory_sensitivity': current_user.respiratory_sensitivity or 'low',
+            'uses_rescue_inhaler': current_user.uses_rescue_inhaler or False,
+            'outdoor_activity_level': current_user.outdoor_activity_level or 'moderate',
             'lat': lat,  # Add location for time-based greeting
             'lon': lon
         }

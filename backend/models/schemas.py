@@ -26,13 +26,14 @@ class UserBase(BaseModel):
     email: EmailStr
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    age: Optional[int] = None
+    age_range: Optional[str] = None  # "18-25", "26-35", "36-50", "51-65", "65+"
     location: Optional[Dict[str, Any]] = None
-    allergies: Optional[List[str]] = []
-    asthma_severity: Optional[str] = None
-    triggers: Optional[List[str]] = []
-    health_conditions: Optional[List[str]] = []
-    medications: Optional[List[str]] = []
+    environmental_sensitivities: Optional[List[str]] = []  # "pollen", "dust", "pollution", "smoke", "mold", "pet_dander"
+    respiratory_sensitivity: Optional[str] = None  # "none", "low", "moderate", "high"
+    known_triggers: Optional[List[str]] = []  # Environmental triggers, not medical
+    uses_air_purifier: Optional[bool] = False
+    uses_rescue_inhaler: Optional[bool] = False  # Wellness indicator, not medication tracking
+    outdoor_activity_level: Optional[str] = None  # "sedentary", "moderate", "active", "very_active"
     household_info: Optional[Dict[str, Any]] = None
     avatar: Optional[str] = None
 
@@ -42,13 +43,14 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    age: Optional[int] = None
+    age_range: Optional[str] = None
     location: Optional[Dict[str, Any]] = None
-    allergies: Optional[List[str]] = None
-    asthma_severity: Optional[str] = None
-    triggers: Optional[List[str]] = None
-    health_conditions: Optional[List[str]] = None
-    medications: Optional[List[str]] = None
+    environmental_sensitivities: Optional[List[str]] = None
+    respiratory_sensitivity: Optional[str] = None
+    known_triggers: Optional[List[str]] = None
+    uses_air_purifier: Optional[bool] = None
+    uses_rescue_inhaler: Optional[bool] = None
+    outdoor_activity_level: Optional[str] = None
     household_info: Optional[Dict[str, Any]] = None
     avatar: Optional[str] = None  # Can be preset ID or base64 image
 
