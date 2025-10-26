@@ -20,7 +20,7 @@ import CookieConsent from './components/CookieConsent';
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
+const ProfileWellness = lazy(() => import('./pages/ProfileWellness'));
 const AirQuality = lazy(() => import('./pages/AirQuality'));
 const Predictions = lazy(() => import('./pages/Predictions'));
 const PremiumDashboard = lazy(() => import('./pages/PremiumDashboard'));
@@ -152,7 +152,7 @@ const routes = [
   },
   {
     path: '/profile',
-    element: <ProtectedRoute><Profile /></ProtectedRoute>
+    element: <ProtectedRoute><ProfileWellness /></ProtectedRoute>
   },
   {
     path: '/air-quality',
