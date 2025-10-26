@@ -642,11 +642,19 @@ async def get_dynamic_briefing_authenticated(
         # Only set triggers if user has them
         triggers = current_user.triggers if hasattr(current_user, 'triggers') and current_user.triggers else []
         
+        # Get all health information
+        health_conditions = current_user.health_conditions if hasattr(current_user, 'health_conditions') and current_user.health_conditions else []
+        medications = current_user.medications if hasattr(current_user, 'medications') and current_user.medications else []
+        allergies = current_user.allergies if hasattr(current_user, 'allergies') and current_user.allergies else []
+        
         user_profile = {
             'name': user_name,
             'age': current_user.age or 30,
             'condition': condition,  # Empty string if no condition
             'triggers': triggers,  # Empty list if no triggers
+            'health_conditions': health_conditions,  # All health conditions
+            'medications': medications,  # Current medications
+            'allergies': allergies,  # Allergies
             'fitness_goal': getattr(current_user, 'fitness_goal', 'daily exercise'),
             'medication': {
                 'rescue': True,

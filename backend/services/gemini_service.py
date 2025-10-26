@@ -211,14 +211,31 @@ class GeminiService:
         temperature = environmental_data.get('temperature', 20)
         humidity = environmental_data.get('humidity', 50)
         
+        # Get detailed health information
+        health_conditions = user_profile.get('health_conditions', [])
+        medications = user_profile.get('medications', [])
+        allergies = user_profile.get('allergies', [])
+        triggers = user_profile.get('triggers', [])
+        
+        # Build health profile string
+        health_profile = f"- Primary Condition: {condition if condition else 'General wellness'}\n"
+        health_profile += f"- Age: {user_profile.get('age', 'adult')}\n"
+        
+        if health_conditions:
+            health_profile += f"- Health Conditions: {', '.join(health_conditions)}\n"
+        if medications:
+            health_profile += f"- Current Medications: {', '.join(medications)}\n"
+        if allergies:
+            health_profile += f"- Allergies: {', '.join(allergies)}\n"
+        if triggers:
+            health_profile += f"- Known Triggers: {', '.join(triggers)}\n"
+        
         prompt = f"""You are a trusted wellness coach who explains health information clearly and professionally.
 
 Generate a *Daily Air Quality and Wellbeing Briefing* for {name}.
 
 **User Profile:**
-- Health Condition: {condition}
-- Age: {user_profile.get('age', 'adult')}
-- Triggers: {user_profile.get('triggers', [])}
+{health_profile}
 
 **Current Environmental Conditions:**
 - PM2.5: {pm25:.1f} µg/m³ (safe limit: 35 µg/m³)
@@ -239,26 +256,35 @@ Generate a *Daily Air Quality and Wellbeing Briefing* for {name}.
 
 **1. Daily Briefing (100-150 words):**
 - Warm greeting with today's conditions in plain language
-- Explain how air quality affects breathing and energy (simple terms)
+- **PERSONALIZE based on their specific health conditions and medications**
+- Explain how air quality affects their specific condition (e.g., if they have asthma + take albuterol, mention how PM2.5 can trigger symptoms requiring rescue inhaler use)
 - Include risk score: {risk_score:.0f}/100
+- If they have allergies, mention pollen levels and how it interacts with their specific allergens
 
 **2. How Pollutants Affect Your Health (75-100 words):**
 - Explain PM2.5 and ozone in simple terms (tiny particles + irritating gas)
+- **TAILOR to their health conditions**: If they have diabetes, mention cardiovascular effects; if COPD, mention lung function; if asthma, mention airway inflammation
 - When both are high, they work together to make breathing harder (30-40% more irritation)
 - Describe effects clearly: "makes airways swollen and sensitive", "harder to breathe deeply"
 - Mention how weather affects this (simple explanation)
+- **If they take medications, mention how air quality can affect medication effectiveness or need**
 
 **3. 🎯 Your Action Plan (3-4 items):**
 - Clear, time-specific actions (e.g., "6-9 AM: Go for your morning walk")
+- **PERSONALIZE based on their triggers and medications**: If smoke is a trigger, emphasize avoiding outdoor cooking areas; if they take controller medications, remind them about timing
 - Explain benefits in simple terms (e.g., "cuts your exposure by 60%")
 - Include: when to open windows, water intake, exercise timing, what to avoid
 - Use numbered list with specific times and amounts
+- **If they have specific allergies, give allergy-specific advice** (e.g., "Keep windows closed during peak pollen hours 10 AM-3 PM")
 
 **4. 💪 Wellness Boost (50-75 words):**
 - Acknowledge their efforts in simple, encouraging language
-- Share one research-backed fact (e.g., "tracking air quality helps reduce symptoms by 25%")
-- Give one easy wellness tip (breathing exercises, hydration, etc.)
+- **PERSONALIZE**: Reference their specific condition management (e.g., "Managing asthma while staying active takes real dedication")
+- Share one research-backed fact relevant to their condition
+- Give one easy wellness tip tailored to their health profile
 - End with genuine, motivating words
+
+**CRITICAL: This briefing MUST be highly personalized to {name}'s specific health profile. Reference their conditions, medications, allergies, and triggers throughout. Make them feel like this briefing was written specifically for them, not a generic template.**
 
 **Tone:** Professional but friendly, clear and direct, encouraging and supportive — like a health-savvy friend who genuinely cares about their wellbeing."""
 
