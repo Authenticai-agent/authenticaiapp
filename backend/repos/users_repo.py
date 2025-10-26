@@ -94,17 +94,24 @@ def update_user_full_profile(user_id: str, payload: dict) -> int:
     loc_lat = loc.get("lat")
     loc_lon = loc.get("lon")
     loc_addr = loc.get("address")
-    allergies = payload.get("allergies") or None
-    triggers = payload.get("triggers") or None
-    health_conditions = payload.get("health_conditions") or None
-    medications = payload.get("medications") or None
+    
+    # Keep arrays as arrays (don't convert empty arrays to None)
+    allergies = payload.get("allergies") if "allergies" in payload else None
+    triggers = payload.get("triggers") if "triggers" in payload else None
+    health_conditions = payload.get("health_conditions") if "health_conditions" in payload else None
+    medications = payload.get("medications") if "medications" in payload else None
     household = payload.get("household_info") or None
     avatar = payload.get("avatar") or None
 
     # Ensure columns exist
     ensure_users_profile_columns()
 
-    print(f"🔴 REPO: Updating user {user_id} with avatar length: {len(avatar) if avatar else 0}")
+    print(f"🔴 REPO: Updating user {user_id}")
+    print(f"  - allergies: {allergies}")
+    print(f"  - triggers: {triggers}")
+    print(f"  - health_conditions: {health_conditions}")
+    print(f"  - medications: {medications}")
+    print(f"  - avatar length: {len(avatar) if avatar else 0}")
     
     try:
         cur.execute(
