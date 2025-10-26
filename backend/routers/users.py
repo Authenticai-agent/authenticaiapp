@@ -127,6 +127,12 @@ async def update_user_profile(
             elif key == "triggers":
                 # Store triggers in separate field
                 mapped_data["triggers"] = value
+            elif key == "health_conditions":
+                # Store health_conditions in separate field
+                mapped_data["health_conditions"] = value
+            elif key == "medications":
+                # Store medications in separate field
+                mapped_data["medications"] = value
             elif key == "age":
                 # Age field exists in database
                 mapped_data["age"] = value
