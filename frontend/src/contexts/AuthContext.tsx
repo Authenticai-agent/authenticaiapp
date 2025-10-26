@@ -105,27 +105,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const login = async (email: string, password: string) => {
+    console.log('🔐 Login attempt for:', email);
     setLoading(true); // Set loading to prevent premature redirect
+    
     try {
+      console.log('📡 Calling /auth/login...');
       const response = await api.post('/auth/login', { email, password });
       const { access_token } = response.data;
+      console.log('✅ Login successful, got token');
       
       localStorage.setItem('token', access_token);
       api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
       
-      // Fetch user and merge with full profile
+      // Fetch user profile
+      console.log('📡 Fetching user profile from /auth/me...');
       const userResponse = await api.get('/auth/me');
       let mergedUser = userResponse.data;
-      console.log('User from /auth/me:', mergedUser);
-      console.log('Avatar from /auth/me:', mergedUser.avatar);
+      console.log('✅ Got user data:', mergedUser);
       
+      // Try to merge with extended profile (non-blocking)
       try {
+        console.log('📡 Fetching extended profile...');
         const profileResp = await api.put('/users/profile', { email }, {
           headers: { 'X-Suppress-Api-Error': 'true' }
         } as any);
         const profileData = profileResp.data?.profile_data || {};
-        console.log('Profile data from /users/profile:', profileData);
-        console.log('Avatar from profile:', profileData.avatar);
         
         const normalized = {
           ...profileData,
@@ -136,19 +140,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
           )
         };
         mergedUser = { ...mergedUser, ...normalized };
-        console.log('Final merged user:', mergedUser);
-        console.log('Final avatar:', mergedUser.avatar);
+        console.log('✅ Merged profile data');
       } catch (e) {
-        console.log('Profile merge error:', e);
+        console.warn('⚠️  Profile merge failed (non-critical):', e);
       }
       
-      // Set user and loading state together to prevent race condition
+      // Set user and complete login
+      console.log('✅ Setting user and completing login');
       setUser(mergedUser);
       setLoading(false);
       
       toast.success('Welcome back!');
+      console.log('🎉 Login complete!');
     } catch (error: any) {
-      const message = error.response?.data?.detail || 'Login failed';
+      console.error('❌ Login failed:', error);
+      const message = error.response?.data?.detail || error.message || 'Login failed';
       toast.error(message);
       setLoading(false);
       throw error;
