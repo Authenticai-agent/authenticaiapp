@@ -19,6 +19,7 @@ interface Donation {
 const Profile: React.FC = () => {
   const { user, updateUser, loading, refreshUser } = useAuth();
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const [donations, setDonations] = useState<Donation[]>([]);
   const [loadingDonations, setLoadingDonations] = useState(false);
   const [formData, setFormData] = useState({
@@ -83,7 +84,8 @@ const Profile: React.FC = () => {
     if (!user && localStorage.getItem('token')) {
       refreshUser();
     }
-    if (user) {
+    // Don't reset form if we just saved (prevents clearing newly added data)
+    if (user && !justSaved) {
       setFormData({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
@@ -109,7 +111,7 @@ const Profile: React.FC = () => {
       // Fetch donations
       fetchDonations();
     }
-  }, [user, fetchDonations, refreshUser]);
+  }, [user, fetchDonations, refreshUser, justSaved]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -156,9 +158,13 @@ const Profile: React.FC = () => {
       console.log('Avatar in updateData:', updateData.avatar);
       await updateUser(updateData);
       
-      // Show success message and refresh the form
+      // Show success message
       console.log('Profile update completed successfully');
       toast.success('Profile saved');
+      
+      // Set flag to prevent useEffect from resetting form
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 1000);
       
     } catch (error) {
       // Error handling is done in the AuthContext
