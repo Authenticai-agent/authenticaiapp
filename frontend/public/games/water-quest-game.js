@@ -1,4 +1,6 @@
+/* eslint-disable no-unused-vars */
 // Water Quality Quest - Enhanced Game Logic
+// Note: Functions are called from onclick handlers in HTML strings, so eslint thinks they're unused
 const gameState = {currentChapter:1,trustLevel:50,dataCollected:0,ecoPoints:0,waterQuality:25,inventory:[],achievements:[],decisions:[],difficulty:1,completedChapters:[]};
 const ALL_CHAPTERS=[
 {number:1,title:"The Murky Beginning",story:"You arrive in Clearwater Village. The once-crystal-clear lake has turned murky brown, and dead fish float on the surface. Worried villagers gather at the shore. As the new Eco-Ranger, you need to find out what's wrong with the water.",mission:"Test water samples from 3 different locations to find clues about the pollution.",difficulty:1,minigame:"waterTesting",learningGoal:"Learn how pH, temperature, and turbidity tell us about water health.",rewards:{ecoPoints:100,trust:10,items:["pH Strips","Thermometer","Eco Journal"]}},
