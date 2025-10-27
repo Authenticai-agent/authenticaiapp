@@ -224,26 +224,29 @@ const Dashboard: React.FC = () => {
          airQualityAPI.getComprehensive(effectiveLocation.lat, effectiveLocation.lon).then(res => {
            console.log('Air quality data received:', res?.data);
            // Transform comprehensive data to match expected format
-           if (res?.data?.air_quality) {
+           // API returns data directly in res.data (not res.data.data)
+           const apiData = res?.data;
+           if (apiData?.air_quality) {
              return {
                data: [{
                  id: `comprehensive_${Date.now()}`,
-                 location: res.data.location,
-                 timestamp: res.data.timestamp,
+                 location: apiData.location,
+                 timestamp: apiData.timestamp,
                  source: 'comprehensive',
-                 aqi: res.data.air_quality.aqi,
-                 pm25: res.data.air_quality.pm25,
-                 pm10: res.data.air_quality.pm10,
-                 ozone: res.data.air_quality.ozone,
-                 no2: res.data.air_quality.no2,
-                 so2: res.data.air_quality.so2,
-                 co: res.data.air_quality.co,
-                 nh3: res.data.air_quality.nh3,
-                 created_at: res.data.timestamp
+                 aqi: apiData.air_quality.aqi,
+                 pm25: apiData.air_quality.pm25,
+                 pm10: apiData.air_quality.pm10,
+                 ozone: apiData.air_quality.ozone,
+                 no2: apiData.air_quality.no2,
+                 so2: apiData.air_quality.so2,
+                 co: apiData.air_quality.co,
+                 nh3: apiData.air_quality.nh3,
+                 created_at: apiData.timestamp
                }]
              };
            }
-           return res;
+           console.warn('Air quality data structure unexpected:', apiData);
+           return null;
          }).catch(err => {
           console.warn('Air quality data failed:', err);
           return null;
