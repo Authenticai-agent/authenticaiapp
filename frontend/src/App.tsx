@@ -42,6 +42,7 @@ const SecurityPolicy = lazy(() => import('./pages/SecurityPolicy'));
 const AccessibilityStatement = lazy(() => import('./pages/AccessibilityStatement'));
 const APIMonitoring = lazy(() => import('./pages/APIMonitoring'));
 const AirDetective = lazy(() => import('./pages/AirDetective'));
+const Wellness = lazy(() => import('./pages/Wellness'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -189,6 +190,10 @@ const routes = [
   {
     path: '/coaching',
     element: <ProtectedRoute><Coaching /></ProtectedRoute>
+  },
+  {
+    path: '/wellness',
+    element: <ProtectedRoute><Wellness /></ProtectedRoute>
   },
   {
     path: '/faq',
