@@ -16,6 +16,76 @@ router = APIRouter()
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # ============================================================================
+# TEST ENDPOINT
+# ============================================================================
+
+@router.get("/test-db-connection")
+async def test_database_connection():
+    """Test if wellness database connection works"""
+    try:
+        import psycopg2
+        import os
+        
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL:
+            return {
+                "status": "error",
+                "message": "DATABASE_URL not set",
+                "has_supabase": False
+            }
+        
+        if "supabase" not in DATABASE_URL:
+            return {
+                "status": "warning",
+                "message": "DATABASE_URL doesn't contain 'supabase'",
+                "has_supabase": False,
+                "url_preview": DATABASE_URL[:30] + "..."
+            }
+        
+        # Try to connect
+        conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        
+        # Test query
+        cursor.execute("SELECT 1 as test")
+        result = cursor.fetchone()
+        
+        # Check if wellness_checkins table exists
+        cursor.execute("""
+            SELECT EXISTS (
+                SELECT FROM information_schema.tables 
+                WHERE table_name = 'wellness_checkins'
+            )
+        """)
+        table_exists = cursor.fetchone()[0]
+        
+        # Count records if table exists
+        record_count = 0
+        if table_exists:
+            cursor.execute("SELECT COUNT(*) FROM wellness_checkins")
+            record_count = cursor.fetchone()[0]
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "status": "success",
+            "message": "Database connection successful",
+            "has_supabase": True,
+            "table_exists": table_exists,
+            "record_count": record_count,
+            "test_query": result[0] if result else None
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database connection failed: {str(e)}",
+            "error_type": type(e).__name__
+        }
+
+# ============================================================================
 # MODELS
 # ============================================================================
 
