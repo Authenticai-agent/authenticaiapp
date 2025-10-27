@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useGlobalLocation } from '../contexts/LocationContext';
 import { predictionsAPI, airQualityAPI, forecastAPI } from '../services/api';
 import { resolveEffectiveLocation } from '../utils/location';
+import { getLocationName } from '../utils/geocoding';
 import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
@@ -62,6 +63,7 @@ const Dashboard: React.FC = () => {
   const [dailyBriefing, setDailyBriefing] = useState<DailyBriefing | null>(null);
   const [briefingLoading, setBriefingLoading] = useState(false);
   const [tomorrowForecast, setTomorrowForecast] = useState<any>(null);
+  const [locationName, setLocationName] = useState<string>('');
 
   // SECURITY: Clear all cached data when user changes
   useEffect(() => {
@@ -89,6 +91,13 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     // Clear briefing when location changes to prevent showing stale data
     setDailyBriefing(null);
+    
+    // Load location name
+    if (currentLocation) {
+      getLocationName(currentLocation.lat, currentLocation.lon)
+        .then(name => setLocationName(name))
+        .catch(() => setLocationName(`${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)}`));
+    }
     
     // Load data from localStorage first, then fetch fresh data
     loadCachedData();
@@ -504,7 +513,7 @@ const Dashboard: React.FC = () => {
             Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user.first_name || 'there'}!
           </h1>
           <p className="mt-2 text-gray-600">
-            {currentLocation?.displayName || currentLocation?.city || 'Your location'}
+            {locationName || 'Loading location...'}
           </p>
         </div>
 
@@ -539,7 +548,7 @@ const Dashboard: React.FC = () => {
               <ExclamationTriangleIcon className="h-16 w-16 text-blue-200" />
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              {currentLocation?.displayName || currentLocation?.city || 'Your location'}
+              {locationName}
             </p>
           </div>
 

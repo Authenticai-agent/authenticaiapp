@@ -8,6 +8,7 @@ import clsx from 'clsx';
 const activeNavigation = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Air Quality', href: '/air-quality' },
+  { name: 'Wellness', href: '/wellness' },
   { name: 'Privacy', href: '/privacy' },
   { name: 'FAQ', href: '/faq' },
 ];
