@@ -20,6 +20,7 @@ interface Recommendation {
   duration_minutes: number;
   category: string;
   description: string;
+  instructions?: string;
   why_helpful: string;
   difficulty: string;
 }
