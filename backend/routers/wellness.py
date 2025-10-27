@@ -332,8 +332,88 @@ async def get_mood_trends(user_id: str, days: int = Query(30, description="Analy
 @router.post("/self-care/recommendations")
 async def get_selfcare_recommendations(request: SelfCareRequest):
     """
-    Get AI-powered personalized self-care recommendations
-    Based on current mood, stress, energy, and environmental factors
+    Get professional self-care recommendations based on available time
+    Returns breathing, mindfulness, or meditation exercises
+    """
+    try:
+        from .selfcare_library import get_exercises_by_time, BREATHING_EXERCISES, MINDFULNESS_EXERCISES, MEDITATION_EXERCISES
+        
+        # Determine which category based on mood/stress
+        if request.stress_level >= 7:
+            # High stress - breathing exercises
+            category = "breathing"
+            exercises = get_exercises_by_time("breathing", request.available_time_minutes, max_results=3)
+        elif request.energy_level <= 4:
+            # Low energy - gentle mindfulness
+            category = "mindfulness"
+            exercises = get_exercises_by_time("mindfulness", request.available_time_minutes, max_results=3)
+        else:
+            # Balanced - meditation
+            category = "meditation"
+            exercises = get_exercises_by_time("meditation", request.available_time_minutes, max_results=3)
+        
+        # Transform to expected format
+        recommendations = []
+        for ex in exercises:
+            recommendations.append({
+                "title": ex["title"],
+                "duration_minutes": ex["duration_minutes"],
+                "category": category,
+                "description": ex["description"],
+                "instructions": ex["instructions"],
+                "why_helpful": ex["benefits"],
+                "difficulty": ex["difficulty"]
+            })
+        
+        return {
+            "status": "success",
+            "user_state": {
+                "mood": request.current_mood,
+                "stress_level": request.stress_level,
+                "energy_level": request.energy_level
+            },
+            "category": category,
+            "recommendations": recommendations,
+            "priority_focus": f"Based on your {category} needs, these exercises are selected for your {request.available_time_minutes} minutes",
+            "encouragement": "Take care of yourself today! 💚"
+        }
+        
+    except Exception as e:
+        # Fallback if library fails
+        return get_fallback_recommendations(request)
+
+
+@router.get("/self-care/library")
+async def get_selfcare_library(category: str = Query("all", description="breathing, mindfulness, meditation, or all")):
+    """
+    Get all available self-care exercises by category
+    Free version: 45 exercises total (15 each category)
+    """
+    try:
+        from .selfcare_library import BREATHING_EXERCISES, MINDFULNESS_EXERCISES, MEDITATION_EXERCISES
+        
+        if category == "breathing":
+            return {"category": "breathing", "exercises": BREATHING_EXERCISES, "count": len(BREATHING_EXERCISES)}
+        elif category == "mindfulness":
+            return {"category": "mindfulness", "exercises": MINDFULNESS_EXERCISES, "count": len(MINDFULNESS_EXERCISES)}
+        elif category == "meditation":
+            return {"category": "meditation", "exercises": MEDITATION_EXERCISES, "count": len(MEDITATION_EXERCISES)}
+        else:
+            return {
+                "breathing": {"exercises": BREATHING_EXERCISES, "count": len(BREATHING_EXERCISES)},
+                "mindfulness": {"exercises": MINDFULNESS_EXERCISES, "count": len(MINDFULNESS_EXERCISES)},
+                "meditation": {"exercises": MEDITATION_EXERCISES, "count": len(MEDITATION_EXERCISES)},
+                "total": len(BREATHING_EXERCISES) + len(MINDFULNESS_EXERCISES) + len(MEDITATION_EXERCISES)
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to load library: {str(e)}")
+
+
+@router.post("/self-care/recommendations-old")
+async def get_selfcare_recommendations_ai(request: SelfCareRequest):
+    """
+    DEPRECATED: Old AI-powered recommendations (kept for reference)
+    Use /self-care/recommendations instead
     """
     try:
         # Build context for AI

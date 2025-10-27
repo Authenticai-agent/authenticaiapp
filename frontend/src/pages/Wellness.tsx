@@ -405,9 +405,19 @@ const Wellness: React.FC = () => {
                       <span>⏱️ {rec.duration_minutes} min</span>
                       <span>📊 {rec.difficulty}</span>
                     </div>
+                    
+                    {/* Instructions */}
+                    {rec.instructions && (
+                      <div className="bg-blue-50 border-l-4 border-blue-600 p-4 rounded mb-3">
+                        <p className="text-sm font-semibold text-blue-900 mb-2">📋 Instructions:</p>
+                        <p className="text-sm text-blue-800 whitespace-pre-line">{rec.instructions}</p>
+                      </div>
+                    )}
+                    
+                    {/* Benefits */}
                     <div className="bg-purple-50 border-l-4 border-purple-600 p-3 rounded">
                       <p className="text-sm text-purple-900">
-                        <strong>Why this helps:</strong> {rec.why_helpful}
+                        <strong>✨ Benefits:</strong> {rec.why_helpful}
                       </p>
                     </div>
                   </div>
