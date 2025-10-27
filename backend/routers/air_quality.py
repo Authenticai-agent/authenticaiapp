@@ -1816,8 +1816,7 @@ async def get_current_air_quality(
 @router.get("/comprehensive-test", response_model=Dict[str, Any])
 async def get_comprehensive_environmental_data_test_endpoint(
     lat: float = Query(..., description="Latitude"),
-    lon: float = Query(..., description="Longitude"),
-    current_user: User = Depends(get_current_user)
+    lon: float = Query(..., description="Longitude")
 ):
     """Test endpoint for comprehensive environmental data without authentication"""
     try:
