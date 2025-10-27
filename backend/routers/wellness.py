@@ -50,10 +50,12 @@ async def create_emotional_checkin(checkin: EmotionalCheckIn):
     Record daily emotional check-in with mood, energy, stress levels
     """
     try:
-        from database import get_db_connection
+        import psycopg2
+        import os
         
-        conn = get_db_connection()
-        if not conn:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL or "supabase" not in DATABASE_URL:
             # Demo mode - return success without saving
             return {
                 "status": "success",
@@ -62,6 +64,7 @@ async def create_emotional_checkin(checkin: EmotionalCheckIn):
                 "timestamp": datetime.now().isoformat()
             }
         
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
         # Create wellness_checkins table if not exists
@@ -127,10 +130,12 @@ async def get_checkin_history(
     Get user's emotional check-in history
     """
     try:
-        from database import get_db_connection
+        import psycopg2
+        import os
         
-        conn = get_db_connection()
-        if not conn:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL or "supabase" not in DATABASE_URL:
             # Demo mode - return sample data
             return {
                 "user_id": user_id,
@@ -148,6 +153,7 @@ async def get_checkin_history(
                 ]
             }
         
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -194,10 +200,12 @@ async def get_mood_trends(user_id: str, days: int = Query(30, description="Analy
     Analyze mood trends over time
     """
     try:
-        from database import get_db_connection
+        import psycopg2
+        import os
         
-        conn = get_db_connection()
-        if not conn:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL or "supabase" not in DATABASE_URL:
             # Demo mode
             return {
                 "user_id": user_id,
@@ -212,6 +220,7 @@ async def get_mood_trends(user_id: str, days: int = Query(30, description="Analy
                 }
             }
         
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
         cursor.execute("""
@@ -403,10 +412,12 @@ async def analyze_environmental_mood_correlation(
     Analyze correlation between environmental factors and mood
     """
     try:
-        from database import get_db_connection
+        import psycopg2
+        import os
         
-        conn = get_db_connection()
-        if not conn:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL or "supabase" not in DATABASE_URL:
             # Demo mode
             return {
                 "user_id": user_id,
@@ -432,6 +443,7 @@ async def analyze_environmental_mood_correlation(
                 ]
             }
         
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
         # Get check-ins with location data
@@ -489,10 +501,12 @@ async def get_personalized_insights(user_id: str):
     """
     try:
         # Get recent check-in history
-        from database import get_db_connection
+        import psycopg2
+        import os
         
-        conn = get_db_connection()
-        if not conn:
+        DATABASE_URL = os.getenv("DATABASE_URL")
+        
+        if not DATABASE_URL or "supabase" not in DATABASE_URL:
             return {
                 "insights": [
                     "Your stress levels tend to peak on weekdays - consider scheduling self-care breaks",
@@ -506,6 +520,7 @@ async def get_personalized_insights(user_id: str):
                 ]
             }
         
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
         cursor.execute("""
