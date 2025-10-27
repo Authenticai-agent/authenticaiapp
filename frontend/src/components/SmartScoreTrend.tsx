@@ -61,16 +61,27 @@ const SmartScoreTrend: React.FC<{ currentScore: number }> = ({ currentScore }) =
 
       {/* Visual Trend Dots */}
       <div className="flex items-center justify-center space-x-4 mb-4">
-        {last3Days.map((day, index) => (
-          <div key={day.date} className="flex flex-col items-center">
-            <div className={`w-12 h-12 rounded-full ${getColorClass(day.level)} flex items-center justify-center text-white font-bold shadow-lg`}>
-              {day.score}
+        {[0, 1, 2].map((dayIndex) => {
+          const day = last3Days[dayIndex];
+          const label = dayIndex === 0 ? '2 days ago' : dayIndex === 1 ? 'Yesterday' : 'Today';
+          
+          return (
+            <div key={dayIndex} className="flex flex-col items-center">
+              {day ? (
+                <div className={`w-12 h-12 rounded-full ${getColorClass(day.level)} flex items-center justify-center text-white font-bold shadow-lg`}>
+                  {day.score}
+                </div>
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 font-bold border-2 border-dashed border-gray-300">
+                  ?
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-2">
+                {label}
+              </p>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              {index === 0 ? '2 days ago' : index === 1 ? 'Yesterday' : 'Today'}
-            </p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Trend Line */}
@@ -96,8 +107,11 @@ const SmartScoreTrend: React.FC<{ currentScore: number }> = ({ currentScore }) =
           {last3Days.length >= 2 && last3Days[last3Days.length - 1].score === last3Days[last3Days.length - 2].score && (
             '➡️ Risk levels are stable. Continue monitoring your environment.'
           )}
-          {last3Days.length < 2 && (
-            '📊 Check in daily to see your breathing risk trends over time.'
+          {last3Days.length === 1 && (
+            '📊 Come back tomorrow to see your 3-day trend! (Day 1 of 3 recorded)'
+          )}
+          {last3Days.length === 0 && (
+            '📊 Check in daily to start tracking your breathing risk trends.'
           )}
         </p>
       </div>
