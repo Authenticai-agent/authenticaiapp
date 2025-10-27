@@ -43,6 +43,7 @@ const Wellness: React.FC = () => {
   const [availableTime, setAvailableTime] = useState(15);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<'all' | 'breathing' | 'mindfulness' | 'meditation'>('all');
   
   // Insights state
   const [insights, setInsights] = useState<any>(null);
@@ -107,18 +108,11 @@ const Wellness: React.FC = () => {
         duration: 3000
       });
 
-      // Reset form
-      setCheckIn({
-        mood: 'calm',
-        mood_intensity: 5,
-        energy_level: 5,
-        stress_level: 5,
-        sleep_quality: 7,
-        notes: ''
-      });
-
       // Switch to self-care tab
       setActiveTab('selfcare');
+      
+      // Auto-load recommendations
+      handleGetRecommendations();
       
     } catch (error) {
       console.error('Failed to submit check-in:', error);
@@ -339,8 +333,25 @@ const Wellness: React.FC = () => {
         {activeTab === 'selfcare' && (
           <div className="bg-white rounded-xl shadow-lg p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Personalized Self-Care Recommendations
+              Professional Self-Care Exercises
             </h2>
+
+            {/* Category Tabs */}
+            <div className="flex gap-2 mb-6 border-b border-gray-200">
+              {['all', 'breathing', 'mindfulness', 'meditation'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat as any)}
+                  className={`px-4 py-2 font-medium transition-all border-b-2 ${
+                    selectedCategory === cat
+                      ? 'border-purple-600 text-purple-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {cat === 'all' ? '🌟 All' : cat === 'breathing' ? '🫁 Breathing' : cat === 'mindfulness' ? '🧘 Mindfulness' : '🧘‍♀️ Meditation'}
+                </button>
+              ))}
+            </div>
 
             {/* Time Selection */}
             <div className="mb-8">
@@ -390,7 +401,9 @@ const Wellness: React.FC = () => {
             {/* Recommendations List */}
             {recommendations.length > 0 && (
               <div className="space-y-4">
-                {recommendations.map((rec, index) => (
+                {recommendations
+                  .filter(rec => selectedCategory === 'all' || rec.category === selectedCategory)
+                  .map((rec, index) => (
                   <div
                     key={index}
                     className="border-2 border-gray-200 rounded-lg p-6 hover:border-purple-300 transition-all"
