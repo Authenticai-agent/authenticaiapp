@@ -1,6 +1,7 @@
 """
 Wellness Reports API
 Generates weekly and monthly wellness reports with LLM analysis
+Uses Gemini 2.5 Flash (same as daily briefing)
 """
 
 from fastapi import APIRouter, HTTPException, Depends
@@ -8,12 +9,25 @@ from typing import Dict, Any, List
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 import os
-from openai import OpenAI
+import logging
+import google.generativeai as genai
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Initialize Gemini client (same as daily briefing)
+api_key = os.getenv("GEMINI_API_KEY")
+if api_key:
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('models/gemini-2.5-flash')
+        logger.info("✅ Gemini initialized for wellness reports")
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Gemini: {e}")
+        model = None
+else:
+    logger.warning("⚠️ GEMINI_API_KEY not found")
+    model = None
 
 
 class WellnessReport(BaseModel):
@@ -71,7 +85,7 @@ async def analyze_wellness_data(data: Dict[str, Any]) -> Dict[str, Any]:
         summary = prepare_data_summary(data)
         
         # Generate LLM analysis
-        prompt = f"""You are a wellness coach analyzing a user's {period} wellness data. 
+        prompt = f"""You are an empathetic wellness coach analyzing a user's {period} wellness data. 
 
 DATA SUMMARY:
 {summary}
@@ -90,18 +104,12 @@ Please provide a comprehensive wellness report with:
 
 Be encouraging, specific, and data-driven. Use emojis appropriately. Format in markdown."""
 
-        # Call OpenAI API
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are an empathetic wellness coach who provides data-driven, encouraging insights."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=2000
-        )
+        # Call Gemini API
+        if not model:
+            raise HTTPException(status_code=503, detail="Gemini AI service not available")
         
-        analysis = response.choices[0].message.content
+        response = model.generate_content(prompt)
+        analysis = response.text
         
         return {
             "status": "success",
