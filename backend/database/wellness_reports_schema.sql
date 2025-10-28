@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS wellness_reports (
   CONSTRAINT unique_user_period UNIQUE(user_id, report_type, period_start)
 );
 
--- Indexes for fast queries
-CREATE INDEX IF NOT EXISTS idx_user_reports ON wellness_reports(user_id, report_type, period_end DESC);
-CREATE INDEX IF NOT EXISTS idx_generated_at ON wellness_reports(generated_at DESC);
+-- Indexes for fast queries (DESC is specified separately)
+CREATE INDEX IF NOT EXISTS idx_user_reports ON wellness_reports(user_id, report_type, period_end);
+CREATE INDEX IF NOT EXISTS idx_generated_at ON wellness_reports(generated_at);
 
 -- Function to cleanup old reports based on subscription tier
 CREATE OR REPLACE FUNCTION cleanup_old_wellness_reports()
