@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FireIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { getTodayDate } from '../utils/dailyReset';
 
 interface CheckInData {
   date: string;
@@ -10,16 +11,20 @@ const LungEnergyMeter: React.FC = () => {
   const [streak, setStreak] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
   const [checkedInToday, setCheckedInToday] = useState(false);
+  const [todaySelection, setTodaySelection] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Load data from localStorage
     const storedCheckIns = localStorage.getItem('lungEnergyCheckIns');
     const checkIns: CheckInData[] = storedCheckIns ? JSON.parse(storedCheckIns) : [];
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDate();
     const todayCheckIn = checkIns.find(c => c.date === today);
     
     setCheckedInToday(!!todayCheckIn);
+    if (todayCheckIn) {
+      setTodaySelection(todayCheckIn.noFlareUp);
+    }
     
     // Calculate streak
     let currentStreak = 0;
@@ -45,7 +50,7 @@ const LungEnergyMeter: React.FC = () => {
     const storedCheckIns = localStorage.getItem('lungEnergyCheckIns');
     const checkIns: CheckInData[] = storedCheckIns ? JSON.parse(storedCheckIns) : [];
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDate();
     const existingIndex = checkIns.findIndex(c => c.date === today);
     
     if (existingIndex >= 0) {
@@ -56,11 +61,10 @@ const LungEnergyMeter: React.FC = () => {
     
     localStorage.setItem('lungEnergyCheckIns', JSON.stringify(checkIns));
     setCheckedInToday(true);
+    setTodaySelection(noFlareUp);
     
-    if (noFlareUp) {
-      setTotalPoints(prev => prev + 1);
-      setStreak(prev => prev + 1);
-    }
+    // Recalculate points
+    setTotalPoints(checkIns.filter(c => c.noFlareUp).length);
   };
 
   const getLevel = (points: number) => {
@@ -106,37 +110,48 @@ const LungEnergyMeter: React.FC = () => {
       </div>
 
       {/* Check-in Section */}
-      {!checkedInToday ? (
-        <div className="space-y-3">
-          <p className="text-sm text-gray-700 text-center mb-3">
-            How are your lungs feeling today?
+      <div className="space-y-3">
+        <p className="text-sm text-gray-700 text-center mb-3">
+          {checkedInToday ? 'Change your selection?' : 'How are your lungs feeling today?'}
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => handleCheckIn(true)}
+            className={`py-3 px-4 border-2 rounded-lg transition-all hover:scale-105 ${
+              todaySelection === true
+                ? 'bg-green-50 border-green-500 ring-2 ring-green-400'
+                : 'bg-green-50 border-green-300 opacity-60'
+            }`}
+          >
+            <CheckCircleIcon className="w-6 h-6 text-green-600 mx-auto mb-1" />
+            <p className="text-sm font-semibold text-green-700">No Flare-ups</p>
+            <p className="text-xs text-green-600">+1 point</p>
+            {todaySelection === true && (
+              <div className="text-xs text-green-600 mt-1 font-bold">✓ Selected</div>
+            )}
+          </button>
+          <button
+            onClick={() => handleCheckIn(false)}
+            className={`py-3 px-4 border-2 rounded-lg transition-all hover:scale-105 ${
+              todaySelection === false
+                ? 'bg-gray-50 border-gray-500 ring-2 ring-gray-400'
+                : 'bg-gray-50 border-gray-300 opacity-60'
+            }`}
+          >
+            <div className="text-2xl mb-1">😔</div>
+            <p className="text-sm font-semibold text-gray-700">Had Issues</p>
+            <p className="text-xs text-gray-500">Track it</p>
+            {todaySelection === false && (
+              <div className="text-xs text-gray-600 mt-1 font-bold">✓ Selected</div>
+            )}
+          </button>
+        </div>
+        {checkedInToday && (
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Thanks for checking in! You can change your selection anytime.
           </p>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => handleCheckIn(true)}
-              className="py-3 px-4 bg-green-50 border-2 border-green-500 rounded-lg hover:bg-green-100 transition-all"
-            >
-              <CheckCircleIcon className="w-6 h-6 text-green-600 mx-auto mb-1" />
-              <p className="text-sm font-semibold text-green-700">No Flare-ups</p>
-              <p className="text-xs text-green-600">+1 point</p>
-            </button>
-            <button
-              onClick={() => handleCheckIn(false)}
-              className="py-3 px-4 bg-gray-50 border-2 border-gray-300 rounded-lg hover:bg-gray-100 transition-all"
-            >
-              <div className="text-2xl mb-1">😔</div>
-              <p className="text-sm font-semibold text-gray-700">Had Issues</p>
-              <p className="text-xs text-gray-500">Track it</p>
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="p-4 bg-green-50 rounded-lg text-center">
-          <CheckCircleIcon className="w-8 h-8 text-green-600 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-green-700">Checked in for today!</p>
-          <p className="text-xs text-green-600 mt-1">Come back tomorrow to continue your streak</p>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Milestones */}
       <div className="mt-4 pt-4 border-t border-gray-200">
