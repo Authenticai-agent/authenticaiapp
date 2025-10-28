@@ -32,9 +32,9 @@ app = FastAPI(
 
 # CORS middleware - MUST BE FIRST (added first, runs last in FastAPI)
 # Configure for production
-allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://authenticai-app.netlify.app")
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://authenticai-app.netlify.app,https://authenticai.app")
 allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
-logger.info(f"CORS allowed origins: {allowed_origins}")
+logger.info(f"✅ CORS allowed origins: {allowed_origins}")
 
 app.add_middleware(
     CORSMiddleware,
