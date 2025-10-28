@@ -3,7 +3,7 @@ Daily Briefing API endpoints
 Provides endpoints for daily briefings, educational content, and coaching
 Now includes Dynamic Daily Briefings for personalized, adaptive coaching
 """
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 from pydantic import BaseModel
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
@@ -18,6 +18,7 @@ from services.gemini_service import GeminiService  # NEW: Gemini Flash-Lite inte
 from services.premium_lean_engine import premium_lean_engine
 from services.briefing_history_service import briefing_history_service
 from routers.air_quality import AirQualityService, get_air_quality_service
+from middleware.rate_limiter import check_rate_limit  # NEW: Rate limiting
 # from services.unified_environmental_engine import unified_environmental_engine  # Temporary disable
 
 # Initialize Gemini service for professional wellness coach tone
@@ -518,6 +519,7 @@ async def get_dynamic_briefing(
 
 @router.get("/dynamic-briefing-authenticated", response_model=Dict[str, Any])
 async def get_dynamic_briefing_authenticated(
+    request: Request,
     lat: float = Query(..., description="Latitude"),
     lon: float = Query(..., description="Longitude"),
     current_user: User = Depends(get_current_user),
@@ -527,7 +529,11 @@ async def get_dynamic_briefing_authenticated(
     Get Dynamic Daily Briefing for authenticated user
     Uses user's actual profile and CURRENT selected location
     WITH CACHING: Reduces Gemini API calls by 80-90%
+    RATE LIMITED: 5 requests per 24 hours
     """
+    # Rate limit check (5 requests per day)
+    await check_rate_limit(request, current_user.id, "daily_briefing")
+    
     try:
         # Check cache first (1-hour window for same location AND user)
         # Round coordinates to 2 decimals (~1km precision) for cache key
