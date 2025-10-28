@@ -13,7 +13,7 @@ from pydantic import BaseModel
 import os
 import logging
 import google.generativeai as genai
-from database.supabase_client import get_supabase_client
+from services.supabase_client import get_supabase_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
