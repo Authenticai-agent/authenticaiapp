@@ -48,7 +48,34 @@ const DailyAffirmation: React.FC = () => {
 
   const handleComplete = () => {
     const today = new Date().toISOString().split('T')[0];
+    
+    // Save in old format for backward compatibility
     localStorage.setItem('affirmation_completed_date', today);
+    
+    // Save in new format for wellness reports
+    try {
+      const stored = localStorage.getItem('daily_affirmation_completed');
+      const completions: Array<{date: string; affirmation: string}> = stored ? JSON.parse(stored) : [];
+      
+      // Check if already completed today
+      const existingIndex = completions.findIndex(c => c.date === today);
+      if (existingIndex === -1) {
+        completions.push({
+          date: today,
+          affirmation: data?.affirmation.affirmation || 'Daily affirmation'
+        });
+        
+        // Keep only last 90 days
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        const filtered = completions.filter(c => new Date(c.date) >= ninetyDaysAgo);
+        
+        localStorage.setItem('daily_affirmation_completed', JSON.stringify(filtered));
+      }
+    } catch (error) {
+      console.error('Error saving affirmation completion:', error);
+    }
+    
     setCompleted(true);
   };
 

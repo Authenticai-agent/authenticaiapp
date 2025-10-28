@@ -42,6 +42,32 @@ const DailyChallenge: React.FC = () => {
 
   const handleComplete = () => {
     setDailyActionCompleted('daily_challenge_completed');
+    
+    // Save for wellness reports
+    try {
+      const today = getTodayDate();
+      const stored = localStorage.getItem('challenges_completed');
+      const completions: Array<{date: string; challenge: string}> = stored ? JSON.parse(stored) : [];
+      
+      // Check if already completed today
+      const existingIndex = completions.findIndex(c => c.date === today);
+      if (existingIndex === -1) {
+        completions.push({
+          date: today,
+          challenge: challenge?.challenge || 'Daily challenge'
+        });
+        
+        // Keep only last 90 days
+        const ninetyDaysAgo = new Date();
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        const filtered = completions.filter(c => new Date(c.date) >= ninetyDaysAgo);
+        
+        localStorage.setItem('challenges_completed', JSON.stringify(filtered));
+      }
+    } catch (error) {
+      console.error('Error saving challenge completion:', error);
+    }
+    
     setCompleted(true);
   };
 

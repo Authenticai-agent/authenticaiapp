@@ -242,11 +242,22 @@ function aggregateEnergyData(checkIns: CheckInData[]) {
 
 function getAffirmationsCompleted(start: Date, end: Date): number {
   try {
-    const stored = localStorage.getItem('affirmation_completed_date');
-    if (!stored) return 0;
+    // Check for new format (with date)
+    const stored = localStorage.getItem('daily_affirmation_completed');
+    if (stored) {
+      const data = JSON.parse(stored);
+      const completions: Array<{date: string}> = Array.isArray(data) ? data : [data];
+      return completions.filter(c => {
+        const d = new Date(c.date);
+        return d >= start && d <= end;
+      }).length;
+    }
     
-    // Count days with completed affirmations in range
-    const completedDate = new Date(stored);
+    // Fallback to old format
+    const oldStored = localStorage.getItem('affirmation_completed_date');
+    if (!oldStored) return 0;
+    
+    const completedDate = new Date(oldStored);
     return (completedDate >= start && completedDate <= end) ? 1 : 0;
   } catch {
     return 0;
@@ -258,11 +269,25 @@ function getChallengesCompleted(start: Date, end: Date): number {
     const stored = localStorage.getItem('challenges_completed');
     if (!stored) return 0;
     
-    const completed: string[] = JSON.parse(stored);
-    return completed.filter(date => {
-      const d = new Date(date);
-      return d >= start && d <= end;
-    }).length;
+    const data = JSON.parse(stored);
+    
+    // Handle new format (array of objects with date and challenge)
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && 'date' in data[0]) {
+      return data.filter((c: {date: string}) => {
+        const d = new Date(c.date);
+        return d >= start && d <= end;
+      }).length;
+    }
+    
+    // Handle old format (array of date strings)
+    if (Array.isArray(data)) {
+      return data.filter((date: string) => {
+        const d = new Date(date);
+        return d >= start && d <= end;
+      }).length;
+    }
+    
+    return 0;
   } catch {
     return 0;
   }
