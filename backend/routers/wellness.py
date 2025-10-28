@@ -332,38 +332,63 @@ async def get_mood_trends(user_id: str, days: int = Query(30, description="Analy
 @router.post("/self-care/recommendations")
 async def get_selfcare_recommendations(request: SelfCareRequest):
     """
-    Get professional self-care recommendations based on available time
-    Returns breathing, mindfulness, or meditation exercises
+    Get professional self-care recommendations from ALL categories
+    Returns breathing, mindfulness, AND meditation exercises
     """
     try:
-        from .selfcare_library import get_exercises_by_time, BREATHING_EXERCISES, MINDFULNESS_EXERCISES, MEDITATION_EXERCISES
+        from .selfcare_library import get_exercises_by_time
         
-        # Determine which category based on mood/stress
-        if request.stress_level >= 7:
-            # High stress - breathing exercises
-            category = "breathing"
-            exercises = get_exercises_by_time("breathing", request.available_time_minutes, max_results=3)
-        elif request.energy_level <= 4:
-            # Low energy - gentle mindfulness
-            category = "mindfulness"
-            exercises = get_exercises_by_time("mindfulness", request.available_time_minutes, max_results=3)
-        else:
-            # Balanced - meditation
-            category = "meditation"
-            exercises = get_exercises_by_time("meditation", request.available_time_minutes, max_results=3)
+        # Get exercises from ALL categories
+        breathing_exercises = get_exercises_by_time("breathing", request.available_time_minutes, max_results=5)
+        mindfulness_exercises = get_exercises_by_time("mindfulness", request.available_time_minutes, max_results=5)
+        meditation_exercises = get_exercises_by_time("meditation", request.available_time_minutes, max_results=5)
         
         # Transform to expected format
         recommendations = []
-        for ex in exercises:
+        
+        # Add breathing exercises
+        for ex in breathing_exercises:
             recommendations.append({
                 "title": ex["title"],
                 "duration_minutes": ex["duration_minutes"],
-                "category": category,
+                "category": "breathing",
                 "description": ex["description"],
                 "instructions": ex["instructions"],
                 "why_helpful": ex["benefits"],
                 "difficulty": ex["difficulty"]
             })
+        
+        # Add mindfulness exercises
+        for ex in mindfulness_exercises:
+            recommendations.append({
+                "title": ex["title"],
+                "duration_minutes": ex["duration_minutes"],
+                "category": "mindfulness",
+                "description": ex["description"],
+                "instructions": ex["instructions"],
+                "why_helpful": ex["benefits"],
+                "difficulty": ex["difficulty"]
+            })
+        
+        # Add meditation exercises
+        for ex in meditation_exercises:
+            recommendations.append({
+                "title": ex["title"],
+                "duration_minutes": ex["duration_minutes"],
+                "category": "meditation",
+                "description": ex["description"],
+                "instructions": ex["instructions"],
+                "why_helpful": ex["benefits"],
+                "difficulty": ex["difficulty"]
+            })
+        
+        # Determine priority category based on mood/stress
+        if request.stress_level >= 7:
+            priority = "breathing"
+        elif request.energy_level <= 4:
+            priority = "mindfulness"
+        else:
+            priority = "meditation"
         
         return {
             "status": "success",
@@ -372,9 +397,10 @@ async def get_selfcare_recommendations(request: SelfCareRequest):
                 "stress_level": request.stress_level,
                 "energy_level": request.energy_level
             },
-            "category": category,
+            "priority_category": priority,
             "recommendations": recommendations,
-            "priority_focus": f"Based on your {category} needs, these exercises are selected for your {request.available_time_minutes} minutes",
+            "total_exercises": len(recommendations),
+            "priority_focus": f"We recommend starting with {priority} exercises based on your current state",
             "encouragement": "Take care of yourself today! 💚"
         }
         
