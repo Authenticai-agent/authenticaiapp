@@ -86,24 +86,35 @@ async def analyze_wellness_data(data: Dict[str, Any]) -> Dict[str, Any]:
         summary = prepare_data_summary(data)
         
         # Generate LLM analysis
-        prompt = f"""You are an empathetic wellness coach analyzing a user's {period} wellness data. 
+        prompt = f"""You are a friendly wellness coach talking to a friend about their {period} wellness journey.
 
 DATA SUMMARY:
 {summary}
 
-Please provide a comprehensive wellness report with:
+Write a warm, easy-to-understand wellness report. Use simple everyday language - like you're talking to a friend over coffee. Avoid fancy words like "noteworthy", "optimal", "facilitate", "utilize", "endeavor", etc.
 
-1. **Overall Wellness Score** (0-100): Based on all metrics
-2. **Key Insights**: 3-5 main observations about their wellness patterns
-3. **Mood Analysis**: Trends, most common moods, emotional patterns
-4. **Stress Patterns**: When stress is highest/lowest, triggers if identifiable
-5. **Sleep Quality**: Average quality, consistency, recommendations
-6. **Energy Levels**: Patterns throughout the period, correlation with other factors
-7. **Positive Highlights**: What they did well, achievements to celebrate
-8. **Areas for Improvement**: Specific, actionable suggestions
-9. **Personalized Recommendations**: 3-5 tailored action items for next {period}
+Instead use simple words like: "good", "great", "helps", "use", "try", etc.
 
-Be encouraging, specific, and data-driven. Use emojis appropriately. Format in markdown."""
+Include:
+
+1. **Overall Wellness Score** (0-100): How they're doing overall
+2. **What We Noticed**: 3-5 simple observations about their week/month
+3. **Your Mood**: How they've been feeling emotionally (use everyday language)
+4. **Stress Levels**: When they felt stressed and when they felt calm
+5. **Sleep**: How well they slept and tips to sleep better
+6. **Energy**: When they felt energized vs tired
+7. **Great Job On**: What they did really well (celebrate wins!)
+8. **Could Work On**: A few simple things to try (be kind and encouraging)
+9. **Next Steps**: 3-5 easy action items for next {period}
+
+IMPORTANT:
+- Write like you're talking to a friend
+- Use simple, everyday words
+- Be warm and encouraging
+- No medical jargon or fancy vocabulary
+- Use emojis to keep it friendly
+- Keep sentences short and clear
+- Format in markdown"""
 
         # Call Gemini API
         if not model:
