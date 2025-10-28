@@ -8,6 +8,7 @@ import { getLocationName } from '../utils/geocoding';
 import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
+import { canGenerateBriefing, incrementBriefingCount, getRemainingBriefings } from '../utils/briefingLimit';
 import { 
   ExclamationTriangleIcon, 
   CloudIcon,
@@ -326,6 +327,16 @@ const Dashboard: React.FC = () => {
       return;
     }
     
+    // Check briefing limit (5 per day for free tier)
+    if (!canGenerateBriefing()) {
+      const remaining = getRemainingBriefings();
+      toast.error(`Daily briefing limit reached (5/day). Resets at midnight.`, {
+        duration: 4000,
+        icon: '⏰'
+      });
+      return;
+    }
+    
     setBriefingLoading(true);
     try {
       console.log('🔵 Generating daily briefing for location:', currentLocation);
@@ -390,6 +401,14 @@ const Dashboard: React.FC = () => {
       };
       console.log('Formatted daily briefing:', newDailyBriefing);
       setDailyBriefing(newDailyBriefing);
+      
+      // Increment briefing count
+      const usage = incrementBriefingCount();
+      const remaining = getRemainingBriefings();
+      toast.success(`Briefing generated! ${remaining}/5 remaining today`, {
+        duration: 3000,
+        icon: '✅'
+      });
       
       // Update the dashboard risk score to match the briefing (ensures consistency)
       if (data.risk_score) {
@@ -629,10 +648,15 @@ const Dashboard: React.FC = () => {
           {/* Daily Briefing - Main Summary */}
           <div className="card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900">Daily Briefing</h3>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">Daily Briefing</h3>
+                <p className="text-xs text-gray-500 mt-1">
+                  {getRemainingBriefings()}/5 remaining today
+                </p>
+              </div>
               <button
                 onClick={generateDailyBriefing}
-                disabled={briefingLoading}
+                disabled={briefingLoading || !canGenerateBriefing()}
                 className="btn-primary text-sm"
               >
                 {briefingLoading ? <LoadingSpinner size="sm" /> : 'Generate'}

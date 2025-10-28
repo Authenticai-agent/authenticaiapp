@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import DailyAffirmation from '../components/DailyAffirmation';
 import DailyChallenge from '../components/DailyChallenge';
+import StreakDisplay from '../components/StreakDisplay';
+import { updateStreak } from '../utils/streaks';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -111,10 +113,24 @@ const Wellness: React.FC = () => {
         ...checkIn
       });
 
-      toast.success('Check-in saved! 💚', {
-        icon: '✅',
-        duration: 3000
+      // Update streak and check for new badges
+      const streakData = updateStreak();
+      const newBadges = streakData.badges.filter(badge => {
+        const unlockedToday = new Date(badge.unlockedAt).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
+        return unlockedToday;
       });
+
+      // Show success message with streak info
+      if (newBadges.length > 0) {
+        toast.success(`🎉 New Badge Unlocked: ${newBadges[0].emoji} ${newBadges[0].name}!`, {
+          duration: 5000
+        });
+      } else {
+        toast.success(`Check-in saved! 🔥 ${streakData.currentStreak} day streak!`, {
+          icon: '✅',
+          duration: 3000
+        });
+      }
 
       // Switch to self-care tab
       setActiveTab('selfcare');
@@ -247,6 +263,9 @@ const Wellness: React.FC = () => {
         {/* Daily Check-in Tab */}
         {activeTab === 'checkin' && (
           <div className="space-y-6">
+            {/* Streak Display */}
+            <StreakDisplay />
+            
             {/* Daily Affirmation & Challenge */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <DailyAffirmation />
