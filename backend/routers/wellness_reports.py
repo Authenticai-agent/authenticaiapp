@@ -2,6 +2,7 @@
 Wellness Reports API
 Generates weekly and monthly wellness reports with LLM analysis
 Uses Gemini 2.5 Flash (same as daily briefing)
+NO OpenAI - Gemini only
 """
 
 from fastapi import APIRouter, HTTPException, Depends
