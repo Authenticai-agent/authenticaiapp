@@ -61,11 +61,16 @@ const Wellness: React.FC = () => {
     { value: 'angry', emoji: '😠', label: 'Angry' }
   ];
 
-  // Load check-in history
+  // Load check-in history and auto-load exercises
   useEffect(() => {
     if (user && activeTab === 'insights') {
       loadHistory();
       loadInsights();
+    }
+    
+    // Auto-load exercises when switching to self-care tab
+    if (user && activeTab === 'selfcare' && recommendations.length === 0) {
+      handleGetRecommendations();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, activeTab]);
