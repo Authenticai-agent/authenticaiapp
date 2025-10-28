@@ -21,6 +21,7 @@ import CommunityGoodDayChallenge from '../components/CommunityGoodDayChallenge';
 import EducationalMicroTips from '../components/EducationalMicroTips';
 import IndoorWellnessTip from '../components/IndoorWellnessTip';
 import DonationCTA from '../components/DonationCTA';
+import DailyInspiration from '../components/DailyInspiration';
 
 // API Base URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
@@ -629,8 +630,12 @@ const Dashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <DailyInspiration />
           <CommunityGoodDayChallenge />
           <EducationalMicroTips />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <IndoorWellnessTip />
         </div>
 

@@ -88,6 +88,7 @@ from routers.stripe_donations import router as stripe_router
 from routers.monitoring import router as monitoring_router
 from routers.wellness import router as wellness_router
 from routers.admin import router as admin_router
+from routers.inspirations import router as inspirations_router
 
 app.include_router(air_quality_router, prefix="/api/v1/air-quality", tags=["air-quality"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
@@ -108,6 +109,7 @@ app.include_router(stripe_router, prefix="/api/v1/stripe", tags=["stripe"])
 app.include_router(monitoring_router, prefix="/api/v1/monitoring", tags=["monitoring"])
 app.include_router(wellness_router, prefix="/api/v1/wellness", tags=["wellness"])
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["admin"])
+app.include_router(inspirations_router, prefix="/api/v1/inspirations", tags=["inspirations"])
 
 @app.get("/")
 async def root():
