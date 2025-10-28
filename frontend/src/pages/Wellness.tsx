@@ -3,6 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Heart, Brain, TrendingUp, Calendar, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import DailyAffirmation from '../components/DailyAffirmation';
+import DailyChallenge from '../components/DailyChallenge';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -244,10 +246,18 @@ const Wellness: React.FC = () => {
 
         {/* Daily Check-in Tab */}
         {activeTab === 'checkin' && (
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              How are you feeling today?
-            </h2>
+          <div className="space-y-6">
+            {/* Daily Affirmation & Challenge */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <DailyAffirmation />
+              <DailyChallenge />
+            </div>
+
+            {/* Check-in Form */}
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                How are you feeling today?
+              </h2>
 
             {/* Mood Selection */}
             <div className="mb-8">
@@ -352,6 +362,7 @@ const Wellness: React.FC = () => {
             >
               Save Check-in & Get Self-Care Tips
             </button>
+            </div>
           </div>
         )}
 
