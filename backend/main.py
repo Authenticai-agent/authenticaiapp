@@ -91,6 +91,7 @@ from routers.admin import router as admin_router
 from routers.inspirations import router as inspirations_router
 from routers.affirmations import router as affirmations_router
 from routers.challenges import router as challenges_router
+from routers.wellness_reports import router as wellness_reports_router
 
 app.include_router(air_quality_router, prefix="/api/v1/air-quality", tags=["air-quality"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
@@ -114,6 +115,7 @@ app.include_router(admin_router, prefix="/api/v1/admin", tags=["admin"])
 app.include_router(inspirations_router, prefix="/api/v1/inspirations", tags=["inspirations"])
 app.include_router(affirmations_router, prefix="/api/v1/affirmations", tags=["affirmations"])
 app.include_router(challenges_router, prefix="/api/v1/challenges", tags=["challenges"])
+app.include_router(wellness_reports_router, prefix="/api/v1/wellness-reports", tags=["wellness-reports"])
 
 @app.get("/")
 async def root():

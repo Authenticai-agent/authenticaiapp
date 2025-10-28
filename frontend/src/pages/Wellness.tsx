@@ -6,7 +6,9 @@ import axios from 'axios';
 import DailyAffirmation from '../components/DailyAffirmation';
 import DailyChallenge from '../components/DailyChallenge';
 import StreakDisplay from '../components/StreakDisplay';
+import WellnessReport from '../components/WellnessReport';
 import { updateStreak } from '../utils/streaks';
+import { saveCheckIn } from '../utils/wellnessDataCollector';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -110,6 +112,12 @@ const Wellness: React.FC = () => {
     try {
       await axios.post(`${API_BASE_URL}/wellness/check-in`, {
         user_id: user.id,
+        ...checkIn
+      });
+
+      // Save check-in to localStorage for reports
+      saveCheckIn({
+        date: new Date().toISOString().split('T')[0],
         ...checkIn
       });
 
@@ -511,6 +519,9 @@ const Wellness: React.FC = () => {
         {/* Insights Tab */}
         {activeTab === 'insights' && (
           <div className="space-y-6">
+            {/* Wellness Reports */}
+            <WellnessReport />
+            
             {/* AI Insights */}
             <div className="bg-white rounded-xl shadow-lg p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
