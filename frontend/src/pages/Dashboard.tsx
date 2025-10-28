@@ -578,9 +578,9 @@ const Dashboard: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">Plan</p>
                 <p className="text-4xl font-bold text-gray-900 mb-2 capitalize">
-                  {user.subscription_tier}
+                  {user?.subscription_tier || 'free'}
                 </p>
-                {user.subscription_tier === 'free' && (
+                {user?.subscription_tier === 'free' && (
                   <button 
                     disabled
                     className="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-400 cursor-not-allowed inline-block"
@@ -593,7 +593,7 @@ const Dashboard: React.FC = () => {
               <SparklesIcon className="h-16 w-16 text-purple-200" />
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              {user.subscription_tier === 'free' ? 'Premium features coming soon' : 'Full access'}
+              {user?.subscription_tier === 'free' ? 'Premium features coming soon' : 'Full access'}
             </p>
           </div>
         </div>
