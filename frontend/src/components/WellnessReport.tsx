@@ -4,10 +4,12 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { collectWellnessData } from '../utils/wellnessDataCollector';
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '../contexts/AuthContext';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
 const WellnessReport: React.FC = () => {
+  const { user } = useAuth();
   const [reportType, setReportType] = useState<'weekly' | 'monthly'>('weekly');
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<string | null>(null);
@@ -19,7 +21,13 @@ const WellnessReport: React.FC = () => {
       // Collect all wellness data from localStorage
       const wellnessData = collectWellnessData(reportType);
       
-      console.log('Collected wellness data:', wellnessData);
+      // Add user_id for database storage
+      const dataWithUser = {
+        ...wellnessData,
+        user_id: user?.id
+      };
+      
+      console.log('Collected wellness data:', dataWithUser);
       
       // Check if there's enough data
       if (wellnessData.total_check_ins === 0) {
@@ -31,7 +39,7 @@ const WellnessReport: React.FC = () => {
       }
       
       // Send to backend for LLM analysis
-      const response = await axios.post(`${API_BASE_URL}/wellness-reports/analyze-wellness-data`, wellnessData);
+      const response = await axios.post(`${API_BASE_URL}/wellness-reports/analyze-wellness-data`, dataWithUser);
       
       setReport(response.data.analysis);
       setReportData(wellnessData);

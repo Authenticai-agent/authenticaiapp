@@ -3,18 +3,21 @@ Wellness Reports API
 Generates weekly and monthly wellness reports with LLM analysis
 Uses Gemini 2.5 Flash (same as daily briefing)
 NO OpenAI - Gemini only
+Stores reports in Supabase: FREE (4 weekly + 2 monthly), PAID (12 weekly + 6 monthly)
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
 import os
 import logging
 import google.generativeai as genai
+from database.supabase_client import get_supabase_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
+supabase = get_supabase_client()
 
 # Initialize Gemini client (same as daily briefing)
 api_key = os.getenv("GEMINI_API_KEY")
@@ -123,10 +126,45 @@ IMPORTANT:
         response = model.generate_content(prompt)
         analysis = response.text
         
+        # Extract wellness score from analysis (if present)
+        wellness_score = None
+        try:
+            # Try to find score in format "Score: 75/100" or "75/100"
+            import re
+            score_match = re.search(r'(\d+)/100', analysis)
+            if score_match:
+                wellness_score = int(score_match.group(1))
+        except:
+            pass
+        
+        # Save report to database
+        report_data = {
+            "user_id": data.get("user_id"),
+            "report_type": period,
+            "period_start": data.get("start_date"),
+            "period_end": data.get("end_date"),
+            "wellness_score": wellness_score,
+            "analysis_text": analysis,
+            "data_summary": data,
+            "generated_at": datetime.now().isoformat()
+        }
+        
+        try:
+            # Save to Supabase
+            result = supabase.table("wellness_reports").insert(report_data).execute()
+            logger.info(f"✅ Saved {period} report for user {data.get('user_id')}")
+            
+            # Cleanup old reports based on subscription tier
+            cleanup_old_reports(data.get("user_id"))
+        except Exception as e:
+            logger.error(f"❌ Failed to save report: {e}")
+            # Continue anyway - don't fail the request
+        
         return {
             "status": "success",
             "period": period,
             "analysis": analysis,
+            "wellness_score": wellness_score,
             "data_summary": summary,
             "generated_at": datetime.now().isoformat()
         }
@@ -222,12 +260,93 @@ def format_check_in_notes(check_ins: List[Dict]) -> str:
 async def get_report_history(user_id: str) -> Dict[str, Any]:
     """
     Get history of generated reports for a user
+    FREE: Last 4 weekly + 2 monthly
+    PAID: Last 12 weekly + 6 monthly
     """
-    # This would fetch from database
-    # For now, return structure
-    return {
-        "status": "success",
-        "user_id": user_id,
-        "reports": [],
-        "message": "Report history endpoint ready"
-    }
+    try:
+        # Fetch all reports for user, ordered by date
+        result = supabase.table("wellness_reports")\
+            .select("*")\
+            .eq("user_id", user_id)\
+            .order("period_end", desc=True)\
+            .execute()
+        
+        reports = result.data if result.data else []
+        
+        # Separate by type
+        weekly_reports = [r for r in reports if r["report_type"] == "weekly"]
+        monthly_reports = [r for r in reports if r["report_type"] == "monthly"]
+        
+        return {
+            "status": "success",
+            "user_id": user_id,
+            "weekly_reports": weekly_reports,
+            "monthly_reports": monthly_reports,
+            "total_reports": len(reports)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching report history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+def cleanup_old_reports(user_id: str):
+    """
+    Cleanup old reports based on subscription tier
+    FREE: Keep last 4 weekly + 2 monthly
+    PAID: Keep last 12 weekly + 6 monthly
+    """
+    try:
+        # Get user's subscription tier
+        user_result = supabase.table("users")\
+            .select("subscription_tier")\
+            .eq("id", user_id)\
+            .single()\
+            .execute()
+        
+        if not user_result.data:
+            return
+        
+        subscription_tier = user_result.data.get("subscription_tier", "free")
+        
+        # Set limits based on tier
+        if subscription_tier == "premium":
+            weekly_limit = 12
+            monthly_limit = 6
+        else:
+            weekly_limit = 4
+            monthly_limit = 2
+        
+        # Get all reports for user
+        all_reports = supabase.table("wellness_reports")\
+            .select("id, report_type, period_end")\
+            .eq("user_id", user_id)\
+            .order("period_end", desc=True)\
+            .execute()
+        
+        if not all_reports.data:
+            return
+        
+        # Separate by type
+        weekly = [r for r in all_reports.data if r["report_type"] == "weekly"]
+        monthly = [r for r in all_reports.data if r["report_type"] == "monthly"]
+        
+        # Delete old weekly reports
+        if len(weekly) > weekly_limit:
+            old_weekly_ids = [r["id"] for r in weekly[weekly_limit:]]
+            supabase.table("wellness_reports")\
+                .delete()\
+                .in_("id", old_weekly_ids)\
+                .execute()
+            logger.info(f"🗑️ Deleted {len(old_weekly_ids)} old weekly reports for user {user_id}")
+        
+        # Delete old monthly reports
+        if len(monthly) > monthly_limit:
+            old_monthly_ids = [r["id"] for r in monthly[monthly_limit:]]
+            supabase.table("wellness_reports")\
+                .delete()\
+                .in_("id", old_monthly_ids)\
+                .execute()
+            logger.info(f"🗑️ Deleted {len(old_monthly_ids)} old monthly reports for user {user_id}")
+            
+    except Exception as e:
+        logger.error(f"Error cleaning up old reports: {e}")
