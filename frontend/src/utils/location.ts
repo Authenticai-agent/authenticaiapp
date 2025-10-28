@@ -50,8 +50,11 @@ export async function resolveEffectiveLocation(userLocation: any | null | undefi
     return geo;
   }
 
-  // 4) No location available
-  return null;
+  // 4) Fallback to default location (New York City) to ensure new users can use the app
+  // This prevents blocking new signups due to location permission issues
+  const defaultLocation = { lat: 40.7128, lon: -74.0060 }; // NYC
+  console.log('Using default location (NYC) for new user');
+  return defaultLocation;
 }
 
 

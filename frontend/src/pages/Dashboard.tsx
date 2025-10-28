@@ -484,26 +484,8 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  if (!user?.location) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-warning-400" />
-            <h2 className="mt-2 text-lg font-medium text-gray-900">Setup Required</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Please complete your profile setup to start using Authenticai.
-            </p>
-            <div className="mt-6">
-              <Link to="/profile" className="btn-primary">
-                Complete Profile
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Allow dashboard access even without saved location - use browser location or default
+  // This ensures new users can sign up and use the app immediately
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
