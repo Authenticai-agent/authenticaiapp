@@ -66,22 +66,18 @@ const Dashboard: React.FC = () => {
   const [tomorrowForecast, setTomorrowForecast] = useState<any>(null);
   const [locationName, setLocationName] = useState<string>('');
 
-  // SECURITY: Clear all cached data when user changes
   useEffect(() => {
     if (user?.id) {
       const lastUserId = localStorage.getItem('lastUserId');
       
       // If user ID changed, clear all cached data
-      if (lastUserId && lastUserId !== user.id) {
+      if (lastUserId && user?.id && lastUserId !== user.id) {
         // Clear all state
         setRiskPrediction(null);
         setAirQuality(null);
         setDailyBriefing(null);
-        
-        // Clear localStorage to prevent data leakage between users
-        localStorage.removeItem('riskPrediction');
-        localStorage.removeItem('airQuality');
-        localStorage.removeItem('dailyBriefing');
+        setTomorrowForecast(null);
+        setLocationName('');
       }
       
       // Store current user ID to detect user changes
@@ -501,7 +497,7 @@ const Dashboard: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user.first_name || 'there'}!
+            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}, {user?.first_name || 'there'}!
           </h1>
           <p className="mt-2 text-gray-600">
             {locationName || 'Loading location...'}
