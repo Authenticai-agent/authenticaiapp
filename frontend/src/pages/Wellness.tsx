@@ -41,7 +41,8 @@ const Wellness: React.FC = () => {
   
   // Self-care state
   const [availableTime, setAvailableTime] = useState(15);
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [allRecommendations, setAllRecommendations] = useState<Recommendation[]>([]); // Store all 45
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]); // Display subset
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<'all' | 'breathing' | 'mindfulness' | 'meditation'>('all');
   
@@ -144,13 +145,12 @@ const Wellness: React.FC = () => {
         shuffle: true  // Request shuffled exercises
       });
 
-      // Get all recommendations and shuffle them
-      const allRecommendations = response.data.recommendations || [];
-      const shuffled = allRecommendations.sort(() => Math.random() - 0.5);
+      // Store ALL 45 exercises
+      const all = response.data.recommendations || [];
+      setAllRecommendations(all);
       
-      // Show only 5 random exercises at a time (not all 45)
-      const selectedExercises = shuffled.slice(0, 5);
-      setRecommendations(selectedExercises);
+      // Filter and display based on selected category
+      filterAndDisplayExercises(all, selectedCategory);
       
       toast.success('New exercises loaded! 🌟', {
         duration: 2000,
@@ -162,6 +162,21 @@ const Wellness: React.FC = () => {
     } finally {
       setLoadingRecommendations(false);
     }
+  };
+
+  // Filter exercises by category and show 5 random ones
+  const filterAndDisplayExercises = (exercises: Recommendation[], category: 'all' | 'breathing' | 'mindfulness' | 'meditation') => {
+    let filtered = exercises;
+    
+    // Filter by category if not 'all'
+    if (category !== 'all') {
+      filtered = exercises.filter(ex => ex.category === category);
+    }
+    
+    // Shuffle and take 5
+    const shuffled = filtered.sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+    setRecommendations(selected);
   };
 
   const getCategoryColor = (category: string) => {
@@ -352,7 +367,11 @@ const Wellness: React.FC = () => {
               {['all', 'breathing', 'mindfulness', 'meditation'].map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat as any)}
+                  onClick={() => {
+                    const category = cat as 'all' | 'breathing' | 'mindfulness' | 'meditation';
+                    setSelectedCategory(category);
+                    filterAndDisplayExercises(allRecommendations, category);
+                  }}
                   className={`px-4 py-2 font-medium transition-all border-b-2 ${
                     selectedCategory === cat
                       ? 'border-purple-600 text-purple-600'
@@ -449,7 +468,7 @@ const Wellness: React.FC = () => {
                 ))}
 
                 <button
-                  onClick={handleGetRecommendations}
+                  onClick={() => filterAndDisplayExercises(allRecommendations, selectedCategory)}
                   className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors"
                 >
                   Get New Recommendations
