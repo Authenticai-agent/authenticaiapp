@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaceSmileIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { getTodayDate } from '../utils/dailyReset';
 
 interface DayFeeling {
   date: string;
@@ -23,7 +24,7 @@ const CommunityGoodDayChallenge: React.FC = () => {
     const storedFeelings = localStorage.getItem('dailyFeelings');
     const feelings: DayFeeling[] = storedFeelings ? JSON.parse(storedFeelings) : [];
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDate();
     const todayFeeling = feelings.find(f => f.date === today);
     
     if (todayFeeling) {
@@ -45,7 +46,7 @@ const CommunityGoodDayChallenge: React.FC = () => {
     const storedFeelings = localStorage.getItem('dailyFeelings');
     const feelings: DayFeeling[] = storedFeelings ? JSON.parse(storedFeelings) : [];
     
-    const today = new Date().toISOString().split('T')[0];
+    const today = getTodayDate();
     const newFeeling = { date: today, emoji, label };
     
     const existingIndex = feelings.findIndex(f => f.date === today);

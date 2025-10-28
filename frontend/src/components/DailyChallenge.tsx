@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Target, RefreshCw, CheckCircle } from 'lucide-react';
 import axios from 'axios';
+import { getTodayDate, isDailyActionCompleted, setDailyActionCompleted } from '../utils/dailyReset';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -21,6 +22,9 @@ const DailyChallenge: React.FC = () => {
 
   useEffect(() => {
     fetchChallenge();
+    // Check if completed today
+    const isCompleted = isDailyActionCompleted('daily_challenge_completed');
+    setCompleted(isCompleted);
   }, []);
 
   const fetchChallenge = async () => {
@@ -37,6 +41,7 @@ const DailyChallenge: React.FC = () => {
   };
 
   const handleComplete = () => {
+    setDailyActionCompleted('daily_challenge_completed');
     setCompleted(true);
   };
 
