@@ -84,39 +84,35 @@ const CommunityGoodDayChallenge: React.FC = () => {
         <UserGroupIcon className="w-5 h-5 text-gray-400" />
       </div>
 
-      {!submittedToday ? (
-        <div>
-          <p className="text-sm text-gray-600 mb-4 text-center">
-            How did you feel today?
-          </p>
-          <div className="grid grid-cols-3 gap-3">
-            {feelings.map((feeling) => (
-              <button
-                key={feeling.value}
-                onClick={() => handleSubmit(feeling.emoji, feeling.label)}
-                className={`py-4 px-2 border-2 rounded-lg transition-all hover:scale-105 ${feeling.color}`}
-              >
-                <div className="text-3xl mb-2">{feeling.emoji}</div>
-                <p className="text-xs font-semibold">{feeling.label}</p>
-              </button>
-            ))}
-          </div>
+      <div>
+        <p className="text-sm text-gray-600 mb-4 text-center">
+          {submittedToday ? 'Change how you felt today?' : 'How did you feel today?'}
+        </p>
+        <div className="grid grid-cols-3 gap-3">
+          {feelings.map((feeling) => (
+            <button
+              key={feeling.value}
+              onClick={() => handleSubmit(feeling.emoji, feeling.label)}
+              className={`py-4 px-2 border-2 rounded-lg transition-all hover:scale-105 ${
+                selectedFeeling === feeling.label 
+                  ? feeling.color + ' ring-2 ring-purple-500' 
+                  : feeling.color + ' opacity-60'
+              }`}
+            >
+              <div className="text-3xl mb-2">{feeling.emoji}</div>
+              <p className="text-xs font-semibold">{feeling.label}</p>
+              {selectedFeeling === feeling.label && (
+                <div className="text-xs text-purple-600 mt-1">✓ Selected</div>
+              )}
+            </button>
+          ))}
         </div>
-      ) : (
-        <div className="text-center">
-          <div className="inline-block p-4 bg-purple-50 rounded-full mb-3">
-            <div className="text-4xl">
-              {feelings.find(f => f.label === selectedFeeling)?.emoji}
-            </div>
-          </div>
-          <p className="text-sm font-semibold text-gray-700 mb-1">
-            Thanks for sharing!
+        {submittedToday && (
+          <p className="text-xs text-gray-500 text-center mt-3">
+            Thanks for sharing! You can change your selection anytime.
           </p>
-          <p className="text-xs text-gray-500">
-            You felt {selectedFeeling?.toLowerCase()} today
-          </p>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Community Insights */}
       {totalResponses > 0 && (
