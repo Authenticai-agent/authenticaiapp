@@ -216,6 +216,14 @@ const Dashboard: React.FC = () => {
         return;
       }
       effectiveLocation = resolvedLocation;
+      
+      // Notify user if using default location (Chicago user should see Chicago, not NYC)
+      if (effectiveLocation.lat === 40.7128 && effectiveLocation.lon === -74.0060) {
+        toast('📍 Using default location. Enable location permissions for accurate local data.', {
+          duration: 5000,
+          icon: '⚠️'
+        });
+      }
     }
 
     try {
