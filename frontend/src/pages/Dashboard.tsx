@@ -621,7 +621,10 @@ const Dashboard: React.FC = () => {
             currentOzone={airQuality?.ozone || 0}
             tomorrowOzone={tomorrowForecast?.ozone}
           />
-          <SmartScoreTrend currentScore={riskPrediction?.risk_score || 0} />
+          <SmartScoreTrend 
+            currentScore={riskPrediction?.risk_score || 0} 
+            airQuality={airQuality}
+          />
           <LungEnergyMeter />
         </div>
 

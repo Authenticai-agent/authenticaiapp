@@ -7,20 +7,59 @@ interface TrendData {
   level: 'low' | 'moderate' | 'high';
 }
 
-const SmartScoreTrend: React.FC<{ currentScore: number }> = ({ currentScore }) => {
+interface AirQuality {
+  aqi?: number;
+  pm25?: number;
+  pm10?: number;
+  ozone?: number;
+  no2?: number;
+  so2?: number;
+  co?: number;
+}
+
+const SmartScoreTrend: React.FC<{ currentScore: number; airQuality?: AirQuality | null }> = ({ currentScore, airQuality }) => {
   const [trendData, setTrendData] = useState<TrendData[]>([]);
+
+  // Calculate breathing risk score from air quality data
+  const calculateRiskScore = (aq: AirQuality | null | undefined): number => {
+    if (!aq) return 0;
+    
+    // Weighted formula based on pollutants
+    const aqi = aq.aqi || 0;
+    const pm25 = aq.pm25 || 0;
+    const ozone = aq.ozone || 0;
+    
+    // AQI-based risk (0-500 scale, normalize to 0-100)
+    const aqiRisk = Math.min(100, (aqi / 300) * 100);
+    
+    // PM2.5-based risk (0-250 scale, normalize to 0-100)
+    const pm25Risk = Math.min(100, (pm25 / 150) * 100);
+    
+    // Ozone-based risk (0-200 scale, normalize to 0-100)
+    const ozoneRisk = Math.min(100, (ozone / 150) * 100);
+    
+    // Weighted average (AQI 50%, PM2.5 30%, Ozone 20%)
+    const riskScore = Math.round(
+      (aqiRisk * 0.5) + (pm25Risk * 0.3) + (ozoneRisk * 0.2)
+    );
+    
+    return Math.min(100, Math.max(0, riskScore));
+  };
 
   useEffect(() => {
     // Load trend data from localStorage
     const storedTrend = localStorage.getItem('breathingRiskTrend');
     let trend: TrendData[] = storedTrend ? JSON.parse(storedTrend) : [];
 
+    // Calculate today's score: use riskPrediction if available, otherwise calculate from air quality
+    const todayScore = currentScore > 0 ? currentScore : calculateRiskScore(airQuality);
+    
     // Add today's score
     const today = new Date().toISOString().split('T')[0];
     const existingIndex = trend.findIndex(t => t.date === today);
     
-    const level: 'low' | 'moderate' | 'high' = currentScore < 30 ? 'low' : currentScore < 60 ? 'moderate' : 'high';
-    const newEntry: TrendData = { date: today, score: currentScore, level };
+    const level: 'low' | 'moderate' | 'high' = todayScore < 30 ? 'low' : todayScore < 60 ? 'moderate' : 'high';
+    const newEntry: TrendData = { date: today, score: todayScore, level };
 
     if (existingIndex >= 0) {
       trend[existingIndex] = newEntry;
@@ -33,7 +72,7 @@ const SmartScoreTrend: React.FC<{ currentScore: number }> = ({ currentScore }) =
     
     localStorage.setItem('breathingRiskTrend', JSON.stringify(trend));
     setTrendData(trend);
-  }, [currentScore]);
+  }, [currentScore, airQuality]);
 
   const getColorClass = (level: string) => {
     switch (level) {
@@ -91,7 +130,7 @@ const SmartScoreTrend: React.FC<{ currentScore: number }> = ({ currentScore }) =
             last3Days[last3Days.length - 1]?.level === 'low' ? 'bg-green-500' :
             last3Days[last3Days.length - 1]?.level === 'moderate' ? 'bg-yellow-500' : 'bg-red-500'
           }`}
-          style={{ width: `${(currentScore / 100) * 100}%` }}
+          style={{ width: `${((last3Days[last3Days.length - 1]?.score || 0) / 100) * 100}%` }}
         />
       </div>
 
