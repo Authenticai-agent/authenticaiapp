@@ -135,17 +135,18 @@ const Wellness: React.FC = () => {
         stress_level: checkIn.stress_level,
         energy_level: checkIn.energy_level,
         available_time_minutes: availableTime,
-        location_type: 'home'
+        location_type: 'home',
+        shuffle: true  // Request shuffled exercises
       });
 
-      setRecommendations(response.data.recommendations || []);
+      // Shuffle the recommendations on the frontend too for variety
+      const shuffled = (response.data.recommendations || []).sort(() => Math.random() - 0.5);
+      setRecommendations(shuffled);
       
-      if (response.data.encouragement) {
-        toast.success(response.data.encouragement, {
-          duration: 4000,
-          icon: '💚'
-        });
-      }
+      toast.success('New exercises loaded! 🌟', {
+        duration: 2000,
+        icon: '✨'
+      });
     } catch (error) {
       console.error('Failed to get recommendations:', error);
       toast.error('Failed to load recommendations');

@@ -338,10 +338,10 @@ async def get_selfcare_recommendations(request: SelfCareRequest):
     try:
         from .selfcare_library import get_exercises_by_time
         
-        # Get exercises from ALL categories
-        breathing_exercises = get_exercises_by_time("breathing", request.available_time_minutes, max_results=5)
-        mindfulness_exercises = get_exercises_by_time("mindfulness", request.available_time_minutes, max_results=5)
-        meditation_exercises = get_exercises_by_time("meditation", request.available_time_minutes, max_results=5)
+        # Get ALL exercises from each category (all 15 per category)
+        breathing_exercises = get_exercises_by_time("breathing", request.available_time_minutes, max_results=15)
+        mindfulness_exercises = get_exercises_by_time("mindfulness", request.available_time_minutes, max_results=15)
+        meditation_exercises = get_exercises_by_time("meditation", request.available_time_minutes, max_results=15)
         
         # Transform to expected format
         recommendations = []
