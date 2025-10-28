@@ -139,9 +139,13 @@ const Wellness: React.FC = () => {
         shuffle: true  // Request shuffled exercises
       });
 
-      // Shuffle the recommendations on the frontend too for variety
-      const shuffled = (response.data.recommendations || []).sort(() => Math.random() - 0.5);
-      setRecommendations(shuffled);
+      // Get all recommendations and shuffle them
+      const allRecommendations = response.data.recommendations || [];
+      const shuffled = allRecommendations.sort(() => Math.random() - 0.5);
+      
+      // Show only 5 random exercises at a time (not all 45)
+      const selectedExercises = shuffled.slice(0, 5);
+      setRecommendations(selectedExercises);
       
       toast.success('New exercises loaded! 🌟', {
         duration: 2000,
@@ -158,11 +162,12 @@ const Wellness: React.FC = () => {
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       breathing: 'bg-blue-100 text-blue-800',
-      movement: 'bg-green-100 text-green-800',
       mindfulness: 'bg-purple-100 text-purple-800',
+      meditation: 'bg-indigo-100 text-indigo-800',
+      movement: 'bg-green-100 text-green-800',
       social: 'bg-pink-100 text-pink-800',
       creative: 'bg-yellow-100 text-yellow-800',
-      rest: 'bg-indigo-100 text-indigo-800'
+      rest: 'bg-gray-100 text-gray-800'
     };
     return colors[category] || 'bg-gray-100 text-gray-800';
   };
