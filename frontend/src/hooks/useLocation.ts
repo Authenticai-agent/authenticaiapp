@@ -81,15 +81,19 @@ export function useLocation() {
    * Update the permanent GPS location (saved to database)
    */
   const updateGPSLocation = async (location: Location) => {
+    // Update local state immediately for instant UI feedback
+    setCurrentLocation(location);
+    setIsTemporary(false);
+    localStorage.setItem('gps_location', JSON.stringify(location));
+    localStorage.removeItem('temp_location'); // Clear temp when updating GPS
+    
     try {
+      // Try to save to database (may fail if auth error, but local state already updated)
       await updateUser({ location });
-      localStorage.setItem('gps_location', JSON.stringify(location));
-      localStorage.removeItem('temp_location'); // Clear temp when updating GPS
-      setCurrentLocation(location);
-      setIsTemporary(false);
     } catch (error) {
-      console.error('Failed to update GPS location:', error);
-      throw error;
+      console.error('Failed to update GPS location in database:', error);
+      // Don't throw - location is already set locally
+      // The updateUser function handles auth errors gracefully
     }
   };
 
