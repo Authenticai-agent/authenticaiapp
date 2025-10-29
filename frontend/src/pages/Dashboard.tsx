@@ -99,11 +99,9 @@ const Dashboard: React.FC = () => {
     
     // Load data from localStorage first, then fetch fresh data
     loadCachedData();
-    if (currentLocation) {
-      loadDashboardData();
-    } else {
-      setLoading(false);
-    }
+    
+    // Always try to load data - loadDashboardData will resolve location if needed
+    loadDashboardData();
   }, [currentLocation]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debug air quality state changes
