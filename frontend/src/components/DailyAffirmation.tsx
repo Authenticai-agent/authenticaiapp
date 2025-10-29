@@ -103,7 +103,6 @@ const DailyAffirmation: React.FC = () => {
             <CheckCircle className="w-6 h-6 text-white" />
           )}
         </div>
-        <p className="text-white/90 text-sm mt-1">Day {data.day} of 30</p>
       </div>
 
       {/* Affirmation Content */}
