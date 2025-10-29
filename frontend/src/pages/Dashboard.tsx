@@ -320,9 +320,25 @@ const Dashboard: React.FC = () => {
   };
 
   const generateDailyBriefing = async () => {
-    if (!currentLocation) {
-      toast.error('Location not available. Please wait for location to load.');
-      return;
+    // Resolve location - use currentLocation or fallback
+    let effectiveLocation = currentLocation ? { lat: currentLocation.lat, lon: currentLocation.lon } : null;
+    
+    if (!effectiveLocation) {
+      console.log('No current location, resolving effective location...');
+      const resolvedLocation = await resolveEffectiveLocation(user?.location);
+      if (!resolvedLocation) {
+        toast.error('Unable to determine your location. Please enable location permissions.');
+        return;
+      }
+      effectiveLocation = resolvedLocation;
+      
+      // Notify user if using default location
+      if (effectiveLocation.lat === 40.7128 && effectiveLocation.lon === -74.0060) {
+        toast('📍 Using default location (NYC). Enable location permissions for accurate local briefing.', {
+          duration: 4000,
+          icon: '⚠️'
+        });
+      }
     }
     
     // Check briefing limit (5 per day for free tier)
@@ -337,8 +353,8 @@ const Dashboard: React.FC = () => {
     
     setBriefingLoading(true);
     try {
-      console.log('🔵 Generating daily briefing for location:', currentLocation);
-      console.log('🔵 Using coordinates:', currentLocation.lat, currentLocation.lon);
+      console.log('🔵 Generating daily briefing for location:', effectiveLocation);
+      console.log('🔵 Using coordinates:', effectiveLocation.lat, effectiveLocation.lon);
       console.log('🔵 Current risk score:', riskPrediction?.risk_score);
       console.log('🔵 Current PM2.5:', airQuality?.pm25);
       
@@ -349,7 +365,7 @@ const Dashboard: React.FC = () => {
       if (token && user) {
         try {
           const authResponse = await fetch(
-            `${API_BASE_URL}/daily-briefing/dynamic-briefing-authenticated?lat=${currentLocation.lat}&lon=${currentLocation.lon}`,
+            `${API_BASE_URL}/daily-briefing/dynamic-briefing-authenticated?lat=${effectiveLocation.lat}&lon=${effectiveLocation.lon}`,
             {
               headers: {
                 'Authorization': `Bearer ${token}`,
@@ -376,7 +392,7 @@ const Dashboard: React.FC = () => {
       // Use public endpoint if authenticated failed or no token
       if (!data) {
         const publicResponse = await fetch(
-          `${API_BASE_URL}/daily-briefing/dynamic-briefing?lat=${currentLocation.lat}&lon=${currentLocation.lon}`
+          `${API_BASE_URL}/daily-briefing/dynamic-briefing?lat=${effectiveLocation.lat}&lon=${effectiveLocation.lon}`
         );
         
         if (!publicResponse.ok) {
