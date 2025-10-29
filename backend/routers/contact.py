@@ -71,8 +71,11 @@ async def submit_contact_message(contact: ContactMessage):
                 <p><small>User ID: {contact.user_id or 'Not logged in'}</small></p>
                 """
                 
+                # Use Resend's onboarding domain until authenticai.ai is verified
+                from_email = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
+                
                 resend.Emails.send({
-                    "from": "Authenticai <noreply@authenticai.ai>",
+                    "from": from_email,
                     "to": ["jura@authenticai.ai"],
                     "subject": f"New Feedback from {contact.name}",
                     "html": email_html
