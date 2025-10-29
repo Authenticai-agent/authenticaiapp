@@ -95,6 +95,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
 
       setUser(baseUser);
+      
+      // Automatically get and save location if not set (for existing users)
+      if (!baseUser.location) {
+        console.log('📍 Existing user without location - requesting GPS...');
+        requestAndSaveLocation(baseUser);
+      }
     } catch (error: any) {
       console.error('Failed to fetch user:', error);
       localStorage.removeItem('token');
@@ -148,6 +154,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Set user and complete login
       console.log('✅ Setting user and completing login');
       setUser(mergedUser);
+      
+      // Automatically get and save location if not set
+      if (!mergedUser.location) {
+        console.log('📍 No location found, requesting GPS...');
+        requestAndSaveLocation(mergedUser);
+      }
+      
       setLoading(false);
       
       toast.success('Welcome back!');
@@ -188,6 +201,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
         mergedUser = { ...mergedUser, ...normalized };
       } catch (e) {}
       setUser(mergedUser);
+      
+      // Automatically get and save location for new users
+      if (!mergedUser.location) {
+        console.log('📍 New user - requesting GPS location...');
+        requestAndSaveLocation(mergedUser);
+      }
+      
       setLoading(false);
       
       toast.success('Account created successfully!');
@@ -315,6 +335,49 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(mergedUser);
     } catch (error) {
       console.error('Failed to refresh user:', error);
+    }
+  };
+
+  const requestAndSaveLocation = async (currentUser: User) => {
+    try {
+      if (!navigator.geolocation) {
+        console.warn('Geolocation not supported');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lon: position.coords.longitude
+          };
+
+          console.log('📍 Got GPS location:', location);
+
+          // Save location to user profile
+          try {
+            await updateUser({ location });
+            console.log('✅ Location saved to profile');
+            toast.success('Location detected and saved!', { icon: '📍' });
+          } catch (error) {
+            console.error('Failed to save location:', error);
+          }
+        },
+        (error) => {
+          console.warn('Location permission denied or unavailable:', error);
+          toast('Location access denied. Some features may be limited.', {
+            icon: '⚠️',
+            duration: 5000
+          });
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    } catch (error) {
+      console.error('Error requesting location:', error);
     }
   };
 
