@@ -113,7 +113,7 @@ const CookieConsent: React.FC = () => {
               </button>
               <button
                 onClick={acceptAll}
-                className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                className="px-6 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-medium shadow-sm"
               >
                 Accept All
               </button>
@@ -182,7 +182,7 @@ const CookieConsent: React.FC = () => {
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={savePreferences}
-                  className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
+                  className="px-6 py-2 bg-emerald-700 text-white rounded-lg hover:bg-emerald-800 transition-colors font-medium shadow-sm"
                 >
                   Save Preferences
                 </button>
