@@ -37,8 +37,18 @@ export function getStreakData(currentUserId?: string): StreakData {
       const data = JSON.parse(stored);
       
       // SECURITY: Validate that cached data belongs to current user
-      if (currentUserId && data.userId && data.userId !== currentUserId) {
-        console.warn('⚠️ Streak data belongs to different user, clearing...');
+      if (currentUserId) {
+        // If data has no userId (old format) OR belongs to different user, clear it
+        if (!data.userId || data.userId !== currentUserId) {
+          console.warn('⚠️ Streak data invalid or belongs to different user, clearing...');
+          localStorage.removeItem('wellness_streak');
+          return getDefaultStreakData(currentUserId);
+        }
+      }
+      
+      // If no currentUserId provided but data exists, it's suspicious - clear it
+      if (!currentUserId && data.currentStreak > 0) {
+        console.warn('⚠️ No user ID but streak data exists, clearing for security...');
         localStorage.removeItem('wellness_streak');
         return getDefaultStreakData(currentUserId);
       }
@@ -47,6 +57,7 @@ export function getStreakData(currentUserId?: string): StreakData {
     }
   } catch (error) {
     console.error('Error loading streak data:', error);
+    localStorage.removeItem('wellness_streak');
   }
 
   return getDefaultStreakData(currentUserId);
