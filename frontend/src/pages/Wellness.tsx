@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Heart, Brain, TrendingUp, Calendar, Sparkles } from 'lucide-react';
+import { Heart, Brain, TrendingUp, Calendar, Sparkles, Dumbbell } from 'lucide-react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import DailyAffirmation from '../components/DailyAffirmation';
 import DailyChallenge from '../components/DailyChallenge';
 import StreakDisplay from '../components/StreakDisplay';
 import WellnessReport from '../components/WellnessReport';
+import MorningMovementProgram from '../components/MorningMovementProgram';
 import { updateStreak } from '../utils/streaks';
 import { saveCheckIn } from '../utils/wellnessDataCollector';
 
@@ -33,7 +34,7 @@ interface Recommendation {
 
 const Wellness: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'checkin' | 'selfcare' | 'insights'>('checkin');
+  const [activeTab, setActiveTab] = useState<'checkin' | 'selfcare' | 'workouts' | 'insights'>('checkin');
   
   // Check-in state
   const [checkIn, setCheckIn] = useState<CheckIn>({
@@ -232,21 +233,21 @@ const Wellness: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 bg-white rounded-lg p-1 shadow-sm">
+        <div className="flex gap-2 mb-6 bg-white rounded-lg p-1 shadow-sm overflow-x-auto">
           <button
             onClick={() => setActiveTab('checkin')}
-            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all ${
+            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all whitespace-nowrap ${
               activeTab === 'checkin'
                 ? 'bg-purple-600 text-white shadow-md'
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
             <Heart className="inline-block w-5 h-5 mr-2" />
-            Daily Check-in
+            Check-in
           </button>
           <button
             onClick={() => setActiveTab('selfcare')}
-            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all ${
+            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all whitespace-nowrap ${
               activeTab === 'selfcare'
                 ? 'bg-purple-600 text-white shadow-md'
                 : 'text-gray-600 hover:bg-gray-100'
@@ -256,8 +257,19 @@ const Wellness: React.FC = () => {
             Self-Care
           </button>
           <button
+            onClick={() => setActiveTab('workouts')}
+            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all whitespace-nowrap ${
+              activeTab === 'workouts'
+                ? 'bg-purple-600 text-white shadow-md'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            <Dumbbell className="inline-block w-5 h-5 mr-2" />
+            Workouts
+          </button>
+          <button
             onClick={() => setActiveTab('insights')}
-            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all ${
+            className={`flex-1 py-3 px-4 rounded-md font-medium transition-all whitespace-nowrap ${
               activeTab === 'insights'
                 ? 'bg-purple-600 text-white shadow-md'
                 : 'text-gray-600 hover:bg-gray-100'
@@ -391,6 +403,11 @@ const Wellness: React.FC = () => {
             </button>
             </div>
           </div>
+        )}
+
+        {/* Workouts Tab */}
+        {activeTab === 'workouts' && (
+          <MorningMovementProgram />
         )}
 
         {/* Self-Care Tab */}
