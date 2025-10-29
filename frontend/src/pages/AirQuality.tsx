@@ -104,9 +104,8 @@ const AirQuality: React.FC = () => {
   const [environmentalData, setEnvironmentalData] = useState<ComprehensiveEnvironmentalData | null>(null);
   
   useEffect(() => {
-    if (currentLocation) {
-      loadEnvironmentalData();
-    }
+    // Always try to load data, even if no location (will use default)
+    loadEnvironmentalData();
   }, [currentLocation]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadEnvironmentalData = async (overrideLocation?: { lat: number; lon: number }) => {
@@ -194,21 +193,8 @@ const AirQuality: React.FC = () => {
     }
   };
 
-  if (!user?.location) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-warning-400" />
-            <h2 className="mt-2 text-lg font-medium text-gray-900">Location Required</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Please set your location in your profile to view environmental data.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Removed blocking check - allow page to load even without location
+  // User can set location via city search
 
   if (loading) {
     return (
@@ -222,12 +208,47 @@ const AirQuality: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <ExclamationTriangleIcon className="mx-auto h-12 w-12 text-warning-400" />
-            <h2 className="mt-2 text-lg font-medium text-gray-900">No Data Available</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Unable to load environmental data. Please try again later.
-            </p>
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-8">
+              <MapPinIcon className="mx-auto h-12 w-12 text-blue-400" />
+              <h2 className="mt-4 text-2xl font-bold text-gray-900">Set Your Location</h2>
+              <p className="mt-2 text-sm text-gray-600">
+                Search for your city to view environmental data
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Search for your city
+              </label>
+              <CitySearchDropdown
+                currentCity=""
+                onCitySelect={async (city) => {
+                  setCurrentLocation({
+                    lat: city.lat,
+                    lon: city.lon,
+                    city: city.name,
+                    state: city.state,
+                    country: city.country,
+                    displayName: city.displayName
+                  });
+                  
+                  try {
+                    await updateGPSLocation({ lat: city.lat, lon: city.lon });
+                    toast.success(`📍 Location saved: ${city.displayName}`);
+                    loadEnvironmentalData({ lat: city.lat, lon: city.lon });
+                  } catch (error) {
+                    console.error('Failed to save location:', error);
+                    toast.error('Location updated temporarily');
+                    loadEnvironmentalData({ lat: city.lat, lon: city.lon });
+                  }
+                }}
+                className="w-full"
+              />
+              <p className="mt-3 text-xs text-gray-500">
+                💡 Examples: "Los Angeles", "Chicago", "London", "Tokyo"
+              </p>
+            </div>
           </div>
         </div>
       </div>
