@@ -34,19 +34,15 @@ def setup_admin_user():
         if existing_user.data and len(existing_user.data) > 0:
             # Update existing user
             user_id = existing_user.data[0]['id']
-            print(f"User exists with ID: {user_id}. Updating...")
+            print(f"User exists with ID: {user_id}. Updating password...")
             
             result = db.table('users').update({
-                'password_hash': hashed_password,
-                'is_admin': True,
-                'is_active': True,
-                'updated_at': datetime.utcnow().isoformat()
+                'hashed_password': hashed_password
             }).eq('id', user_id).execute()
             
             print(f"✅ Admin user updated successfully!")
             print(f"   Email: {admin_email}")
             print(f"   Password: {admin_password}")
-            print(f"   Is Admin: True")
             
         else:
             # Create new user
@@ -54,12 +50,9 @@ def setup_admin_user():
             
             result = db.table('users').insert({
                 'email': admin_email,
-                'password_hash': hashed_password,
-                'name': 'Jura Admin',
-                'is_admin': True,
-                'is_active': True,
-                'created_at': datetime.utcnow().isoformat(),
-                'updated_at': datetime.utcnow().isoformat()
+                'hashed_password': hashed_password,
+                'full_name': 'Jura Admin',
+                'subscription_tier': 'premium'
             }).execute()
             
             if result.data and len(result.data) > 0:
@@ -68,16 +61,7 @@ def setup_admin_user():
                 print(f"   User ID: {user_id}")
                 print(f"   Email: {admin_email}")
                 print(f"   Password: {admin_password}")
-                print(f"   Is Admin: True")
-                
-                # Create user profile
-                profile_result = db.table('user_profiles').insert({
-                    'user_id': user_id,
-                    'location': 'Admin',
-                    'created_at': datetime.utcnow().isoformat()
-                }).execute()
-                
-                print(f"✅ Admin profile created")
+                print(f"   Subscription: Premium")
             else:
                 print("❌ Failed to create admin user")
                 return False

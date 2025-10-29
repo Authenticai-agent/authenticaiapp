@@ -17,7 +17,9 @@ router = APIRouter()
 
 def require_admin(current_user: User = Depends(get_current_user)) -> User:
     """Dependency to require admin access"""
-    if not current_user.is_admin:
+    # Check if user is admin by email (since is_admin column doesn't exist)
+    admin_emails = ["jura@authenticai.ai", "admin@authenticai.ai"]
+    if current_user.email not in admin_emails:
         raise HTTPException(status_code=403, detail="Admin access required")
     return current_user
 
