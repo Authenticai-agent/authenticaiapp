@@ -33,6 +33,7 @@ stripe>=5.0.0,<6.0.0
 geopy>=2.3.0,<3.0.0
 google-generativeai>=0.8.0,<1.0.0  # Gemini API - latest stable
 openai>=1.0.0,<2.0.0  # OpenAI API for wellness reports
+resend>=0.8.0,<1.0.0  # Email service for contact/feedback
 
 # Utilities
 python-dotenv>=1.0.0,<2.0.0
