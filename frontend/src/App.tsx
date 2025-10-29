@@ -43,6 +43,7 @@ const AccessibilityStatement = lazy(() => import('./pages/AccessibilityStatement
 const APIMonitoring = lazy(() => import('./pages/APIMonitoring'));
 const AirDetective = lazy(() => import('./pages/AirDetective'));
 const Wellness = lazy(() => import('./pages/Wellness'));
+const Feedback = lazy(() => import('./pages/Feedback'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -243,6 +244,10 @@ const routes = [
   {
     path: '/air-detective',
     element: <ProtectedRoute><AirDetective /></ProtectedRoute>
+  },
+  {
+    path: '/feedback',
+    element: <Feedback />
   },
   // Add a catch-all route for 404s
   { 

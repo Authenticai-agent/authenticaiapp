@@ -11,6 +11,7 @@ const activeNavigation = [
   { name: 'Wellness', href: '/wellness' },
   { name: 'Privacy', href: '/privacy' },
   { name: 'FAQ', href: '/faq' },
+  { name: 'Feedback', href: '/feedback' },
 ];
 
 const games = [
