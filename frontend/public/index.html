@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#10b981" />
     
-    <!-- Preconnect to Google Fonts for faster loading (saves ~280ms) -->
+    <!-- DNS Prefetch & Preconnect for faster API calls -->
+    <link rel="dns-prefetch" href="https://authenticaiapp-production.up.railway.app" />
+    <link rel="preconnect" href="https://authenticaiapp-production.up.railway.app" crossorigin />
+    <link rel="dns-prefetch" href="https://api.openweathermap.org" />
+    <link rel="dns-prefetch" href="https://nominatim.openstreetmap.org" />
+    
+    <!-- Preconnect to Google Fonts for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' http://localhost:8000 https://*.railway.app https://api.openweathermap.org https://api.waqi.org https://generativelanguage.googleapis.com https://nominatim.openstreetmap.org;" />
     
     <meta
       name="description"
