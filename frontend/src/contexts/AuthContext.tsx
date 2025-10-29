@@ -259,10 +259,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Briefing limits
     localStorage.removeItem('briefing_usage');
     
-    // Location data - Clear temporary location, keep GPS location for next login
+    // Location data - Clear ALL location data on logout for security
     localStorage.removeItem('effective_location');
-    localStorage.removeItem('temp_location'); // Clear any temporary location override
-    // Keep gps_location for automatic detection on next login
+    localStorage.removeItem('temp_location');
+    localStorage.removeItem('gps_location'); // Clear GPS location too
     
     // Analytics
     localStorage.removeItem('analytics_events');
@@ -303,7 +303,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         last_name: updated.last_name ?? user.last_name,
         asthma_severity: updated.asthma_severity ?? user.asthma_severity,
         age: updated.age ?? user.age,
-        location: updated.location ?? user.location,
+        location: updated.location ?? userData.location ?? user.location, // Use provided location if API doesn't return it
         avatar: updated.avatar ?? user.avatar,
         updated_at: new Date().toISOString(),
       } as User;
@@ -311,6 +311,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(merged);
       toast.success('Profile updated successfully');
     } catch (error: any) {
+      console.error('Update user error:', error);
+      
+      // If it's an auth error, don't throw - just update locally
+      if (error?.response?.status === 401 || error?.response?.status === 403) {
+        console.warn('Auth error during update, updating locally only');
+        // Update user state locally even if API fails
+        const localUpdate: User = {
+          ...user,
+          ...userData,
+          updated_at: new Date().toISOString(),
+        } as User;
+        setUser(localUpdate);
+        toast.success('Location updated locally');
+        return; // Don't throw, prevent logout
+      }
+      
       const message = error?.response?.data?.detail || 'Update failed';
       toast.error(message);
       throw error;
