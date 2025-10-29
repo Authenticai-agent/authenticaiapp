@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-800 text-white py-8 mt-12">
+    <footer className="bg-gray-800 text-white py-8 mt-12 min-h-[400px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-5 gap-8">
           {/* Legal Column */}
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
               </li>
               <li>
                 <Link to="/cookie-policy" className="hover:text-emerald-400 transition-colors inline-block py-1">
-                  Cookie Policy
+                  Cookie Policy - How we use cookies
                 </Link>
               </li>
               <li>
