@@ -214,8 +214,21 @@ const Dashboard: React.FC = () => {
       
       // Notify user if using default location (Chicago user should see Chicago, not NYC)
       if (effectiveLocation.lat === 40.7128 && effectiveLocation.lon === -74.0060) {
-        toast('📍 Using default location. Enable location permissions for accurate local data.', {
-          duration: 5000,
+        toast((t) => (
+          <div>
+            <div className="font-medium">📍 Using default location (NYC)</div>
+            <div className="text-sm mt-1">
+              <a 
+                href="/air-quality" 
+                className="text-blue-600 hover:text-blue-800 underline"
+                onClick={() => toast.dismiss(t.id)}
+              >
+                Click here to set your location →
+              </a>
+            </div>
+          </div>
+        ), {
+          duration: 8000,
           icon: '⚠️'
         });
       }
@@ -334,8 +347,21 @@ const Dashboard: React.FC = () => {
       
       // Notify user if using default location
       if (effectiveLocation.lat === 40.7128 && effectiveLocation.lon === -74.0060) {
-        toast('📍 Using default location (NYC). Enable location permissions for accurate local briefing.', {
-          duration: 4000,
+        toast((t) => (
+          <div>
+            <div className="font-medium">📍 Using default location (NYC)</div>
+            <div className="text-sm mt-1">
+              <a 
+                href="/air-quality" 
+                className="text-blue-600 hover:text-blue-800 underline"
+                onClick={() => toast.dismiss(t.id)}
+              >
+                Click here to set your location →
+              </a>
+            </div>
+          </div>
+        ), {
+          duration: 8000,
           icon: '⚠️'
         });
       }
