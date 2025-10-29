@@ -1,0 +1,365 @@
+/* Daily Ritual Card */
+.daily-ritual-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+  margin-bottom: 24px;
+}
+
+.daily-ritual-card.completed {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+}
+
+.ritual-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.ritual-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #78350f;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.ritual-subtitle {
+  font-size: 14px;
+  color: #92400e;
+  font-weight: 500;
+}
+
+/* Ritual Steps */
+.ritual-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ritual-step {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.ritual-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.ritual-step.completed {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+/* Step Icons */
+.step-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.breathe-icon {
+  background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%);
+  color: #1e40af;
+}
+
+.move-icon {
+  background: linear-gradient(135deg, #d1fae5 0%, #6ee7b7 100%);
+  color: #065f46;
+}
+
+.protect-icon {
+  background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);
+  color: #9f1239;
+}
+
+.ritual-step.completed .step-icon {
+  background: linear-gradient(135deg, #86efac 0%, #4ade80 100%);
+  color: white;
+}
+
+/* Step Content */
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.step-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.step-technique {
+  font-size: 13px;
+  color: #3b82f6;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.movement-list,
+.protection-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.movement-list li,
+.protection-list li {
+  padding: 2px 0;
+}
+
+.protection-tip {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+/* Step Buttons */
+.step-button {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.breathe-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+}
+
+.breathe-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.move-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.move-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.protect-button {
+  background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+  color: white;
+}
+
+.protect-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
+}
+
+/* Active Step */
+.ritual-active {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.active-step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.active-step-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.timer {
+  font-size: 32px;
+  font-weight: 700;
+  color: #6366f1;
+  font-family: 'Courier New', monospace;
+}
+
+/* Active Step Content */
+.active-step-content {
+  margin-bottom: 24px;
+}
+
+.breathing-practice,
+.movement-practice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.avatar-container {
+  width: 200px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.practice-instructions {
+  text-align: center;
+  max-width: 400px;
+}
+
+.protection-practice {
+  padding: 20px;
+}
+
+.protection-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.checklist-item {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid #ec4899;
+  font-size: 16px;
+  color: #1f2937;
+}
+
+.protection-reminder {
+  font-style: italic;
+}
+
+/* Active Step Controls */
+.active-step-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.control-button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pause-button {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+.pause-button:hover {
+  background: #f59e0b;
+  transform: scale(1.05);
+}
+
+.resume-button {
+  background: #10b981;
+  color: white;
+}
+
+.resume-button:hover {
+  background: #059669;
+  transform: scale(1.05);
+}
+
+.complete-button {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+}
+
+.complete-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+/* Progress Indicator */
+.progress-indicator {
+  margin-top: 16px;
+  text-align: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+/* Completion Message */
+.completion-message {
+  text-align: center;
+  padding: 32px;
+  background: white;
+  border-radius: 16px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .daily-ritual-card {
+    padding: 16px;
+  }
+
+  .ritual-step {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .step-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .active-step-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .active-step-controls {
+    flex-direction: column;
+  }
+
+  .control-button {
+    width: 100%;
+    justify-content: center;
+  }
+}
