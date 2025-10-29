@@ -19,6 +19,7 @@ import {
   getFlowStreak,
   type MorningFlow
 } from '../data/morningMovementProgram';
+import FlowAnimations from './FlowAnimations';
 import toast from 'react-hot-toast';
 
 interface MorningMovementProgramProps {
@@ -147,6 +148,9 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
           )}
         </div>
 
+        {/* Animated Visual */}
+        <FlowAnimations category={currentFlow.category} visuals={currentFlow.visuals} />
+
         {/* Air Quality Alert */}
         {!airQualityRec.safe && (
           <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mb-6 flex items-start gap-3">
@@ -185,14 +189,6 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
           </div>
         </div>
 
-        {/* Visuals */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 mb-6">
-          <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-            <Sun className="w-5 h-5 text-orange-500" />
-            Visualization
-          </h4>
-          <p className="text-gray-700 italic">{currentFlow.visuals}</p>
-        </div>
 
         {/* Complete Button */}
         {!isCompleted && (
@@ -268,6 +264,9 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
             </div>
 
             <div className="space-y-4">
+              {/* Animated Visual in Modal */}
+              <FlowAnimations category={selectedFlow.category} visuals={selectedFlow.visuals} />
+
               <div className="flex gap-4">
                 <div className="bg-blue-50 rounded-lg p-3 flex-1">
                   <div className="text-sm text-blue-600 font-medium">Duration</div>
@@ -289,11 +288,6 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
                     </div>
                   ))}
                 </div>
-              </div>
-
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-2">Visualization:</h4>
-                <p className="text-gray-700 italic">{selectedFlow.visuals}</p>
               </div>
             </div>
           </div>
