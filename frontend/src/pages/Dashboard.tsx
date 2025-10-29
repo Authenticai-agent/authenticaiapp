@@ -60,6 +60,7 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { currentLocation } = useGlobalLocation();
   const [loading, setLoading] = useState(true);
+  const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
   const [riskPrediction, setRiskPrediction] = useState<RiskPrediction | null>(null);
   const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
   const [dailyBriefing, setDailyBriefing] = useState<DailyBriefing | null>(null);
@@ -212,25 +213,11 @@ const Dashboard: React.FC = () => {
       }
       effectiveLocation = resolvedLocation;
       
-      // Notify user if using default location (Chicago user should see Chicago, not NYC)
+      // Store if using default location for persistent banner
       if (effectiveLocation.lat === 40.7128 && effectiveLocation.lon === -74.0060) {
-        toast((t) => (
-          <div>
-            <div className="font-medium">📍 Using default location (NYC)</div>
-            <div className="text-sm mt-1">
-              <a 
-                href="/air-quality" 
-                className="text-blue-600 hover:text-blue-800 underline"
-                onClick={() => toast.dismiss(t.id)}
-              >
-                Click here to set your location →
-              </a>
-            </div>
-          </div>
-        ), {
-          duration: 8000,
-          icon: '⚠️'
-        });
+        setUsingDefaultLocation(true);
+      } else {
+        setUsingDefaultLocation(false);
       }
     }
 
@@ -562,6 +549,33 @@ const Dashboard: React.FC = () => {
             {locationName || 'Loading location...'}
           </p>
         </div>
+
+        {/* Location Banner - Persistent */}
+        {usingDefaultLocation && (
+          <div className="mb-6 bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
+            <div className="flex items-start">
+              <div className="flex-shrink-0">
+                <ExclamationTriangleIcon className="h-5 w-5 text-amber-400" />
+              </div>
+              <div className="ml-3 flex-1">
+                <h3 className="text-sm font-medium text-amber-800">
+                  Using Default Location (New York City)
+                </h3>
+                <div className="mt-2 text-sm text-amber-700">
+                  <p>
+                    For accurate air quality data, please set your location.{' '}
+                    <Link 
+                      to="/air-quality" 
+                      className="font-medium underline text-amber-800 hover:text-amber-900"
+                    >
+                      Go to Air Quality page to set your location →
+                    </Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
