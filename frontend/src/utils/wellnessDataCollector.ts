@@ -62,14 +62,14 @@ export function getDateRange(period: 'weekly' | 'monthly'): { start: Date; end: 
   return { start, end };
 }
 
-export function collectWellnessData(period: 'weekly' | 'monthly'): AggregatedWellnessData {
+export function collectWellnessData(period: 'weekly' | 'monthly', userId?: string): AggregatedWellnessData {
   const { start, end } = getDateRange(period);
   
   // Collect check-ins from localStorage
   const checkIns = getCheckInsFromStorage(start, end);
   
-  // Collect streak data
-  const streakData = getStreakData();
+  // Collect streak data with user validation
+  const streakData = getStreakData(userId);
   
   // Collect completion data
   const affirmationsCompleted = getAffirmationsCompleted(start, end);

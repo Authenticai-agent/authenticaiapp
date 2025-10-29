@@ -74,15 +74,17 @@ async def submit_contact_message(contact: ContactMessage):
                 # Use Resend's onboarding domain until authenticai.ai is verified
                 from_email = os.getenv("RESEND_FROM_EMAIL", "onboarding@resend.dev")
                 
-                resend.Emails.send({
+                params = {
                     "from": from_email,
                     "to": ["jura@authenticai.ai"],
                     "subject": f"New Feedback from {contact.name}",
                     "html": email_html
-                })
-                logger.info(f"📧 Email sent to jura@authenticai.ai")
+                }
+                
+                response = resend.Emails.send(params)
+                logger.info(f"📧 Email sent to jura@authenticai.ai - Response: {response}")
             except Exception as e:
-                logger.error(f"❌ Failed to send email: {e}")
+                logger.error(f"❌ Failed to send email: {e}", exc_info=True)
                 # Don't fail the request if email fails
         else:
             logger.info(f"⚠️ Email not sent (Resend not configured)")

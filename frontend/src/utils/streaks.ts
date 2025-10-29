@@ -9,6 +9,7 @@ export interface StreakData {
   lastCheckInDate: string;
   totalCheckIns: number;
   badges: Badge[];
+  userId?: string; // SECURITY: Track which user this data belongs to
 }
 
 export interface Badge {
@@ -29,23 +30,36 @@ const BADGE_MILESTONES = [
   { days: 90, id: 'legend', name: 'Wellness Legend', emoji: '🏆', description: '90 days! You\'re a legend!' }
 ];
 
-export function getStreakData(): StreakData {
+export function getStreakData(currentUserId?: string): StreakData {
   try {
     const stored = localStorage.getItem('wellness_streak');
     if (stored) {
-      return JSON.parse(stored);
+      const data = JSON.parse(stored);
+      
+      // SECURITY: Validate that cached data belongs to current user
+      if (currentUserId && data.userId && data.userId !== currentUserId) {
+        console.warn('⚠️ Streak data belongs to different user, clearing...');
+        localStorage.removeItem('wellness_streak');
+        return getDefaultStreakData(currentUserId);
+      }
+      
+      return data;
     }
   } catch (error) {
     console.error('Error loading streak data:', error);
   }
 
-  // Default streak data
+  return getDefaultStreakData(currentUserId);
+}
+
+function getDefaultStreakData(userId?: string): StreakData {
   return {
     currentStreak: 0,
     longestStreak: 0,
     lastCheckInDate: '',
     totalCheckIns: 0,
-    badges: []
+    badges: [],
+    userId
   };
 }
 
@@ -57,8 +71,8 @@ export function saveStreakData(data: StreakData): void {
   }
 }
 
-export function updateStreak(): StreakData {
-  const data = getStreakData();
+export function updateStreak(userId?: string): StreakData {
+  const data = getStreakData(userId);
   const today = new Date().toISOString().split('T')[0];
   const lastCheckIn = data.lastCheckInDate;
 
@@ -86,6 +100,7 @@ export function updateStreak(): StreakData {
   // Update stats
   data.lastCheckInDate = today;
   data.totalCheckIns += 1;
+  data.userId = userId; // SECURITY: Always set userId when updating
   
   if (data.currentStreak > data.longestStreak) {
     data.longestStreak = data.currentStreak;

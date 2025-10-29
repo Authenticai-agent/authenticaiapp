@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Award, TrendingUp } from 'lucide-react';
+import { Flame, Award } from 'lucide-react';
 import { getStreakData, getNextBadge } from '../utils/streaks';
 import type { StreakData } from '../utils/streaks';
+import { useAuth } from '../contexts/AuthContext';
 
 const StreakDisplay: React.FC = () => {
+  const { user } = useAuth();
   const [streakData, setStreakData] = useState<StreakData | null>(null);
 
   useEffect(() => {
-    const data = getStreakData();
+    // SECURITY: Pass user ID to validate cached data belongs to current user
+    const data = getStreakData(user?.id);
     setStreakData(data);
-  }, []);
+  }, [user?.id]);
 
   if (!streakData) return null;
 

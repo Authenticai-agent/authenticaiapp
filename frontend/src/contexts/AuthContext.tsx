@@ -200,15 +200,53 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = () => {
-    // Clear only auth-related data, preserve user data like breathing trends
+    // SECURITY: Clear ALL user-specific data to prevent data leakage between users
+    
+    // Auth tokens
     localStorage.removeItem('token');
+    
+    // Dashboard data
     localStorage.removeItem('riskPrediction');
     localStorage.removeItem('airQuality');
     localStorage.removeItem('dailyBriefing');
+    localStorage.removeItem('lastUserId');
+    localStorage.removeItem('lastBriefingUserId');
     
-    // Preserve: breathingRiskTrend, wellness data, streaks, etc.
+    // Wellness data - MUST be cleared for security
+    localStorage.removeItem('breathingRiskTrend');
+    localStorage.removeItem('wellness_streak');
+    localStorage.removeItem('wellness_check_ins');
+    localStorage.removeItem('dailyFeelings');
+    localStorage.removeItem('lungEnergyCheckIns');
     
-    sessionStorage.clear(); // Clear sessionStorage
+    // Daily activities
+    localStorage.removeItem('affirmation_completed_date');
+    localStorage.removeItem('daily_affirmation_completed');
+    localStorage.removeItem('challenges_completed');
+    localStorage.removeItem('daily_ritual_completed');
+    localStorage.removeItem('daily_ritual_streak');
+    localStorage.removeItem('pollution_defense_completed');
+    localStorage.removeItem('pollution_defense_symptoms');
+    
+    // Morning flow program
+    localStorage.removeItem('morningFlowStartDate');
+    localStorage.removeItem('lastFlowCompletedDate');
+    localStorage.removeItem('morningFlowStreak');
+    
+    // Briefing limits
+    localStorage.removeItem('briefing_usage');
+    
+    // Location data
+    localStorage.removeItem('effective_location');
+    
+    // Analytics
+    localStorage.removeItem('analytics_events');
+    
+    // Last daily reset
+    localStorage.removeItem('last_daily_reset');
+    
+    // Clear sessionStorage
+    sessionStorage.clear();
     
     // Remove authorization header
     delete api.defaults.headers.common['Authorization'];

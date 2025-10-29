@@ -18,8 +18,8 @@ const WellnessReport: React.FC = () => {
   const generateReport = async () => {
     setLoading(true);
     try {
-      // Collect all wellness data from localStorage
-      const wellnessData = collectWellnessData(reportType);
+      // Collect all wellness data from localStorage with user validation
+      const wellnessData = collectWellnessData(reportType, user?.id);
       
       // Add user_id for database storage
       const dataWithUser = {

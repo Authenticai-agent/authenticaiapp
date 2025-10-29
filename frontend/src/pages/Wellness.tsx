@@ -123,7 +123,7 @@ const Wellness: React.FC = () => {
       });
 
       // Update streak and check for new badges
-      const streakData = updateStreak();
+      const streakData = updateStreak(user.id);
       const newBadges = streakData.badges.filter(badge => {
         const unlockedToday = new Date(badge.unlockedAt).toISOString().split('T')[0] === new Date().toISOString().split('T')[0];
         return unlockedToday;
