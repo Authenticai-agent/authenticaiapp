@@ -44,6 +44,7 @@ const APIMonitoring = lazy(() => import('./pages/APIMonitoring'));
 const AirDetective = lazy(() => import('./pages/AirDetective'));
 const Wellness = lazy(() => import('./pages/Wellness'));
 const Feedback = lazy(() => import('./pages/Feedback'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -195,6 +196,10 @@ const routes = [
   {
     path: '/wellness',
     element: <ProtectedRoute><Wellness /></ProtectedRoute>
+  },
+  {
+    path: '/admin',
+    element: <ProtectedRoute><AdminDashboard /></ProtectedRoute>
   },
   {
     path: '/faq',

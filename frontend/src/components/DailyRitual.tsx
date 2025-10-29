@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Wind, Activity, Shield, CheckCircle, Play, Pause } from 'lucide-react';
 import ProfessionalAvatar from './ProfessionalAvatar';
+import { trackDailyRitual } from '../utils/analyticsCollector';
 import './DailyRitual.css';
 import './ProfessionalAvatar.css';
 
@@ -52,6 +53,9 @@ const DailyRitual: React.FC<DailyRitualProps> = ({ airQuality }) => {
     setCurrentStep(step);
     setTimer(duration);
     setIsActive(true);
+    
+    // Track analytics
+    trackDailyRitual.started(step, airQuality);
   };
 
   const pauseStep = () => {
@@ -67,6 +71,10 @@ const DailyRitual: React.FC<DailyRitualProps> = ({ airQuality }) => {
       const newCompleted = [...completedSteps, step];
       setCompletedSteps(newCompleted);
       
+      // Track phase completion
+      const duration = step === 'breathe' ? 120 : step === 'move' ? 180 : 120;
+      trackDailyRitual.phaseCompleted(step, duration - timer, airQuality);
+      
       // Check if all steps completed
       if (newCompleted.length === 3) {
         const today = new Date().toISOString().split('T')[0];
@@ -74,7 +82,10 @@ const DailyRitual: React.FC<DailyRitualProps> = ({ airQuality }) => {
         setRitualCompleted(true);
         
         // Update streak
-        updateRitualStreak();
+        const streakData = updateRitualStreak();
+        
+        // Track ritual completion
+        trackDailyRitual.completed(420, streakData.count, airQuality);
       }
     }
     setCurrentStep(null);
@@ -95,8 +106,10 @@ const DailyRitual: React.FC<DailyRitualProps> = ({ airQuality }) => {
       
       streakData.lastDate = today;
       localStorage.setItem('daily_ritual_streak', JSON.stringify(streakData));
+      return streakData;
     } catch (error) {
       console.error('Error updating ritual streak:', error);
+      return { count: 0, lastDate: null };
     }
   };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, CheckCircle, AlertTriangle, Wind, Droplets, Home, Coffee, Play, Pause, Check } from 'lucide-react';
+import { trackPollutionDefense } from '../utils/analyticsCollector';
 import './PollutionDefenseProtocol.css';
 
 interface PollutionDefenseProtocolProps {
@@ -127,11 +128,19 @@ const PollutionDefenseProtocol: React.FC<PollutionDefenseProtocolProps> = ({
     setCurrentPhase('during');
     setIsWalking(true);
     setWalkTimer(0);
+    
+    // Track analytics
+    const completedItems = preChecklist.filter(item => item.checked).map(item => item.id);
+    trackPollutionDefense.preChecklistCompleted(completedItems, airQuality);
+    trackPollutionDefense.walkStarted(15, airQuality);
   };
 
   const endWalkMode = () => {
     setIsWalking(false);
     setCurrentPhase('post');
+    
+    // Track walk completion
+    trackPollutionDefense.walkCompleted(walkTimer, reminderCount, airQuality);
   };
 
   const completeProtocol = () => {
@@ -143,6 +152,9 @@ const PollutionDefenseProtocol: React.FC<PollutionDefenseProtocolProps> = ({
       date: today,
       ...symptoms
     }));
+    
+    // Track symptom reporting
+    trackPollutionDefense.symptomsReported(symptoms, airQuality);
     
     setCurrentPhase('completed');
   };
