@@ -191,7 +191,7 @@ const Wellness: React.FC = () => {
     }
   };
 
-  // Filter exercises by category and show 5 random ones
+  // Filter exercises by category, time, and show 5 random ones
   const filterAndDisplayExercises = (exercises: Recommendation[], category: 'all' | 'breathing' | 'mindfulness' | 'meditation') => {
     let filtered = exercises;
     
@@ -200,9 +200,21 @@ const Wellness: React.FC = () => {
       filtered = exercises.filter(ex => ex.category === category);
     }
     
+    // Filter by available time - only show exercises that fit within the selected time
+    filtered = filtered.filter(ex => ex.duration_minutes <= availableTime);
+    
+    // If no exercises fit the time, show a message
+    if (filtered.length === 0) {
+      toast.error(`No exercises found for ${availableTime} minutes. Try increasing your available time.`, {
+        duration: 3000
+      });
+      setRecommendations([]);
+      return;
+    }
+    
     // Shuffle and take 5
     const shuffled = filtered.sort(() => Math.random() - 0.5);
-    const selected = shuffled.slice(0, 5);
+    const selected = shuffled.slice(0, Math.min(5, filtered.length));
     setRecommendations(selected);
   };
 
@@ -449,7 +461,14 @@ const Wellness: React.FC = () => {
                 max="60"
                 step="5"
                 value={availableTime}
-                onChange={(e) => setAvailableTime(parseInt(e.target.value))}
+                onChange={(e) => {
+                  const newTime = parseInt(e.target.value);
+                  setAvailableTime(newTime);
+                  // Re-filter exercises if we already have recommendations
+                  if (allRecommendations.length > 0) {
+                    filterAndDisplayExercises(allRecommendations, selectedCategory);
+                  }
+                }}
                 className="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer"
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">

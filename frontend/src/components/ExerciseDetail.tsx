@@ -1,6 +1,8 @@
 import React from 'react';
 import { X } from 'lucide-react';
+import ProfessionalAvatar from './ProfessionalAvatar';
 import './ExerciseDetail.css';
+import './ProfessionalAvatar.css';
 
 interface ExerciseDetailProps {
   exercise: string;
@@ -16,17 +18,17 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, index, onClos
     if (lowerName.includes('belly breathing') || lowerName.includes('seated belly')) {
       return (
         <div className="exercise-animation">
-          <div className="belly-breathing-demo">
-            <div className="sitting-figure">
-              <div className="figure-head"></div>
-              <div className="figure-torso">
-                <div className="belly-expand"></div>
-              </div>
-              <div className="figure-legs"></div>
+          <div className="professional-demo-container">
+            <div className="avatar-wrapper">
+              <ProfessionalAvatar pose="breathing" animation="belly-breathing-animation" color="#60a5fa" />
             </div>
-            <div className="breath-indicator">
-              <div className="breath-arrow inhale-arrow">↓</div>
-              <div className="breath-arrow exhale-arrow">↑</div>
+            <div className="breath-indicators">
+              <div className="breath-label inhale-label">
+                <span className="arrow">↓</span> Inhale
+              </div>
+              <div className="breath-label exhale-label">
+                <span className="arrow">↑</span> Exhale
+              </div>
             </div>
           </div>
           <div className="exercise-instructions">
@@ -47,18 +49,13 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, index, onClos
     if (lowerName.includes('torso twist')) {
       return (
         <div className="exercise-animation">
-          <div className="torso-twist-demo">
-            <div className="twist-figure">
-              <div className="figure-head"></div>
-              <div className="figure-torso rotating"></div>
-              <div className="figure-arms">
-                <div className="arm-left"></div>
-                <div className="arm-right"></div>
-              </div>
+          <div className="professional-demo-container">
+            <div className="avatar-wrapper">
+              <ProfessionalAvatar pose="standing" animation="torso-twist-animation" color="#34d399" />
             </div>
-            <div className="rotation-arrows">
-              <div className="arrow-left">←</div>
-              <div className="arrow-right">→</div>
+            <div className="rotation-indicators">
+              <div className="rotation-label left-label">← Left</div>
+              <div className="rotation-label right-label">Right →</div>
             </div>
           </div>
           <div className="exercise-instructions">
@@ -80,18 +77,13 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, index, onClos
     if (lowerName.includes('shoulder roll')) {
       return (
         <div className="exercise-animation">
-          <div className="shoulder-roll-demo">
-            <div className="shoulder-figure">
-              <div className="figure-head"></div>
-              <div className="figure-shoulders">
-                <div className="shoulder-left rolling"></div>
-                <div className="shoulder-right rolling"></div>
-              </div>
-              <div className="figure-body"></div>
+          <div className="professional-demo-container">
+            <div className="avatar-wrapper">
+              <ProfessionalAvatar pose="standing" animation="shoulder-roll-animation" color="#a78bfa" />
             </div>
-            <div className="roll-direction">
-              <div className="direction-indicator forward">↻ Forward</div>
-              <div className="direction-indicator backward">↺ Backward</div>
+            <div className="roll-indicators">
+              <div className="roll-label forward-label">↻ Forward</div>
+              <div className="roll-label backward-label">↺ Backward</div>
             </div>
           </div>
           <div className="exercise-instructions">
@@ -112,18 +104,13 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, index, onClos
     if (lowerName.includes('arms up') || lowerName.includes('fold down')) {
       return (
         <div className="exercise-animation">
-          <div className="arms-fold-demo">
-            <div className="fold-figure">
-              <div className="figure-complete">
-                <div className="figure-head"></div>
-                <div className="figure-torso"></div>
-                <div className="figure-arms extending"></div>
-                <div className="figure-legs"></div>
-              </div>
+          <div className="professional-demo-container">
+            <div className="avatar-wrapper">
+              <ProfessionalAvatar pose="stretching" animation="arms-fold-animation" color="#f59e0b" />
             </div>
-            <div className="movement-phases">
-              <div className="phase inhale-phase">Inhale ↑</div>
-              <div className="phase exhale-phase">Exhale ↓</div>
+            <div className="movement-indicators">
+              <div className="movement-label inhale-label">↑ Inhale</div>
+              <div className="movement-label exhale-label">↓ Exhale</div>
             </div>
           </div>
           <div className="exercise-instructions">
@@ -145,11 +132,9 @@ const ExerciseDetail: React.FC<ExerciseDetailProps> = ({ exercise, index, onClos
     // Default animation for any other exercise
     return (
       <div className="exercise-animation">
-        <div className="default-exercise-demo">
-          <div className="generic-figure">
-            <div className="figure-head"></div>
-            <div className="figure-body pulsing"></div>
-            <div className="figure-limbs"></div>
+        <div className="professional-demo-container">
+          <div className="avatar-wrapper">
+            <ProfessionalAvatar pose="standing" color="#6b7280" />
           </div>
         </div>
         <div className="exercise-instructions">

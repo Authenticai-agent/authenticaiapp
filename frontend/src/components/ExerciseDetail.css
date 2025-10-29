@@ -1,3 +1,107 @@
+/* Professional Avatar Container Styles */
+.professional-demo-container {
+  position: relative;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.avatar-wrapper {
+  width: 200px;
+  height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Breath Indicators */
+.breath-indicators {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.breath-label {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: label-pulse 4s ease-in-out infinite;
+}
+
+.breath-label.inhale-label {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.15);
+}
+
+.breath-label.exhale-label {
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.15);
+  animation-delay: 2s;
+}
+
+@keyframes label-pulse {
+  0%, 40%, 60%, 100% { opacity: 0.4; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Rotation Indicators */
+.rotation-indicators,
+.roll-indicators,
+.movement-indicators {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.rotation-label,
+.roll-label,
+.movement-label {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  animation: indicator-fade 4s ease-in-out infinite;
+}
+
+.rotation-label.left-label,
+.roll-label.forward-label {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.rotation-label.right-label,
+.roll-label.backward-label {
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.15);
+  animation-delay: 2s;
+}
+
+.movement-label.inhale-label {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.15);
+}
+
+.movement-label.exhale-label {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  animation-delay: 3s;
+}
+
+@keyframes indicator-fade {
+  0%, 40%, 60%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
 /* Exercise Detail Modal */
 .exercise-detail-overlay {
   position: fixed;
