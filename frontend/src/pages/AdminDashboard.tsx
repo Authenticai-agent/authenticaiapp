@@ -30,10 +30,31 @@ interface WellnessCorrelation {
   insight: string;
 }
 
+interface FeatureAnalytics {
+  dailyRitual: {
+    completionRate: number;
+    avgDuration: number;
+    mostCompleted: string;
+    avgStreak: number;
+  };
+  pollutionDefense: {
+    activations: number;
+    completionRate: number;
+    avgWalkDuration: number;
+    symptomsReported: number;
+  };
+  engagement: {
+    daysPerWeek: number;
+    avgSessionTime: number;
+    retentionRate: number;
+  };
+}
+
 const AdminDashboard: React.FC = () => {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('7d');
   const [metrics, setMetrics] = useState<UserBehaviorData | null>(null);
   const [correlations, setCorrelations] = useState<WellnessCorrelation[]>([]);
+  const [featureAnalytics, setFeatureAnalytics] = useState<FeatureAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,13 +64,15 @@ const AdminDashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [metricsRes, correlationsRes] = await Promise.all([
+      const [metricsRes, correlationsRes, analyticsRes] = await Promise.all([
         axios.get(`${API_BASE_URL}/admin/metrics?range=${timeRange}`),
-        axios.get(`${API_BASE_URL}/admin/correlations?range=${timeRange}`)
+        axios.get(`${API_BASE_URL}/admin/correlations?range=${timeRange}`),
+        axios.get(`${API_BASE_URL}/admin/feature-analytics?range=${timeRange}`)
       ]);
       
       setMetrics(metricsRes.data);
       setCorrelations(correlationsRes.data);
+      setFeatureAnalytics(analyticsRes.data);
     } catch (error) {
       console.error('Error fetching admin data:', error);
     } finally {
@@ -80,29 +103,21 @@ const AdminDashboard: React.FC = () => {
     {
       title: 'Total Users',
       value: metrics?.totalUsers || 0,
-      change: '+12%',
-      trend: 'up',
       icon: <Users className="w-6 h-6" />
     },
     {
       title: 'Active Today',
       value: metrics?.activeToday || 0,
-      change: '+8%',
-      trend: 'up',
       icon: <Activity className="w-6 h-6" />
     },
     {
       title: 'Ritual Completion',
       value: `${metrics?.dailyRitualCompletionRate || 0}%`,
-      change: '+15%',
-      trend: 'up',
       icon: <CheckCircle className="w-6 h-6" />
     },
     {
       title: 'Avg Session',
       value: `${metrics?.avgSessionDuration || 0}m`,
-      change: '+22%',
-      trend: 'up',
       icon: <TrendingUp className="w-6 h-6" />
     }
   ];
@@ -186,19 +201,19 @@ const AdminDashboard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Completion Rate</span>
-              <span className="font-bold text-purple-600">78%</span>
+              <span className="font-bold text-purple-600">{featureAnalytics?.dailyRitual.completionRate || 0}%</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Avg Duration</span>
-              <span className="font-bold text-purple-600">6.8 min</span>
+              <span className="font-bold text-purple-600">{featureAnalytics?.dailyRitual.avgDuration || 0} min</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Most Completed Phase</span>
-              <span className="font-bold text-purple-600">Breathe (92%)</span>
+              <span className="font-bold text-purple-600">{featureAnalytics?.dailyRitual.mostCompleted || 'N/A'}</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Avg Streak</span>
-              <span className="font-bold text-purple-600">12 days</span>
+              <span className="font-bold text-purple-600">{featureAnalytics?.dailyRitual.avgStreak || 0} days</span>
             </div>
           </div>
         </div>
@@ -218,19 +233,19 @@ const AdminDashboard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Activations</span>
-              <span className="font-bold text-orange-600">234</span>
+              <span className="font-bold text-orange-600">{featureAnalytics?.pollutionDefense.activations || 0}</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Completion Rate</span>
-              <span className="font-bold text-orange-600">65%</span>
+              <span className="font-bold text-orange-600">{featureAnalytics?.pollutionDefense.completionRate || 0}%</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Avg Walk Duration</span>
-              <span className="font-bold text-orange-600">18 min</span>
+              <span className="font-bold text-orange-600">{featureAnalytics?.pollutionDefense.avgWalkDuration || 0} min</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
               <span className="text-gray-700">Symptoms Reported</span>
-              <span className="font-bold text-orange-600">12%</span>
+              <span className="font-bold text-orange-600">{featureAnalytics?.pollutionDefense.symptomsReported || 0}%</span>
             </div>
           </div>
         </div>
@@ -286,19 +301,19 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-blue-600">6.2</p>
+            <p className="text-2xl font-bold text-blue-600">{featureAnalytics?.engagement.daysPerWeek || 0}</p>
             <p className="text-sm text-gray-600">Days/week active</p>
           </div>
           
           <div className="text-center p-4 bg-green-50 rounded-lg">
             <BarChart3 className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-green-600">14.5 min</p>
+            <p className="text-2xl font-bold text-green-600">{featureAnalytics?.engagement.avgSessionTime || 0} min</p>
             <p className="text-sm text-gray-600">Avg session time</p>
           </div>
           
           <div className="text-center p-4 bg-purple-50 rounded-lg">
             <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-            <p className="text-2xl font-bold text-purple-600">82%</p>
+            <p className="text-2xl font-bold text-purple-600">{featureAnalytics?.engagement.retentionRate || 0}%</p>
             <p className="text-sm text-gray-600">7-day retention</p>
           </div>
         </div>

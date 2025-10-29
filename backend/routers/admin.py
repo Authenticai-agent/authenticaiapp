@@ -299,6 +299,202 @@ async def export_data(
         raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
 
 
+@router.get("/feature-analytics")
+async def get_feature_analytics(
+    range: str = Query("7d", regex="^(7d|30d|90d)$"),
+    admin: User = Depends(require_admin)
+) -> Dict[str, Any]:
+    """Get detailed feature analytics"""
+    
+    db = get_admin_db()
+    days = int(range[:-1])
+    start_date = (datetime.utcnow() - timedelta(days=days)).isoformat()
+    
+    try:
+        # Daily Ritual Analytics
+        ritual_completed = db.table('analytics_events')\
+            .select('*')\
+            .eq('event_type', 'daily_ritual.completed')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        ritual_started = db.table('analytics_events')\
+            .select('*')\
+            .eq('event_type', 'daily_ritual.started')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        ritual_phases = db.table('analytics_events')\
+            .select('data')\
+            .eq('event_type', 'daily_ritual.phase_completed')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        ritual_completion_rate = 0
+        ritual_avg_duration = 0
+        ritual_most_completed = "N/A"
+        ritual_avg_streak = 0
+        
+        if ritual_started.data and len(ritual_started.data) > 0:
+            ritual_completion_rate = round((len(ritual_completed.data or []) / len(ritual_started.data)) * 100, 1)
+        
+        if ritual_completed.data:
+            durations = [e.get('data', {}).get('total_duration_seconds', 0) for e in ritual_completed.data]
+            if durations:
+                ritual_avg_duration = round(sum(durations) / len(durations) / 60, 1)
+            
+            streaks = [e.get('data', {}).get('streak_count', 0) for e in ritual_completed.data]
+            if streaks:
+                ritual_avg_streak = round(sum(streaks) / len(streaks), 1)
+        
+        if ritual_phases.data:
+            phase_counts = {}
+            for event in ritual_phases.data:
+                phase = event.get('data', {}).get('phase', 'unknown')
+                phase_counts[phase] = phase_counts.get(phase, 0) + 1
+            if phase_counts:
+                most_completed_phase = max(phase_counts, key=phase_counts.get)
+                ritual_most_completed = f"{most_completed_phase.capitalize()} ({round((phase_counts[most_completed_phase] / sum(phase_counts.values())) * 100)}%)"
+        
+        # Pollution Defense Analytics
+        pd_triggered = db.table('analytics_events')\
+            .select('*')\
+            .eq('event_type', 'pollution_defense.triggered')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        pd_walk_completed = db.table('analytics_events')\
+            .select('data')\
+            .eq('event_type', 'pollution_defense.walk_completed')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        pd_walk_started = db.table('analytics_events')\
+            .select('*')\
+            .eq('event_type', 'pollution_defense.walk_started')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        pd_symptoms = db.table('analytics_events')\
+            .select('data')\
+            .eq('event_type', 'pollution_defense.symptoms_reported')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        pd_activations = len(pd_triggered.data or [])
+        pd_completion_rate = 0
+        pd_avg_walk_duration = 0
+        pd_symptoms_reported = 0
+        
+        if pd_walk_started.data and len(pd_walk_started.data) > 0:
+            pd_completion_rate = round((len(pd_walk_completed.data or []) / len(pd_walk_started.data)) * 100, 1)
+        
+        if pd_walk_completed.data:
+            durations = [e.get('data', {}).get('actual_duration_seconds', 0) for e in pd_walk_completed.data]
+            if durations:
+                pd_avg_walk_duration = round(sum(durations) / len(durations) / 60, 1)
+        
+        if pd_symptoms.data:
+            symptoms_with_issues = sum(1 for e in pd_symptoms.data 
+                                      if e.get('data', {}).get('cough') or 
+                                         e.get('data', {}).get('wheeze') or 
+                                         e.get('data', {}).get('fatigue'))
+            if len(pd_symptoms.data) > 0:
+                pd_symptoms_reported = round((symptoms_with_issues / len(pd_symptoms.data)) * 100, 1)
+        
+        # Engagement Analytics
+        session_events = db.table('analytics_events')\
+            .select('user_id, timestamp')\
+            .eq('event_type', 'app.session_started')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        session_durations = db.table('analytics_events')\
+            .select('data')\
+            .eq('event_type', 'app.session_ended')\
+            .gte('timestamp', start_date)\
+            .execute()
+        
+        engagement_days_per_week = 0
+        engagement_avg_session = 0
+        engagement_retention = 0
+        
+        if session_events.data:
+            # Calculate unique days per user
+            user_days = {}
+            for event in session_events.data:
+                user_id = event.get('user_id')
+                date = event.get('timestamp', '').split('T')[0]
+                if user_id:
+                    if user_id not in user_days:
+                        user_days[user_id] = set()
+                    user_days[user_id].add(date)
+            
+            if user_days:
+                avg_days = sum(len(days) for days in user_days.values()) / len(user_days)
+                engagement_days_per_week = round((avg_days / days) * 7, 1)
+        
+        if session_durations.data:
+            durations = [e.get('data', {}).get('duration_seconds', 0) for e in session_durations.data]
+            if durations:
+                engagement_avg_session = round(sum(durations) / len(durations) / 60, 1)
+        
+        # Calculate retention (users active in last 7 days / total users)
+        week_ago = (datetime.utcnow() - timedelta(days=7)).isoformat()
+        active_users = db.table('analytics_events')\
+            .select('user_id')\
+            .gte('timestamp', week_ago)\
+            .execute()
+        
+        total_users = db.table('users').select('id', count='exact').execute()
+        
+        if total_users.count and total_users.count > 0 and active_users.data:
+            unique_active = len(set(e['user_id'] for e in active_users.data if e.get('user_id')))
+            engagement_retention = round((unique_active / total_users.count) * 100, 1)
+        
+        return {
+            "dailyRitual": {
+                "completionRate": ritual_completion_rate,
+                "avgDuration": ritual_avg_duration,
+                "mostCompleted": ritual_most_completed,
+                "avgStreak": ritual_avg_streak
+            },
+            "pollutionDefense": {
+                "activations": pd_activations,
+                "completionRate": pd_completion_rate,
+                "avgWalkDuration": pd_avg_walk_duration,
+                "symptomsReported": pd_symptoms_reported
+            },
+            "engagement": {
+                "daysPerWeek": engagement_days_per_week,
+                "avgSessionTime": engagement_avg_session,
+                "retentionRate": engagement_retention
+            }
+        }
+        
+    except Exception as e:
+        print(f"Error fetching feature analytics: {str(e)}")
+        return {
+            "dailyRitual": {
+                "completionRate": 0,
+                "avgDuration": 0,
+                "mostCompleted": "N/A",
+                "avgStreak": 0
+            },
+            "pollutionDefense": {
+                "activations": 0,
+                "completionRate": 0,
+                "avgWalkDuration": 0,
+                "symptomsReported": 0
+            },
+            "engagement": {
+                "daysPerWeek": 0,
+                "avgSessionTime": 0,
+                "retentionRate": 0
+            }
+        }
+
+
 @router.post("/analytics/events")
 async def receive_analytics_events(
     events: List[Dict[str, Any]]
