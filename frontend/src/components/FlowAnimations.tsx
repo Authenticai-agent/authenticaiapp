@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './FlowAnimations.css';
 
 interface FlowAnimationProps {
@@ -7,12 +7,35 @@ interface FlowAnimationProps {
 }
 
 const FlowAnimations: React.FC<FlowAnimationProps> = ({ category, visuals }) => {
+  const [breathPhase, setBreathPhase] = useState<'inhale' | 'hold' | 'exhale'>('inhale');
+  
+  // Breathing cycle: 4s inhale, 2s hold, 4s exhale, 2s hold = 12s total
+  useEffect(() => {
+    if (category !== 'breathing') return;
+    
+    const cycle = () => {
+      setBreathPhase('inhale');
+      setTimeout(() => setBreathPhase('hold'), 4000);
+      setTimeout(() => setBreathPhase('exhale'), 6000);
+      setTimeout(() => setBreathPhase('hold'), 10000);
+    };
+    
+    cycle();
+    const interval = setInterval(cycle, 12000);
+    return () => clearInterval(interval);
+  }, [category]);
   
   // Breathing animations
   if (category === 'breathing') {
+    
     return (
       <div className="flow-animation-container">
         <div className="breathing-animation">
+          <div className="breath-instruction">
+            <span className={`breath-text ${breathPhase}`}>
+              {breathPhase === 'inhale' ? 'Inhale' : breathPhase === 'exhale' ? 'Exhale' : 'Hold'}
+            </span>
+          </div>
           <div className="lung-left"></div>
           <div className="lung-right"></div>
           <div className="breath-glow"></div>

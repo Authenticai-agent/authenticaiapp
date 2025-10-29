@@ -20,6 +20,7 @@ import {
   type MorningFlow
 } from '../data/morningMovementProgram';
 import FlowAnimations from './FlowAnimations';
+import ExerciseDetail from './ExerciseDetail';
 import toast from 'react-hot-toast';
 
 interface MorningMovementProgramProps {
@@ -39,6 +40,7 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
   const [streak, setStreak] = useState(getFlowStreak());
   const [showAllFlows, setShowAllFlows] = useState(false);
   const [selectedFlow, setSelectedFlow] = useState<MorningFlow | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<{ exercise: string; index: number } | null>(null);
 
   useEffect(() => {
     setCurrentFlow(getCurrentDayFlow());
@@ -214,11 +216,16 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
           </h4>
           <div className="space-y-2">
             {currentFlow.moves.map((move, index) => (
-              <div key={index} className="flex items-start gap-3 bg-gray-50 rounded-lg p-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+              <div 
+                key={index} 
+                className="flex items-start gap-3 bg-gray-50 rounded-lg p-3 cursor-pointer hover:bg-purple-50 hover:shadow-md transition-all duration-200 group"
+                onClick={() => setSelectedExercise({ exercise: move, index })}
+              >
+                <span className="flex-shrink-0 w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold group-hover:scale-110 transition-transform">
                   {index + 1}
                 </span>
-                <span className="text-gray-700">{move}</span>
+                <span className="text-gray-700 group-hover:text-purple-900 font-medium">{move}</span>
+                <span className="ml-auto text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">→</span>
               </div>
             ))}
           </div>
@@ -400,6 +407,15 @@ const MorningMovementProgram: React.FC<MorningMovementProgramProps> = ({
           <li>🎁 <strong>First {FREE_FLOW_LIMIT} days FREE</strong> - Days {FREE_FLOW_LIMIT + 1}-30 coming soon with premium</li>
         </ul>
       </div>
+
+      {/* Exercise Detail Modal */}
+      {selectedExercise && (
+        <ExerciseDetail
+          exercise={selectedExercise.exercise}
+          index={selectedExercise.index}
+          onClose={() => setSelectedExercise(null)}
+        />
+      )}
     </div>
   );
 };

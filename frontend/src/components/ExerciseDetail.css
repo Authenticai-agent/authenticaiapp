@@ -1,0 +1,651 @@
+/* Exercise Detail Modal */
+.exercise-detail-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.exercise-detail-modal {
+  background: white;
+  border-radius: 20px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from { 
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #6b7280;
+}
+
+.close-button:hover {
+  background: #e5e7eb;
+  transform: scale(1.1);
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.exercise-number {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #9333ea, #ec4899);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.exercise-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0;
+}
+
+.exercise-animation {
+  margin-bottom: 30px;
+}
+
+.exercise-instructions {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.exercise-instructions h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+
+.exercise-instructions ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #4b5563;
+  line-height: 1.8;
+}
+
+.exercise-instructions li {
+  margin-bottom: 8px;
+}
+
+.exercise-instructions p {
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ===== BELLY BREATHING ANIMATION ===== */
+.belly-breathing-demo {
+  position: relative;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.sitting-figure {
+  position: relative;
+  width: 120px;
+  height: 200px;
+}
+
+.sitting-figure .figure-head {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.sitting-figure .figure-torso {
+  width: 80px;
+  height: 100px;
+  background: #60a5fa;
+  border-radius: 40px 40px 20px 20px;
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  overflow: visible;
+}
+
+.belly-expand {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(147, 197, 253, 0.5);
+  border-radius: 50%;
+  animation: belly-breathe 4s ease-in-out infinite;
+}
+
+@keyframes belly-breathe {
+  0%, 100% { transform: translateX(-50%) scale(0.8); opacity: 0.3; }
+  50% { transform: translateX(-50%) scale(1.3); opacity: 0.7; }
+}
+
+.sitting-figure .figure-legs {
+  width: 90px;
+  height: 60px;
+  background: #3b82f6;
+  border-radius: 20px 20px 40px 40px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.breath-indicator {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.breath-arrow {
+  font-size: 40px;
+  font-weight: bold;
+  margin: 10px 0;
+  animation: arrow-pulse 4s ease-in-out infinite;
+}
+
+.inhale-arrow {
+  color: #3b82f6;
+  animation-delay: 0s;
+}
+
+.exhale-arrow {
+  color: #a78bfa;
+  animation-delay: 2s;
+}
+
+@keyframes arrow-pulse {
+  0%, 45%, 55%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* ===== TORSO TWIST ANIMATION ===== */
+.torso-twist-demo {
+  position: relative;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #d1fae5 0%, #dbeafe 100%);
+  border-radius: 16px;
+}
+
+.twist-figure {
+  position: relative;
+  width: 120px;
+  height: 200px;
+}
+
+.twist-figure .figure-head {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.twist-figure .figure-torso {
+  width: 80px;
+  height: 120px;
+  background: #34d399;
+  border-radius: 40px;
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.twist-figure .figure-torso.rotating {
+  animation: torso-rotate 4s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes torso-rotate {
+  0%, 100% { transform: translateX(-50%) rotateY(0deg); }
+  25% { transform: translateX(-50%) rotateY(-25deg); }
+  50% { transform: translateX(-50%) rotateY(0deg); }
+  75% { transform: translateX(-50%) rotateY(25deg); }
+}
+
+.figure-arms {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 10px;
+}
+
+.arm-left, .arm-right {
+  position: absolute;
+  width: 60px;
+  height: 10px;
+  background: #10b981;
+  border-radius: 5px;
+}
+
+.arm-left {
+  left: 0;
+  transform-origin: right center;
+  animation: arm-swing-left 4s ease-in-out infinite;
+}
+
+.arm-right {
+  right: 0;
+  transform-origin: left center;
+  animation: arm-swing-right 4s ease-in-out infinite;
+}
+
+@keyframes arm-swing-left {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(15deg); }
+}
+
+@keyframes arm-swing-right {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+.rotation-arrows {
+  position: absolute;
+  bottom: 40px;
+  display: flex;
+  gap: 100px;
+}
+
+.arrow-left, .arrow-right {
+  font-size: 36px;
+  font-weight: bold;
+  color: #10b981;
+  animation: arrow-fade 4s ease-in-out infinite;
+}
+
+.arrow-left {
+  animation-delay: 0s;
+}
+
+.arrow-right {
+  animation-delay: 2s;
+}
+
+@keyframes arrow-fade {
+  0%, 40%, 60%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* ===== SHOULDER ROLL ANIMATION ===== */
+.shoulder-roll-demo {
+  position: relative;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e9d5ff 0%, #fce7f3 100%);
+  border-radius: 16px;
+}
+
+.shoulder-figure {
+  position: relative;
+  width: 120px;
+  height: 200px;
+}
+
+.shoulder-figure .figure-head {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.figure-shoulders {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.shoulder-left, .shoulder-right {
+  width: 35px;
+  height: 35px;
+  background: #a78bfa;
+  border-radius: 50%;
+}
+
+.shoulder-left.rolling {
+  animation: shoulder-roll-left 3s ease-in-out infinite;
+}
+
+.shoulder-right.rolling {
+  animation: shoulder-roll-right 3s ease-in-out infinite;
+}
+
+@keyframes shoulder-roll-left {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-10px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(10px); }
+}
+
+@keyframes shoulder-roll-right {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-10px); }
+  50% { transform: translateY(0); }
+  75% { transform: translateY(10px); }
+}
+
+.shoulder-figure .figure-body {
+  width: 70px;
+  height: 120px;
+  background: #a78bfa;
+  border-radius: 35px;
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.roll-direction {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.direction-indicator {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  animation: direction-pulse 6s ease-in-out infinite;
+}
+
+.direction-indicator.forward {
+  color: #7c3aed;
+  background: rgba(167, 139, 250, 0.2);
+  animation-delay: 0s;
+}
+
+.direction-indicator.backward {
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.2);
+  animation-delay: 3s;
+}
+
+@keyframes direction-pulse {
+  0%, 40%, 60%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ===== ARMS UP FOLD DOWN ANIMATION ===== */
+.arms-fold-demo {
+  position: relative;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #fef3c7 0%, #fce7f3 100%);
+  border-radius: 16px;
+}
+
+.fold-figure {
+  position: relative;
+  width: 120px;
+  height: 250px;
+}
+
+.figure-complete {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  animation: fold-movement 6s ease-in-out infinite;
+  transform-origin: center 60%;
+}
+
+@keyframes fold-movement {
+  0%, 100% { transform: rotate(0deg) scaleY(1); }
+  50% { transform: rotate(90deg) scaleY(0.7); }
+}
+
+.figure-complete .figure-head {
+  width: 50px;
+  height: 50px;
+  background: #fbbf24;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.figure-complete .figure-torso {
+  width: 60px;
+  height: 100px;
+  background: #f59e0b;
+  border-radius: 30px;
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.figure-complete .figure-arms {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 80px;
+}
+
+.figure-complete .figure-arms.extending {
+  animation: arms-extend 6s ease-in-out infinite;
+}
+
+@keyframes arms-extend {
+  0%, 100% { transform: translateX(-50%) translateY(40px) rotate(0deg); }
+  50% { transform: translateX(-50%) translateY(-20px) rotate(-180deg); }
+}
+
+.figure-complete .figure-legs {
+  width: 70px;
+  height: 80px;
+  background: #d97706;
+  border-radius: 35px 35px 20px 20px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.movement-phases {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.phase {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 25px;
+  animation: phase-pulse 6s ease-in-out infinite;
+}
+
+.phase.inhale-phase {
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.2);
+  animation-delay: 0s;
+}
+
+.phase.exhale-phase {
+  color: #ec4899;
+  background: rgba(236, 72, 153, 0.2);
+  animation-delay: 3s;
+}
+
+@keyframes phase-pulse {
+  0%, 40%, 60%, 100% { opacity: 0.3; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ===== DEFAULT EXERCISE ANIMATION ===== */
+.default-exercise-demo {
+  position: relative;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-radius: 16px;
+}
+
+.generic-figure {
+  position: relative;
+  width: 100px;
+  height: 180px;
+}
+
+.generic-figure .figure-head {
+  width: 50px;
+  height: 50px;
+  background: #9ca3af;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.generic-figure .figure-body {
+  width: 70px;
+  height: 100px;
+  background: #6b7280;
+  border-radius: 35px;
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.generic-figure .figure-body.pulsing {
+  animation: gentle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.05); }
+}
+
+.generic-figure .figure-limbs {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .exercise-detail-modal {
+    padding: 20px;
+  }
+  
+  .exercise-title {
+    font-size: 20px;
+  }
+  
+  .belly-breathing-demo,
+  .torso-twist-demo,
+  .shoulder-roll-demo,
+  .arms-fold-demo,
+  .default-exercise-demo {
+    height: 250px;
+  }
+}
