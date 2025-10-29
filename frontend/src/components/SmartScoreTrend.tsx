@@ -168,24 +168,39 @@ const SmartScoreTrend: React.FC<{ currentScore: number; airQuality?: AirQuality 
       {/* Interpretation */}
       <div className="p-3 bg-gray-50 rounded-lg">
         <p className="text-sm text-gray-700">
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
-           last3Days[last3Days.length - 1]!.score < last3Days[last3Days.length - 2]!.score && (
-            '📉 Your breathing risk is improving! Keep up the good habits.'
-          )}
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
-           last3Days[last3Days.length - 1]!.score > last3Days[last3Days.length - 2]!.score && (
-            '📈 Risk is increasing. Consider indoor activities and check your triggers.'
-          )}
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
-           last3Days[last3Days.length - 1]!.score === last3Days[last3Days.length - 2]!.score && (
-            '➡️ Risk levels are stable. Continue monitoring your environment.'
-          )}
-          {last3Days.filter(d => d !== null).length === 1 && (
-            '📊 Come back tomorrow to see your 3-day trend! (Day 1 of 3 recorded)'
-          )}
-          {last3Days.filter(d => d !== null).length === 0 && (
-            '📊 Check in daily to start tracking your breathing risk trends.'
-          )}
+          {(() => {
+            const validDays = last3Days.filter(d => d !== null);
+            const hasYesterday = last3Days[1] !== null;
+            const hasToday = last3Days[2] !== null;
+            
+            // If we have at least 2 consecutive days with data
+            if (validDays.length >= 2 && hasYesterday && hasToday) {
+              const yesterday = last3Days[1]!;
+              const today = last3Days[2]!;
+              
+              if (today.score < yesterday.score) {
+                return '📉 Your breathing risk is improving! Keep up the good habits.';
+              } else if (today.score > yesterday.score) {
+                return '📈 Risk is increasing. Consider indoor activities and check your triggers.';
+              } else {
+                return '➡️ Risk levels are stable. Continue monitoring your environment.';
+              }
+            }
+            
+            // Only today's data
+            if (hasToday && !hasYesterday) {
+              const today = last3Days[2]!;
+              if (today.score < 30) {
+                return '✅ Today\'s breathing risk is low. Great conditions for outdoor activities!';
+              } else if (today.score < 60) {
+                return '⚠️ Today\'s breathing risk is moderate. Be mindful of triggers and symptoms.';
+              } else {
+                return '🚨 Today\'s breathing risk is high. Consider staying indoors and using air purification.';
+              }
+            }
+            
+            return '📊 Check in daily to start tracking your breathing risk trends.';
+          })()}
         </p>
       </div>
 
