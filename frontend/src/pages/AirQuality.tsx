@@ -11,12 +11,14 @@ import {
 // Removed chart imports as we're now using a comprehensive dashboard layout
 import { useAuth } from '../contexts/AuthContext';
 import { useGlobalLocation } from '../contexts/LocationContext';
+import { useLocation } from '../hooks/useLocation';
 import { airQualityAPI } from '../services/api';
 import { resolveEffectiveLocation } from '../utils/location';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import { CitySearchDropdown } from '../components/CitySearchDropdown';
+import { MapPinIcon } from '@heroicons/react/24/outline';
 
 interface ComprehensiveEnvironmentalData {
   location: { lat: number; lon: number };
@@ -97,6 +99,7 @@ interface ComprehensiveEnvironmentalData {
 const AirQuality: React.FC = () => {
   const { user } = useAuth();
   const { currentLocation, setCurrentLocation } = useGlobalLocation();
+  const { updateGPSLocation, isTemporary } = useLocation();
   const [loading, setLoading] = useState(true);
   const [environmentalData, setEnvironmentalData] = useState<ComprehensiveEnvironmentalData | null>(null);
   
@@ -265,13 +268,19 @@ const AirQuality: React.FC = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <MapPinIcon className="w-4 h-4 mr-1" />
               Search for a city to view its air quality
+              {isTemporary && (
+                <span className="ml-2 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded">
+                  Temporary
+                </span>
+              )}
             </label>
             <CitySearchDropdown
               currentCity={currentLocation?.displayName || ''}
-              onCitySelect={(city) => {
-                // Update global location context
+              onCitySelect={async (city) => {
+                // Update global location context for immediate display
                 setCurrentLocation({
                   lat: city.lat,
                   lon: city.lon,
@@ -280,14 +289,24 @@ const AirQuality: React.FC = () => {
                   country: city.country,
                   displayName: city.displayName
                 });
-                toast.success(`Viewing air quality for ${city.displayName}`);
+                
+                // Save to user profile permanently
+                try {
+                  await updateGPSLocation({ lat: city.lat, lon: city.lon });
+                  toast.success(`📍 Location saved: ${city.displayName}`, {
+                    duration: 3000
+                  });
+                } catch (error) {
+                  console.error('Failed to save location:', error);
+                  toast.error('Location updated temporarily (will reset on logout)');
+                }
               }}
               className="w-full"
             />
           </div>
           
           <p className="text-xs text-gray-600 mt-3">
-            💡 Type a city name (e.g., "Los Angeles", "London", "Tokyo") to see its environmental data
+            💡 Type a city name (e.g., "Los Angeles", "London", "Tokyo") to save your location
           </p>
         </div>
 

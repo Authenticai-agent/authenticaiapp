@@ -97,9 +97,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(baseUser);
       
       // Automatically get and save location if not set (for existing users)
+      // Make it silent and non-blocking
       if (!baseUser.location) {
-        console.log('📍 Existing user without location - requesting GPS...');
-        requestAndSaveLocation(baseUser);
+        console.log('📍 Existing user without location - requesting GPS silently...');
+        requestAndSaveLocation(baseUser, true); // silent mode
       }
     } catch (error: any) {
       console.error('Failed to fetch user:', error);
@@ -156,9 +157,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(mergedUser);
       
       // Automatically get and save location if not set
+      // Make it silent to not interrupt login flow
       if (!mergedUser.location) {
-        console.log('📍 No location found, requesting GPS...');
-        requestAndSaveLocation(mergedUser);
+        console.log('📍 No location found, requesting GPS silently...');
+        requestAndSaveLocation(mergedUser, true); // silent mode
       }
       
       setLoading(false);
@@ -203,9 +205,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(mergedUser);
       
       // Automatically get and save location for new users
+      // Make it silent to not interrupt registration flow
       if (!mergedUser.location) {
-        console.log('📍 New user - requesting GPS location...');
-        requestAndSaveLocation(mergedUser);
+        console.log('📍 New user - requesting GPS location silently...');
+        requestAndSaveLocation(mergedUser, true); // silent mode
       }
       
       setLoading(false);

@@ -21,20 +21,38 @@ export function useLocation() {
   const [isTemporary, setIsTemporary] = useState(false);
 
   useEffect(() => {
-    // Priority: temp_location > user.location > gps_location
+    // Priority: temp_location > user.location > gps_location > default (NYC)
     const tempLocation = localStorage.getItem('temp_location');
+    const gpsLocation = localStorage.getItem('gps_location');
     
     if (tempLocation) {
       // User has set a temporary location
-      const parsed = JSON.parse(tempLocation);
-      setCurrentLocation(parsed);
-      setIsTemporary(true);
+      try {
+        const parsed = JSON.parse(tempLocation);
+        setCurrentLocation(parsed);
+        setIsTemporary(true);
+      } catch (e) {
+        localStorage.removeItem('temp_location');
+        setCurrentLocation(user?.location || null);
+        setIsTemporary(false);
+      }
     } else if (user?.location) {
-      // Use user's saved GPS location
+      // Use user's saved GPS location from profile
       setCurrentLocation(user.location);
       setIsTemporary(false);
+    } else if (gpsLocation) {
+      // Use cached GPS location from localStorage
+      try {
+        const parsed = JSON.parse(gpsLocation);
+        setCurrentLocation(parsed);
+        setIsTemporary(false);
+      } catch (e) {
+        localStorage.removeItem('gps_location');
+        setCurrentLocation(null);
+        setIsTemporary(false);
+      }
     } else {
-      // No location available
+      // No location available - features will prompt user
       setCurrentLocation(null);
       setIsTemporary(false);
     }
