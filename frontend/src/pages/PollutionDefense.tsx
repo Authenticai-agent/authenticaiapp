@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from '../hooks/useLocation';
 import { 
   Shield, Wind, Droplets, Apple, Heart, CheckCircle, 
   Clock, MapPin, Sparkles, Activity, Home
@@ -36,6 +37,7 @@ interface ActivationData {
 
 const PollutionDefense: React.FC = () => {
   const { user } = useAuth();
+  const { currentLocation, isTemporary } = useLocation();
   const [phase, setPhase] = useState<Phase>('check');
   const [loading, setLoading] = useState(false);
   const [activationData, setActivationData] = useState<ActivationData | null>(null);
@@ -90,7 +92,7 @@ const PollutionDefense: React.FC = () => {
   }, [phase, walkStartTime]);
 
   const checkActivation = async () => {
-    if (!user?.location) {
+    if (!currentLocation) {
       toast.error('Please enable location to check air quality');
       return;
     }
@@ -99,9 +101,9 @@ const PollutionDefense: React.FC = () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/pollution-defense/should-activate`, {
         params: {
-          user_id: user.id,
-          lat: user.location.lat,
-          lon: user.location.lon
+          user_id: user?.id,
+          lat: currentLocation.lat,
+          lon: currentLocation.lon
         }
       });
 
@@ -294,6 +296,12 @@ const PollutionDefense: React.FC = () => {
 
           {activationData && (
             <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
+              {isTemporary && (
+                <div className="mb-2 flex items-center text-sm text-amber-700 bg-amber-50 px-3 py-1 rounded">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  <span>Viewing temporary location (will reset to GPS on logout)</span>
+                </div>
+              )}
               <p className="text-blue-900 font-medium">{activationData.message}</p>
               {activationData.air_quality && (
                 <div className="grid grid-cols-3 gap-4 mt-3 text-sm">

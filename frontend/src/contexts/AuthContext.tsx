@@ -256,8 +256,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Briefing limits
     localStorage.removeItem('briefing_usage');
     
-    // Location data
+    // Location data - Clear temporary location, keep GPS location for next login
     localStorage.removeItem('effective_location');
+    localStorage.removeItem('temp_location'); // Clear any temporary location override
+    // Keep gps_location for automatic detection on next login
     
     // Analytics
     localStorage.removeItem('analytics_events');
@@ -338,7 +340,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const requestAndSaveLocation = async (currentUser: User) => {
+  const requestAndSaveLocation = async (currentUser: User, silent: boolean = false) => {
     try {
       if (!navigator.geolocation) {
         console.warn('Geolocation not supported');
@@ -347,28 +349,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
-          const location = {
+          const gpsLocation = {
             lat: position.coords.latitude,
             lon: position.coords.longitude
           };
 
-          console.log('📍 Got GPS location:', location);
+          console.log('📍 Got GPS location:', gpsLocation);
 
-          // Save location to user profile
+          // Save GPS location to database as the "home" location
+          // Also save to localStorage as current location
           try {
-            await updateUser({ location });
-            console.log('✅ Location saved to profile');
-            toast.success('Location detected and saved!', { icon: '📍' });
+            await updateUser({ location: gpsLocation });
+            localStorage.setItem('gps_location', JSON.stringify(gpsLocation));
+            localStorage.removeItem('temp_location'); // Clear any temporary location
+            console.log('✅ GPS location saved to profile');
+            
+            // Update user state with GPS location
+            setUser({ ...currentUser, location: gpsLocation });
+            
+            if (!silent) {
+              toast.success('Location detected and saved!', { icon: '📍' });
+            }
           } catch (error) {
             console.error('Failed to save location:', error);
           }
         },
         (error) => {
           console.warn('Location permission denied or unavailable:', error);
-          toast('Location access denied. Some features may be limited.', {
-            icon: '⚠️',
-            duration: 5000
-          });
+          if (!silent) {
+            toast('Location access denied. Some features may be limited.', {
+              icon: '⚠️',
+              duration: 5000
+            });
+          }
         },
         {
           enableHighAccuracy: true,
