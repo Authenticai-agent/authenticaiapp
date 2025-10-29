@@ -87,7 +87,38 @@ const SmartScoreTrend: React.FC<{ currentScore: number; airQuality?: AirQuality 
     }
   };
 
-  const last3Days = trendData.slice(-3);
+  // Generate last 3 days with proper dates
+  const generateLast3Days = (): (TrendData | null)[] => {
+    const today = new Date();
+    const dates = [];
+    
+    // Generate dates for last 3 days
+    for (let i = 2; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(date.getDate() - i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    
+    // Map dates to trend data, using existing data or current score
+    return dates.map((date, index) => {
+      const existingData = trendData.find(t => t.date === date);
+      if (existingData) {
+        return existingData;
+      }
+      
+      // For today, always use current score
+      if (index === 2) {
+        const todayScore = currentScore > 0 ? currentScore : calculateRiskScore(airQuality);
+        const level: 'low' | 'moderate' | 'high' = todayScore < 30 ? 'low' : todayScore < 60 ? 'moderate' : 'high';
+        return { date, score: todayScore, level };
+      }
+      
+      // For past days without data, return null to show placeholder
+      return null;
+    });
+  };
+
+  const last3Days = generateLast3Days();
 
   return (
     <div className="card">
@@ -137,19 +168,22 @@ const SmartScoreTrend: React.FC<{ currentScore: number; airQuality?: AirQuality 
       {/* Interpretation */}
       <div className="p-3 bg-gray-50 rounded-lg">
         <p className="text-sm text-gray-700">
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1].score < last3Days[last3Days.length - 2].score && (
+          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
+           last3Days[last3Days.length - 1]!.score < last3Days[last3Days.length - 2]!.score && (
             '📉 Your breathing risk is improving! Keep up the good habits.'
           )}
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1].score > last3Days[last3Days.length - 2].score && (
+          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
+           last3Days[last3Days.length - 1]!.score > last3Days[last3Days.length - 2]!.score && (
             '📈 Risk is increasing. Consider indoor activities and check your triggers.'
           )}
-          {last3Days.length >= 2 && last3Days[last3Days.length - 1].score === last3Days[last3Days.length - 2].score && (
+          {last3Days.length >= 2 && last3Days[last3Days.length - 1] && last3Days[last3Days.length - 2] && 
+           last3Days[last3Days.length - 1]!.score === last3Days[last3Days.length - 2]!.score && (
             '➡️ Risk levels are stable. Continue monitoring your environment.'
           )}
-          {last3Days.length === 1 && (
+          {last3Days.filter(d => d !== null).length === 1 && (
             '📊 Come back tomorrow to see your 3-day trend! (Day 1 of 3 recorded)'
           )}
-          {last3Days.length === 0 && (
+          {last3Days.filter(d => d !== null).length === 0 && (
             '📊 Check in daily to start tracking your breathing risk trends.'
           )}
         </p>
