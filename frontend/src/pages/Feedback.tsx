@@ -9,7 +9,7 @@ const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api
 const Feedback: React.FC = () => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    name: user?.name || '',
+    name: '',
     email: user?.email || '',
     message: ''
   });
@@ -38,7 +38,7 @@ const Feedback: React.FC = () => {
 
       setSubmitted(true);
       setFormData({
-        name: user?.name || '',
+        name: '',
         email: user?.email || '',
         message: ''
       });
