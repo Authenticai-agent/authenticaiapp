@@ -200,25 +200,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = () => {
-    // Clear all session data
+    // Clear only auth-related data, preserve user data like breathing trends
     localStorage.removeItem('token');
-    localStorage.clear(); // Clear all localStorage to prevent any data leakage
-    sessionStorage.clear(); // Clear sessionStorage as well
+    localStorage.removeItem('riskPrediction');
+    localStorage.removeItem('airQuality');
+    localStorage.removeItem('dailyBriefing');
+    
+    // Preserve: breathingRiskTrend, wellness data, streaks, etc.
+    
+    sessionStorage.clear(); // Clear sessionStorage
     
     // Remove authorization header
     delete api.defaults.headers.common['Authorization'];
     
     // Clear user state
     setUser(null);
-    
-    // Clear browser cache for security
-    if ('caches' in window) {
-      caches.keys().then((names) => {
-        names.forEach(name => {
-          caches.delete(name);
-        });
-      });
-    }
     
     // Force page reload to clear any cached data and redirect to login
     window.location.href = '/login';
