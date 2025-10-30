@@ -448,6 +448,14 @@ const PollutionDefense: React.FC = () => {
         {/* Phase: Pre-Exposure */}
         {phase === 'pre' && (
           <div className="space-y-6">
+            {/* Back Button */}
+            <button
+              onClick={() => setPhase('check')}
+              className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
+            >
+              ← Back to Protocol Overview
+            </button>
+
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <CheckCircle className="w-6 h-6 text-blue-600 mr-2" />
@@ -562,6 +570,14 @@ const PollutionDefense: React.FC = () => {
         {/* Phase: During Exposure */}
         {phase === 'during' && (
           <div className="space-y-6">
+            {/* Back Button */}
+            <button
+              onClick={() => setPhase('check')}
+              className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
+            >
+              ← Back to Protocol Overview
+            </button>
+
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <Activity className="w-6 h-6 text-green-600 mr-2 animate-pulse" />
@@ -615,6 +631,14 @@ const PollutionDefense: React.FC = () => {
         {/* Phase: Post-Exposure */}
         {phase === 'post' && (
           <div className="space-y-6">
+            {/* Back Button */}
+            <button
+              onClick={() => setPhase('check')}
+              className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
+            >
+              ← Back to Protocol Overview
+            </button>
+
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                 <Heart className="w-6 h-6 text-red-600 mr-2" />
