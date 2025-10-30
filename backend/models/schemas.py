@@ -241,3 +241,93 @@ class Subscription(BaseModel):
     current_period_end: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
+
+# Saved Location schemas
+class SavedLocationBase(BaseModel):
+    name: str
+    lat: float
+    lon: float
+    address: Optional[str] = None
+    is_primary: bool = False
+
+class SavedLocationCreate(SavedLocationBase):
+    pass
+
+class SavedLocationUpdate(BaseModel):
+    name: Optional[str] = None
+    lat: Optional[float] = None
+    lon: Optional[float] = None
+    address: Optional[str] = None
+    is_primary: Optional[bool] = None
+
+class SavedLocation(SavedLocationBase):
+    id: str
+    user_id: str
+    created_at: datetime
+    updated_at: datetime
+
+# Notification Settings schemas
+class NotificationSettingsBase(BaseModel):
+    aqi_threshold: int = 100
+    enabled: bool = True
+    quiet_hours_start: Optional[str] = "22:00"  # 10 PM
+    quiet_hours_end: Optional[str] = "07:00"  # 7 AM
+    max_daily_notifications: int = 2
+
+class NotificationSettingsCreate(NotificationSettingsBase):
+    pass
+
+class NotificationSettingsUpdate(BaseModel):
+    aqi_threshold: Optional[int] = None
+    enabled: Optional[bool] = None
+    quiet_hours_start: Optional[str] = None
+    quiet_hours_end: Optional[str] = None
+    max_daily_notifications: Optional[int] = None
+
+class NotificationSettings(NotificationSettingsBase):
+    id: str
+    user_id: str
+    created_at: datetime
+    updated_at: datetime
+
+# Historical Air Quality schemas
+class AirQualityHistoryBase(BaseModel):
+    location_name: str
+    lat: float
+    lon: float
+    date: str  # YYYY-MM-DD format
+    aqi: int
+    pm25: float
+    pm10: Optional[float] = None
+    ozone: Optional[float] = None
+    no2: Optional[float] = None
+    so2: Optional[float] = None
+    co: Optional[float] = None
+
+class AirQualityHistoryCreate(AirQualityHistoryBase):
+    pass
+
+class AirQualityHistory(AirQualityHistoryBase):
+    id: str
+    user_id: str
+    created_at: datetime
+
+# Forecast schemas
+class HourlyForecast(BaseModel):
+    timestamp: datetime
+    hour: int  # 0-23
+    aqi: int
+    pm25: float
+    pm10: Optional[float] = None
+    ozone: Optional[float] = None
+    no2: Optional[float] = None
+    so2: Optional[float] = None
+    co: Optional[float] = None
+
+class ForecastResponse(BaseModel):
+    location: Dict[str, Any]
+    forecast_date: str
+    hourly_forecast: List[HourlyForecast]
+    best_time: Optional[Dict[str, Any]] = None
+    worst_time: Optional[Dict[str, Any]] = None
+    source: str

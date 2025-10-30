@@ -95,6 +95,9 @@ from routers.wellness_reports import router as wellness_reports_router
 from routers.contact import router as contact_router
 from routers.pollution_defense import router as pollution_defense_router
 from routers.calendar_integration import router as calendar_router
+from routers.locations import router as locations_router
+from routers.history import router as history_router
+from routers.notifications import router as notifications_router
 
 app.include_router(air_quality_router, prefix="/api/v1/air-quality", tags=["air-quality"])
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
@@ -122,6 +125,9 @@ app.include_router(wellness_reports_router, prefix="/api/v1/wellness-reports", t
 app.include_router(contact_router, prefix="/api/v1/contact", tags=["contact"])
 app.include_router(pollution_defense_router, prefix="/api/v1/pollution-defense", tags=["pollution-defense"])
 app.include_router(calendar_router, prefix="/api/v1/calendar", tags=["calendar"])
+app.include_router(locations_router, prefix="/api/v1", tags=["locations"])
+app.include_router(history_router, prefix="/api/v1", tags=["history"])
+app.include_router(notifications_router, prefix="/api/v1", tags=["notifications"])
 
 @app.get("/")
 async def root():

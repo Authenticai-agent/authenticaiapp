@@ -206,6 +206,148 @@ def _generate_weather_fallback() -> Dict[str, Any]:
     }
 
 
+@router.get("/forecast/hourly")
+async def get_hourly_forecast(
+    lat: float = Query(..., description="Latitude"),
+    lon: float = Query(..., description="Longitude"),
+    hours: int = Query(24, description="Number of hours to forecast (max 96)"),
+    current_user: User = Depends(get_current_user)
+) -> Dict[str, Any]:
+    """
+    Get hourly air quality forecast for next 24-96 hours
+    
+    Returns hour-by-hour predictions with best/worst times highlighted
+    Uses OpenWeather Air Pollution API forecast endpoint
+    """
+    try:
+        openweather_key = os.getenv("OPENWEATHER_API_KEY")
+        
+        if not openweather_key:
+            logger.warning("OpenWeather API key not configured")
+            return {
+                "error": "Forecast unavailable",
+                "hourly_forecast": [],
+                "best_time": None,
+                "worst_time": None
+            }
+        
+        # Limit hours to reasonable range
+        hours = min(hours, 96)
+        
+        # Fetch forecast from OpenWeather
+        url = "http://api.openweathermap.org/data/2.5/air_pollution/forecast"
+        params = {
+            "lat": lat,
+            "lon": lon,
+            "appid": openweather_key
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params, timeout=10.0)
+            response.raise_for_status()
+            data = response.json()
+            
+            if not data.get('list') or len(data['list']) == 0:
+                return {
+                    "error": "No forecast data available",
+                    "hourly_forecast": [],
+                    "best_time": None,
+                    "worst_time": None
+                }
+            
+            # Process hourly forecasts
+            hourly_forecast = []
+            best_aqi = float('inf')
+            worst_aqi = 0
+            best_time = None
+            worst_time = None
+            
+            for i, hour_data in enumerate(data['list'][:hours]):
+                components = hour_data['components']
+                pm25 = components.get('pm2_5', 0)
+                
+                # Calculate US AQI from PM2.5
+                if pm25 <= 12.0:
+                    us_aqi = ((50 - 0) / (12.0 - 0.0)) * (pm25 - 0.0) + 0
+                elif pm25 <= 35.4:
+                    us_aqi = ((100 - 51) / (35.4 - 12.1)) * (pm25 - 12.1) + 51
+                elif pm25 <= 55.4:
+                    us_aqi = ((150 - 101) / (55.4 - 35.5)) * (pm25 - 35.5) + 101
+                elif pm25 <= 150.4:
+                    us_aqi = ((200 - 151) / (150.4 - 55.5)) * (pm25 - 55.5) + 151
+                elif pm25 <= 250.4:
+                    us_aqi = ((300 - 201) / (250.4 - 150.5)) * (pm25 - 150.5) + 201
+                elif pm25 <= 350.4:
+                    us_aqi = ((400 - 301) / (350.4 - 250.5)) * (pm25 - 250.5) + 301
+                else:
+                    us_aqi = ((500 - 401) / (500.4 - 350.5)) * (pm25 - 350.5) + 401
+                
+                us_aqi = int(us_aqi)
+                timestamp = datetime.fromtimestamp(hour_data['dt'])
+                
+                hour_forecast = {
+                    'timestamp': timestamp.isoformat(),
+                    'hour': timestamp.hour,
+                    'aqi': us_aqi,
+                    'pm25': round(pm25, 1),
+                    'pm10': round(components.get('pm10', 0), 1),
+                    'ozone': round(components.get('o3', 0), 1),
+                    'no2': round(components.get('no2', 0), 1),
+                    'so2': round(components.get('so2', 0), 1),
+                    'co': round(components.get('co', 0), 1)
+                }
+                
+                hourly_forecast.append(hour_forecast)
+                
+                # Track best and worst times
+                if us_aqi < best_aqi:
+                    best_aqi = us_aqi
+                    best_time = {
+                        'hour': timestamp.hour,
+                        'time': timestamp.strftime('%I:%M %p'),
+                        'aqi': us_aqi,
+                        'timestamp': timestamp.isoformat()
+                    }
+                
+                if us_aqi > worst_aqi:
+                    worst_aqi = us_aqi
+                    worst_time = {
+                        'hour': timestamp.hour,
+                        'time': timestamp.strftime('%I:%M %p'),
+                        'aqi': us_aqi,
+                        'timestamp': timestamp.isoformat()
+                    }
+            
+            logger.info(f"Generated {len(hourly_forecast)}-hour forecast for ({lat}, {lon})")
+            
+            return {
+                'location': {'lat': lat, 'lon': lon},
+                'forecast_date': datetime.now().strftime('%Y-%m-%d'),
+                'hourly_forecast': hourly_forecast,
+                'best_time': best_time,
+                'worst_time': worst_time,
+                'source': 'openweather_forecast',
+                'total_hours': len(hourly_forecast)
+            }
+            
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error fetching hourly forecast: {e}")
+        return {
+            "error": "Failed to fetch forecast",
+            "hourly_forecast": [],
+            "best_time": None,
+            "worst_time": None
+        }
+    except Exception as e:
+        logger.error(f"Error fetching hourly forecast: {e}")
+        return {
+            "error": str(e),
+            "hourly_forecast": [],
+            "best_time": None,
+            "worst_time": None
+        }
+
+
 @router.get("/forecast/week")
 async def get_week_forecast(
     lat: float = Query(..., description="Latitude"),
@@ -224,6 +366,6 @@ async def get_week_forecast(
         "message": "7-day forecast is a premium feature",
         "upgrade_url": "/pricing",
         "preview": {
-            "tomorrow": await get_tomorrow_forecast(lat, lon)
+            "tomorrow": await get_tomorrow_forecast(lat, lon, current_user)
         }
     }
