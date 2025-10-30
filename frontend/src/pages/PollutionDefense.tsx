@@ -147,31 +147,15 @@ const PollutionDefense: React.FC = () => {
       // Removed toast - status shown on screen
     } catch (error) {
       console.error('Error starting session:', error);
-      toast.error('Failed to start session');
+      // Session tracking is optional - continue anyway
     }
   };
 
   const startWalk = async () => {
-    if (!sessionId) return;
-
-    try {
-      const now = new Date();
-      setWalkStartTime(now);
-      
-      await axios.post(`${API_BASE_URL}/pollution-defense/session/${sessionId}/update`, {
-        phase: 'during_exposure',
-        data: {
-          walk_started_at: now.toISOString(),
-          reminders_shown: []
-        }
-      });
-
-      setPhase('during');
-      // Removed toast - status shown on screen
-    } catch (error) {
-      console.error('Error starting walk:', error);
-      toast.error('Failed to start walk mode');
-    }
+    // No backend call needed - just update UI state
+    const now = new Date();
+    setWalkStartTime(now);
+    setPhase('during');
   };
 
   const showWalkReminder = () => {
@@ -180,22 +164,8 @@ const PollutionDefense: React.FC = () => {
   };
 
   const completeWalk = async () => {
-    if (!sessionId) return;
-
-    try {
-      await axios.post(`${API_BASE_URL}/pollution-defense/session/${sessionId}/update`, {
-        phase: 'post_exposure',
-        data: {
-          recovery_completed: recovery
-        }
-      });
-
-      setPhase('post');
-      // Removed toast - status shown on screen
-    } catch (error) {
-      console.error('Error completing walk:', error);
-      toast.error('Failed to update session');
-    }
+    // No backend call needed - just update UI state
+    setPhase('post');
   };
 
   const submitSymptomCheck = async () => {
