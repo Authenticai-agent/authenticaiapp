@@ -159,9 +159,25 @@ CRITICAL RULES:
         }
         
         try:
-            # Save to Supabase
-            result = supabase.table("wellness_reports").insert(report_data).execute()
-            logger.info(f"✅ Saved {period} report for user {data.get('user_id')}")
+            # Check if report already exists for this period
+            existing = supabase.table("wellness_reports")\
+                .select("id")\
+                .eq("user_id", data.get("user_id"))\
+                .eq("report_type", period)\
+                .eq("period_start", data.get("start_date"))\
+                .execute()
+            
+            if existing.data and len(existing.data) > 0:
+                # Update existing report
+                result = supabase.table("wellness_reports")\
+                    .update(report_data)\
+                    .eq("id", existing.data[0]["id"])\
+                    .execute()
+                logger.info(f"✅ Updated existing {period} report for user {data.get('user_id')}")
+            else:
+                # Insert new report
+                result = supabase.table("wellness_reports").insert(report_data).execute()
+                logger.info(f"✅ Saved new {period} report for user {data.get('user_id')}")
             
             # Cleanup old reports based on subscription tier
             cleanup_old_reports(data.get("user_id"))
