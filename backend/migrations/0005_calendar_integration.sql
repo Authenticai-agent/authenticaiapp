@@ -19,13 +19,18 @@ CREATE TABLE IF NOT EXISTS appointment_reminders (
     air_quality_data JSONB,
     created_at TIMESTAMP DEFAULT NOW(),
     read_at TIMESTAMP,
-    dismissed_at TIMESTAMP,
-    
-    -- Index for quick lookups
-    INDEX idx_appointment_reminders_user (user_id),
-    INDEX idx_appointment_reminders_time (appointment_time),
-    INDEX idx_appointment_reminders_read (user_id, read_at)
+    dismissed_at TIMESTAMP
 );
+
+-- Create indexes for appointment_reminders table
+CREATE INDEX IF NOT EXISTS idx_appointment_reminders_user 
+ON appointment_reminders(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_appointment_reminders_time 
+ON appointment_reminders(appointment_time);
+
+CREATE INDEX IF NOT EXISTS idx_appointment_reminders_read 
+ON appointment_reminders(user_id, read_at);
 
 -- Create index for calendar-connected users
 CREATE INDEX IF NOT EXISTS idx_users_calendar_connected 
