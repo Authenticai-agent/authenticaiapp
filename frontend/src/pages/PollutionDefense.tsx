@@ -513,7 +513,13 @@ const PollutionDefense: React.FC = () => {
           <div className="space-y-6">
             {/* Back Button */}
             <button
-              onClick={() => setPhase('check')}
+              onClick={() => {
+                if (completedProtocol) {
+                  setPhase('post');
+                } else {
+                  setPhase('check');
+                }
+              }}
               className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               ← Back to Protocol Overview
@@ -635,7 +641,13 @@ const PollutionDefense: React.FC = () => {
           <div className="space-y-6">
             {/* Back Button */}
             <button
-              onClick={() => setPhase('check')}
+              onClick={() => {
+                if (completedProtocol) {
+                  setPhase('post');
+                } else {
+                  setPhase('check');
+                }
+              }}
               className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               ← Back to Protocol Overview
@@ -696,7 +708,13 @@ const PollutionDefense: React.FC = () => {
           <div className="space-y-6">
             {/* Back Button */}
             <button
-              onClick={() => setPhase('check')}
+              onClick={() => {
+                if (completedProtocol) {
+                  setPhase('post');
+                } else {
+                  setPhase('check');
+                }
+              }}
               className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
               ← Back to Protocol Overview
