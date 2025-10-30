@@ -4,7 +4,8 @@ Fetches upcoming appointments and provides personalized health recommendations
 Based on: appointment type, weather forecast, air quality, user health profile
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi.responses import RedirectResponse
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from pydantic import BaseModel
@@ -13,10 +14,20 @@ import logging
 import google.generativeai as genai
 from services.supabase_client import get_supabase_client
 import httpx
+from google_auth_oauthlib.flow import Flow
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 supabase = get_supabase_client()
+
+# Google OAuth Configuration
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:3000/calendar/callback')
+
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 
 # Initialize Gemini for recommendations
 api_key = os.getenv("GEMINI_API_KEY")
@@ -44,6 +55,94 @@ class AppointmentReminder(BaseModel):
     start_time: str
     location: Optional[str]
     description: Optional[str]
+
+
+@router.get("/calendar/auth/url")
+async def get_auth_url() -> Dict[str, str]:
+    """
+    Generate Google OAuth URL for calendar access
+    """
+    try:
+        if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=500,
+                detail="Google OAuth credentials not configured. Please set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET environment variables."
+            )
+        
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": GOOGLE_CLIENT_ID,
+                    "client_secret": GOOGLE_CLIENT_SECRET,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "redirect_uris": [GOOGLE_REDIRECT_URI]
+                }
+            },
+            scopes=SCOPES,
+            redirect_uri=GOOGLE_REDIRECT_URI
+        )
+        
+        authorization_url, state = flow.authorization_url(
+            access_type='offline',
+            include_granted_scopes='true',
+            prompt='consent'
+        )
+        
+        logger.info(f"✅ Generated OAuth URL: {authorization_url}")
+        
+        return {
+            "auth_url": authorization_url,
+            "state": state
+        }
+    except Exception as e:
+        logger.error(f"Error generating auth URL: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/calendar/auth/callback")
+async def oauth_callback(code: str, state: str, request: Request):
+    """
+    Handle OAuth callback from Google
+    """
+    try:
+        if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
+            raise HTTPException(
+                status_code=500,
+                detail="Google OAuth credentials not configured"
+            )
+        
+        flow = Flow.from_client_config(
+            {
+                "web": {
+                    "client_id": GOOGLE_CLIENT_ID,
+                    "client_secret": GOOGLE_CLIENT_SECRET,
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token",
+                    "redirect_uris": [GOOGLE_REDIRECT_URI]
+                }
+            },
+            scopes=SCOPES,
+            redirect_uri=GOOGLE_REDIRECT_URI
+        )
+        
+        flow.fetch_token(code=code)
+        credentials = flow.credentials
+        
+        # Store credentials (you'll need to associate with user)
+        # For now, return the access token to frontend
+        
+        logger.info("✅ OAuth callback successful")
+        
+        return {
+            "status": "success",
+            "access_token": credentials.token,
+            "refresh_token": credentials.refresh_token,
+            "expiry": credentials.expiry.isoformat() if credentials.expiry else None
+        }
+    except Exception as e:
+        logger.error(f"Error in OAuth callback: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/connect-calendar")
