@@ -706,19 +706,15 @@ const PollutionDefense: React.FC = () => {
         {/* Phase: Post-Exposure */}
         {phase === 'post' && (
           <div className="space-y-6">
-            {/* Back Button */}
-            <button
-              onClick={() => {
-                if (completedProtocol) {
-                  setPhase('post');
-                } else {
-                  setPhase('check');
-                }
-              }}
-              className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
-            >
-              ← Back to Protocol Overview
-            </button>
+            {/* Back Button - only show if protocol not completed yet */}
+            {!completedProtocol && (
+              <button
+                onClick={() => setPhase('check')}
+                className="flex items-center text-blue-600 hover:text-blue-800 font-medium"
+              >
+                ← Back to Protocol Overview
+              </button>
+            )}
 
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
