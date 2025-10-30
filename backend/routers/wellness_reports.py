@@ -101,23 +101,30 @@ Instead use simple words like: "good", "great", "helps", "use", "try", etc.
 Include:
 
 1. **Overall Wellness Score** (0-100): How they're doing overall
-2. **What We Noticed**: 3-5 simple observations about their week/month
+2. **What We Noticed**: 3-5 simple observations about their week/month (SKIP generic observations like "you checked in" or "you showed up")
 3. **Your Mood**: How they've been feeling emotionally (use everyday language)
 4. **Stress Levels**: When they felt stressed and when they felt calm
 5. **Sleep**: How well they slept and tips to sleep better
 6. **Energy**: When they felt energized vs tired
 7. **Pollution Defense**: If they completed pollution defense protocols, comment on their air quality exposure, symptoms, and recovery practices
-8. **Great Job On**: What they did really well (celebrate wins!)
-9. **Could Work On**: A few simple things to try (be kind and encouraging)
-10. **Next Steps**: 3-5 easy action items for next {period}
+8. **Great Job On**: What they did really well (celebrate SPECIFIC wins - exercises completed, affirmations done, challenges finished, good sleep days, etc. DO NOT praise generic things like "showing up" or "first check-in")
+9. **Areas to Focus On**: Based on their ACTUAL data, give 2-3 SPECIFIC recommendations with concrete actions. Examples:
+   - If energy is low: "Try a 10-minute morning walk before breakfast"
+   - If sleep is poor: "Set a bedtime alarm for 10 PM and avoid screens after 9 PM"
+   - If stress is high: "Do the 5-minute breathing exercise when you feel overwhelmed"
+   - If no exercises done: "Start with just ONE 5-minute guided exercise this week - pick the 'Morning Stretch' or 'Quick Calm'"
+   - If mood is low: "Try writing down 3 good things each evening before bed"
+10. **Next Steps**: 3-5 SPECIFIC, actionable items for next {period} based on their data (not generic advice)
 
-IMPORTANT:
+CRITICAL RULES:
 - Write like you're talking to a friend
 - Use simple, everyday words
-- Be warm and encouraging
+- Be warm and encouraging but SPECIFIC
 - No medical jargon or fancy vocabulary
 - Use emojis to keep it friendly
 - Keep sentences short and clear
+- DO NOT praise generic things like "showing up" or "taking the first step" - focus on ACTUAL actions they took
+- "Areas to Focus On" must have SPECIFIC recommendations based on their data, not vague suggestions
 - If they had pollution exposure, acknowledge it and praise their protective actions
 - Format in markdown"""
 
