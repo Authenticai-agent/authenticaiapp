@@ -25,13 +25,35 @@ const DailyAffirmation: React.FC = () => {
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    fetchAffirmation();
     // Check if already completed today
     const completedToday = localStorage.getItem('affirmation_completed_date');
     const today = new Date().toISOString().split('T')[0];
-    if (completedToday === today) {
+    
+    // Reset if it's a new day
+    if (completedToday && completedToday !== today) {
+      setCompleted(false);
+      localStorage.removeItem('affirmation_completed_date');
+    } else if (completedToday === today) {
       setCompleted(true);
     }
+    
+    fetchAffirmation();
+  }, []);
+  
+  // Check for date change every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const completedToday = localStorage.getItem('affirmation_completed_date');
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (completedToday && completedToday !== today) {
+        setCompleted(false);
+        localStorage.removeItem('affirmation_completed_date');
+        fetchAffirmation(); // Fetch new affirmation for new day
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchAffirmation = async () => {

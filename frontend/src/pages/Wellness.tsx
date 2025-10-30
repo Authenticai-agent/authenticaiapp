@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import DailyAffirmation from '../components/DailyAffirmation';
 import DailyChallenge from '../components/DailyChallenge';
+import DailyInspiration from '../components/DailyInspiration';
 import StreakDisplay from '../components/StreakDisplay';
 import WellnessReport from '../components/WellnessReport';
 import MorningMovementProgram from '../components/MorningMovementProgram';
@@ -298,7 +299,9 @@ const Wellness: React.FC = () => {
             {/* Streak Display */}
             <StreakDisplay />
             
-            {/* Daily Affirmation & Challenge */}
+            {/* Daily Inspiration, Affirmation & Challenge */}
+            <DailyInspiration />
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <DailyAffirmation />
               <DailyChallenge />

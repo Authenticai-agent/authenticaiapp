@@ -23,7 +23,6 @@ import CommunityGoodDayChallenge from '../components/CommunityGoodDayChallenge';
 import EducationalMicroTips from '../components/EducationalMicroTips';
 import IndoorWellnessTip from '../components/IndoorWellnessTip';
 import DonationCTA from '../components/DonationCTA';
-import DailyInspiration from '../components/DailyInspiration';
 import AppointmentReminder from '../components/AppointmentReminder';
 import GoogleCalendarConnect from '../components/GoogleCalendarConnect';
 
@@ -652,30 +651,6 @@ const Dashboard: React.FC = () => {
             </Link>
           </div>
 
-          {/* Plan */}
-          <div className="card bg-gradient-to-br from-purple-50 to-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">Plan</p>
-                <p className="text-4xl font-bold text-gray-900 mb-2 capitalize">
-                  {user?.subscription_tier || 'free'}
-                </p>
-                {user?.subscription_tier === 'free' && (
-                  <button 
-                    disabled
-                    className="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-400 cursor-not-allowed inline-block"
-                    title="Coming Soon"
-                  >
-                    Upgrade (Coming Soon)
-                  </button>
-                )}
-              </div>
-              <SparklesIcon className="h-16 w-16 text-purple-200" />
-            </div>
-            <p className="text-xs text-gray-500 mt-3">
-              {user?.subscription_tier === 'free' ? 'Premium features coming soon' : 'Full access'}
-            </p>
-          </div>
         </div>
 
         {/* Free Tier Engagement Cards */}
@@ -695,8 +670,7 @@ const Dashboard: React.FC = () => {
           <LungEnergyMeter />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <DailyInspiration />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <CommunityGoodDayChallenge />
           <EducationalMicroTips />
         </div>

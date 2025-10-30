@@ -21,11 +21,25 @@ const DailyChallenge: React.FC = () => {
   const [completed, setCompleted] = useState(false);
 
   useEffect(() => {
-    fetchChallenge();
     // Check if completed today
     const isCompleted = isDailyActionCompleted('daily_challenge_completed');
     setCompleted(isCompleted);
+    fetchChallenge();
   }, []);
+  
+  // Check for date change every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const isCompleted = isDailyActionCompleted('daily_challenge_completed');
+      if (!isCompleted && completed) {
+        // New day detected, reset
+        setCompleted(false);
+        fetchChallenge(); // Fetch new challenge for new day
+      }
+    }, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [completed]);
 
   const fetchChallenge = async () => {
     setLoading(true);
