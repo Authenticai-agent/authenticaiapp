@@ -331,11 +331,12 @@ async def get_user_sensitivity(user_id: str) -> Dict[str, Any]:
         user = result.data[0]
         
         # Check if user is in sensitive group
+        user_age = user.get("age")
         is_sensitive = (
             user.get("asthma_severity") in ["moderate", "severe"] or
             "asthma" in (user.get("health_conditions") or []) or
             "copd" in (user.get("health_conditions") or []) or
-            (user.get("age", 0) >= 65)
+            (user_age is not None and user_age >= 65)
         )
         
         return {
