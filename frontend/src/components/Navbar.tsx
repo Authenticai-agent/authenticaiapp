@@ -44,6 +44,9 @@ const PRESET_AVATARS = [
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  
+  // Force re-render when user changes
+  const userKey = user?.id || 'no-user';
 
   const renderAvatar = (size: 'sm' | 'md' = 'sm') => {
     const sizeClasses = size === 'sm' ? 'h-8 w-8' : 'h-10 w-10';
@@ -77,7 +80,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <Disclosure as="nav" className="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
+    <Disclosure as="nav" key={userKey} className="bg-white shadow-sm border-b border-gray-200 fixed w-full top-0 z-50">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
