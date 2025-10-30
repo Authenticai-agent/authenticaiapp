@@ -26,6 +26,7 @@ const games = [
 ];
 
 const premiumFeatures = [
+  { name: 'Premium Features', href: '/premium-features', icon: '✨' },
   { name: 'Predictions', href: '/predictions', icon: '🔮' },
   { name: 'Coaching', href: '/coaching', icon: '💪' },
   { name: 'Health Tracking', href: '/health-tracking', icon: '❤️' },

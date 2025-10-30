@@ -46,6 +46,7 @@ const Wellness = lazy(() => import('./pages/Wellness'));
 const Feedback = lazy(() => import('./pages/Feedback'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const PollutionDefense = lazy(() => import('./pages/PollutionDefense'));
+const PremiumFeatures = lazy(() => import('./pages/PremiumFeatures'));
 const CalendarCallback = lazy(() => import('./pages/CalendarCallback'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -202,6 +203,10 @@ const routes = [
   {
     path: '/pollution-defense',
     element: <ProtectedRoute><PollutionDefense /></ProtectedRoute>
+  },
+  {
+    path: '/premium-features',
+    element: <ProtectedRoute><PremiumFeatures /></ProtectedRoute>
   },
   {
     path: '/admin',
