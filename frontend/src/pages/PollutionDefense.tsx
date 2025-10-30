@@ -78,6 +78,16 @@ const PollutionDefense: React.FC = () => {
     severe: boolean;
   } | null>(null);
 
+  // Completed protocol state
+  const [completedProtocol, setCompletedProtocol] = useState<{
+    date: string;
+    checklist: typeof checklist;
+    walkStartTime: Date | null;
+    recovery: typeof recovery;
+    symptoms: typeof symptoms;
+    recommendation: string;
+  } | null>(null);
+
   useEffect(() => {
     // Only check activation if we have a location
     if (currentLocation) {
@@ -188,20 +198,48 @@ const PollutionDefense: React.FC = () => {
         severe: response.data.severe_symptoms || false
       });
 
-      // Mark protocol as completed
-      const today = new Date().toISOString().split('T')[0];
-      localStorage.setItem('pollution_defense_completed', today);
-      localStorage.setItem('pollution_defense_symptoms', JSON.stringify({
-        date: today,
-        ...symptoms
-      }));
+      // Mark protocol as completed and store for 3 days
+      const now = new Date();
+      const completedData = {
+        date: now.toISOString(),
+        checklist,
+        walkStartTime,
+        recovery,
+        symptoms,
+        recommendation: response.data.recommendation,
+        severe_symptoms: response.data.severe_symptoms || false,
+        aqi: activationData?.air_quality?.aqi,
+        location: currentLocation
+      };
 
-      // Reset to check phase
-      setTimeout(() => {
-        setPhase('check');
-        setSessionId(null);
-        setWalkStartTime(null);
-      }, 3000);
+      // Store in localStorage for 3 days
+      const existingProtocols = JSON.parse(localStorage.getItem('pollution_defense_protocols') || '[]');
+      
+      // Remove protocols older than 3 days
+      const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+      const recentProtocols = existingProtocols.filter((p: any) => 
+        new Date(p.date) > threeDaysAgo
+      );
+      
+      // Add new protocol
+      recentProtocols.push(completedData);
+      localStorage.setItem('pollution_defense_protocols', JSON.stringify(recentProtocols));
+
+      // Set completed state
+      setCompletedProtocol(completedData);
+
+      // Send to analytics
+      try {
+        await axios.post(`${API_BASE_URL}/analytics/pollution-defense`, {
+          user_id: user?.id,
+          ...completedData
+        });
+      } catch (analyticsError) {
+        console.error('Failed to send analytics:', analyticsError);
+        // Don't fail the whole operation if analytics fails
+      }
+
+      // Don't reset - stay on post phase to show completion
 
     } catch (error) {
       console.error('Error submitting symptoms:', error);
@@ -796,13 +834,82 @@ const PollutionDefense: React.FC = () => {
                 </div>
               )}
 
-              <button
-                onClick={submitSymptomCheck}
-                className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Complete Protocol
-              </button>
+              {completedProtocol ? (
+                <>
+                  {/* Completion Summary */}
+                  <div className="mt-6 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-6 border-2 border-blue-300">
+                    <h3 className="text-xl font-bold text-blue-900 mb-4 flex items-center">
+                      <Sparkles className="w-6 h-6 mr-2" />
+                      Protocol Completed!
+                    </h3>
+                    <div className="space-y-3 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Completed:</span>
+                        <span className="font-semibold text-gray-900">
+                          {new Date(completedProtocol.date).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Duration:</span>
+                        <span className="font-semibold text-gray-900">
+                          {completedProtocol.walkStartTime 
+                            ? `${Math.round((new Date().getTime() - new Date(completedProtocol.walkStartTime).getTime()) / 60000)} min`
+                            : 'N/A'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-700">Data stored for:</span>
+                        <span className="font-semibold text-gray-900">3 days</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setPhase('check');
+                      setSessionId(null);
+                      setWalkStartTime(null);
+                      setSymptomRecommendation(null);
+                      setCompletedProtocol(null);
+                      setChecklist({
+                        mask: false,
+                        eyewear: false,
+                        route: false,
+                        timing: false,
+                        hydrated: false,
+                        snack: false
+                      });
+                      setRecovery({
+                        washed: false,
+                        changed_clothes: false,
+                        breathing_exercise: false,
+                        hydrated: false,
+                        air_purifier: false
+                      });
+                      setSymptoms({
+                        cough: false,
+                        wheeze: false,
+                        fatigue: false,
+                        eye_irritation: false,
+                        throat_irritation: false,
+                        overall_feeling: 3
+                      });
+                    }}
+                    className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center"
+                  >
+                    <Shield className="w-5 h-5 mr-2" />
+                    Start New Protocol
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={submitSymptomCheck}
+                  className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Complete Protocol
+                </button>
+              )}
             </div>
           </div>
         )}
