@@ -6,7 +6,6 @@ import {
   Clock, MapPin, Sparkles, Activity, Home
 } from 'lucide-react';
 import axios from 'axios';
-import toast from 'react-hot-toast';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -43,7 +42,6 @@ const PollutionDefense: React.FC = () => {
   const [activationData, setActivationData] = useState<ActivationData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [walkStartTime, setWalkStartTime] = useState<Date | null>(null);
-  const [remindersShown, setRemindersShown] = useState<string[]>([]);
   
   // Checklist states
   const [checklist, setChecklist] = useState({
@@ -73,6 +71,12 @@ const PollutionDefense: React.FC = () => {
     hydrated: false,
     air_purifier: false
   });
+
+  // Symptom recommendation state
+  const [symptomRecommendation, setSymptomRecommendation] = useState<{
+    message: string;
+    severe: boolean;
+  } | null>(null);
 
   useEffect(() => {
     // Only check activation if we have a location
@@ -178,16 +182,11 @@ const PollutionDefense: React.FC = () => {
         ...symptoms
       });
 
-      if (response.data.severe_symptoms) {
-        toast.error(response.data.recommendation, {
-          duration: 8000,
-          icon: '⚠️'
-        });
-      } else {
-        toast.success(response.data.recommendation, {
-          duration: 5000
-        });
-      }
+      // Store recommendation in state instead of showing toast
+      setSymptomRecommendation({
+        message: response.data.recommendation,
+        severe: response.data.severe_symptoms || false
+      });
 
       // Mark protocol as completed
       const today = new Date().toISOString().split('T')[0];
@@ -202,26 +201,18 @@ const PollutionDefense: React.FC = () => {
         setPhase('check');
         setSessionId(null);
         setWalkStartTime(null);
-        setRemindersShown([]);
       }, 3000);
 
     } catch (error) {
       console.error('Error submitting symptoms:', error);
-      toast.error('Failed to submit symptom check');
+      // Show error in state instead of toast
+      setSymptomRecommendation({
+        message: 'Failed to submit symptom check. Please try again.',
+        severe: true
+      });
     }
   };
 
-  const getSeverityColor = (severity: string) => {
-    const colors = {
-      good: 'bg-green-100 text-green-800 border-green-300',
-      moderate: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      unhealthy_sensitive: 'bg-orange-100 text-orange-800 border-orange-300',
-      unhealthy: 'bg-red-100 text-red-800 border-red-300',
-      very_unhealthy: 'bg-purple-100 text-purple-800 border-purple-300',
-      hazardous: 'bg-gray-900 text-white border-gray-700'
-    };
-    return colors[severity as keyof typeof colors] || colors.moderate;
-  };
 
   // Show location setup if no location available
   if (!currentLocation && !loading) {
@@ -787,9 +778,27 @@ const PollutionDefense: React.FC = () => {
                 </div>
               </div>
 
+              {/* Show recommendation if available */}
+              {symptomRecommendation && (
+                <div className={`mt-6 p-4 rounded-lg border-2 ${
+                  symptomRecommendation.severe 
+                    ? 'bg-red-50 border-red-500' 
+                    : 'bg-green-50 border-green-500'
+                }`}>
+                  <h3 className={`font-semibold mb-2 ${
+                    symptomRecommendation.severe ? 'text-red-900' : 'text-green-900'
+                  }`}>
+                    {symptomRecommendation.severe ? '⚠️ Important' : '✅ Recommendation'}
+                  </h3>
+                  <p className={symptomRecommendation.severe ? 'text-red-800' : 'text-green-800'}>
+                    {symptomRecommendation.message}
+                  </p>
+                </div>
+              )}
+
               <button
                 onClick={submitSymptomCheck}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+                className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
                 Complete Protocol
