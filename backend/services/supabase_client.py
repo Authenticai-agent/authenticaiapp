@@ -15,7 +15,7 @@ def get_supabase_client() -> Client:
     
     if _supabase_client is None:
         supabase_url = os.getenv("SUPABASE_URL")
-        supabase_key = os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
+        supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SERVICE_KEY") or os.getenv("SUPABASE_KEY")
         
         if not supabase_url or not supabase_key:
             raise ValueError("SUPABASE_URL and SUPABASE_KEY must be set in environment variables")
