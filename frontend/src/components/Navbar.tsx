@@ -193,9 +193,8 @@ const Navbar: React.FC = () => {
                   
                   {/* Premium Features Dropdown */}
                   <Menu as="div" className="relative">
-                    <Menu.Button className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-400 cursor-not-allowed">
+                    <Menu.Button className="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
                       Premium Features
-                      <LockClosedIcon className="ml-1 h-4 w-4" />
                       <ChevronDownIcon className="ml-1 h-4 w-4" />
                     </Menu.Button>
                     <Transition
@@ -210,29 +209,24 @@ const Navbar: React.FC = () => {
                       <Menu.Items className="absolute left-0 z-10 mt-2 w-56 origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <div className="py-1">
                           <div className="px-4 py-2 text-xs text-gray-500 font-semibold uppercase tracking-wide border-b">
-                            Coming Soon - Premium Only
+                            Premium Features
                           </div>
                           {premiumFeatures.map((feature) => (
-                            <Menu.Item key={feature.name} disabled>
+                            <Menu.Item key={feature.name}>
                               {({ active }) => (
-                                <div
+                                <Link
+                                  to={feature.href}
                                   className={clsx(
-                                    'px-4 py-2 text-sm text-gray-400 cursor-not-allowed flex items-center',
-                                    active && 'bg-gray-50'
+                                    'px-4 py-2 text-sm flex items-center',
+                                    active ? 'bg-gray-50 text-gray-900' : 'text-gray-700'
                                   )}
                                 >
                                   <span className="mr-2">{feature.icon}</span>
                                   {feature.name}
-                                  <LockClosedIcon className="ml-auto h-4 w-4" />
-                                </div>
+                                </Link>
                               )}
                             </Menu.Item>
                           ))}
-                          <div className="border-t mt-1 pt-1">
-                            <div className="block px-4 py-2 text-sm text-gray-400 font-medium cursor-not-allowed">
-                              ✨ Upgrade to Premium (Coming Soon)
-                            </div>
-                          </div>
                         </div>
                       </Menu.Items>
                     </Transition>
