@@ -262,6 +262,33 @@ const PollutionDefense: React.FC = () => {
     return colors[severity as keyof typeof colors] || colors.moderate;
   };
 
+  // Show location setup if no location available
+  if (!currentLocation && !loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+            <MapPin className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Location Required</h2>
+            <p className="text-gray-600 mb-6">
+              To check air quality and activate pollution defense, please set your location first.
+            </p>
+            <a
+              href="/air-quality"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              <MapPin className="w-5 h-5 mr-2" />
+              Go to Air Quality to Set Location
+            </a>
+            <p className="text-sm text-gray-500 mt-4">
+              You'll be able to search for any city worldwide
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 p-6 flex items-center justify-center">
