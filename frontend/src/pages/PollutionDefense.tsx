@@ -100,6 +100,12 @@ const PollutionDefense: React.FC = () => {
       return;
     }
 
+    console.log('🔍 Checking activation with location:', {
+      lat: currentLocation.lat,
+      lon: currentLocation.lon,
+      user_id: user?.id
+    });
+
     setLoading(true);
     try {
       const response = await axios.get(`${API_BASE_URL}/pollution-defense/should-activate`, {
@@ -110,17 +116,13 @@ const PollutionDefense: React.FC = () => {
         }
       });
 
+      console.log('📊 API Response:', response.data);
       setActivationData(response.data);
       
-      if (!response.data.should_activate) {
-        toast.success('Air quality is good! No special precautions needed.', {
-          icon: '✅',
-          duration: 4000
-        });
-      }
+      // Don't show toast - information will be displayed on screen
     } catch (error) {
       console.error('Error checking activation:', error);
-      toast.error('Failed to check air quality');
+      // Don't show toast - will show error on screen
     } finally {
       setLoading(false);
     }
@@ -142,7 +144,7 @@ const PollutionDefense: React.FC = () => {
 
       setSessionId(response.data.session_id);
       setPhase('pre');
-      toast.success('Pollution Defense Mode activated!');
+      // Removed toast - status shown on screen
     } catch (error) {
       console.error('Error starting session:', error);
       toast.error('Failed to start session');
@@ -165,7 +167,7 @@ const PollutionDefense: React.FC = () => {
       });
 
       setPhase('during');
-      toast.success('Walk mode activated. Stay safe!', { icon: '🚶' });
+      // Removed toast - status shown on screen
     } catch (error) {
       console.error('Error starting walk:', error);
       toast.error('Failed to start walk mode');
@@ -173,22 +175,8 @@ const PollutionDefense: React.FC = () => {
   };
 
   const showWalkReminder = () => {
-    const reminders = [
-      { id: 'nasal_breath', message: '💨 Breathe through your nose, not mouth' },
-      { id: 'off_curb', message: '🚶 Stay 1-2m from the curb' },
-      { id: 'pace', message: '⏱️ Keep an easy, moderate pace' },
-      { id: 'upwind', message: '🌬️ Walk on the upwind side of traffic' }
-    ];
-
-    const unshownReminders = reminders.filter(r => !remindersShown.includes(r.id));
-    if (unshownReminders.length > 0) {
-      const reminder = unshownReminders[0];
-      toast(reminder.message, {
-        icon: '💡',
-        duration: 6000
-      });
-      setRemindersShown([...remindersShown, reminder.id]);
-    }
+    // Reminders are now shown permanently on screen during walk phase
+    // No need for toast notifications
   };
 
   const completeWalk = async () => {
@@ -203,7 +191,7 @@ const PollutionDefense: React.FC = () => {
       });
 
       setPhase('post');
-      toast.success('Great job! Now let\'s recover.', { icon: '✅' });
+      // Removed toast - status shown on screen
     } catch (error) {
       console.error('Error completing walk:', error);
       toast.error('Failed to update session');
