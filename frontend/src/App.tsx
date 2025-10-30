@@ -278,14 +278,15 @@ const routes = [
 
 function AppContent() {
   const { user } = useAuth();
+  const location = useLocation();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {user && <Navbar />}
       <main className={`flex-grow ${user ? 'pt-16' : ''}`}>
-        <Routes>
+        <Routes location={location} key={location.pathname}>
           {routes.map((route, index) => (
-            <Route key={index} path={route.path} element={route.element} />
+            <Route key={`${route.path}-${index}`} path={route.path} element={route.element} />
           ))}
         </Routes>
       </main>

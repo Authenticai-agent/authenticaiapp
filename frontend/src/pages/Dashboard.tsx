@@ -116,6 +116,14 @@ const Dashboard: React.FC = () => {
     console.log('Air quality state changed:', airQuality);
   }, [airQuality]);
 
+  // Clear daily briefing when location changes
+  useEffect(() => {
+    if (currentLocation) {
+      setDailyBriefing(null);
+      localStorage.removeItem('dailyBriefing');
+    }
+  }, [currentLocation?.lat, currentLocation?.lon]);
+
   // Handle donation success/cancel from URL params
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
