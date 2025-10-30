@@ -89,12 +89,46 @@ const PollutionDefense: React.FC = () => {
   } | null>(null);
 
   useEffect(() => {
+    // Load today's protocol if it exists
+    loadTodayProtocol();
+    
     // Only check activation if we have a location
     if (currentLocation) {
       checkActivation();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, currentLocation]); // Trigger when user OR location changes
+
+  const loadTodayProtocol = () => {
+    try {
+      const protocols = JSON.parse(localStorage.getItem('pollution_defense_protocols') || '[]');
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Find protocol from today
+      const todayProtocol = protocols.find((p: any) => {
+        const protocolDate = new Date(p.date).toISOString().split('T')[0];
+        return protocolDate === today;
+      });
+
+      if (todayProtocol) {
+        // Restore the completed protocol state
+        setCompletedProtocol(todayProtocol);
+        setSymptomRecommendation({
+          message: todayProtocol.recommendation,
+          severe: todayProtocol.severe_symptoms || false
+        });
+        setPhase('post'); // Show the completion screen
+        
+        // Restore all the data
+        if (todayProtocol.checklist) setChecklist(todayProtocol.checklist);
+        if (todayProtocol.recovery) setRecovery(todayProtocol.recovery);
+        if (todayProtocol.symptoms) setSymptoms(todayProtocol.symptoms);
+        if (todayProtocol.walkStartTime) setWalkStartTime(new Date(todayProtocol.walkStartTime));
+      }
+    } catch (error) {
+      console.error('Error loading today\'s protocol:', error);
+    }
+  };
 
   // Auto-reminder during walk phase
   useEffect(() => {
@@ -864,42 +898,57 @@ const PollutionDefense: React.FC = () => {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => {
-                      setPhase('check');
-                      setSessionId(null);
-                      setWalkStartTime(null);
-                      setSymptomRecommendation(null);
-                      setCompletedProtocol(null);
-                      setChecklist({
-                        mask: false,
-                        eyewear: false,
-                        route: false,
-                        timing: false,
-                        hydrated: false,
-                        snack: false
-                      });
-                      setRecovery({
-                        washed: false,
-                        changed_clothes: false,
-                        breathing_exercise: false,
-                        hydrated: false,
-                        air_purifier: false
-                      });
-                      setSymptoms({
-                        cough: false,
-                        wheeze: false,
-                        fatigue: false,
-                        eye_irritation: false,
-                        throat_irritation: false,
-                        overall_feeling: 3
-                      });
-                    }}
-                    className="w-full mt-6 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors flex items-center justify-center"
-                  >
-                    <Shield className="w-5 h-5 mr-2" />
-                    Start New Protocol
-                  </button>
+                  <div className="mt-6 bg-amber-50 border-2 border-amber-300 rounded-lg p-4">
+                    <p className="text-amber-900 text-sm mb-3">
+                      You've already completed the protocol today. You can retake it if needed, or come back tomorrow for a fresh protocol.
+                    </p>
+                    <button
+                      onClick={() => {
+                        // Remove today's protocol from storage
+                        const protocols = JSON.parse(localStorage.getItem('pollution_defense_protocols') || '[]');
+                        const today = new Date().toISOString().split('T')[0];
+                        const filteredProtocols = protocols.filter((p: any) => {
+                          const protocolDate = new Date(p.date).toISOString().split('T')[0];
+                          return protocolDate !== today;
+                        });
+                        localStorage.setItem('pollution_defense_protocols', JSON.stringify(filteredProtocols));
+                        
+                        // Reset all state
+                        setPhase('check');
+                        setSessionId(null);
+                        setWalkStartTime(null);
+                        setSymptomRecommendation(null);
+                        setCompletedProtocol(null);
+                        setChecklist({
+                          mask: false,
+                          eyewear: false,
+                          route: false,
+                          timing: false,
+                          hydrated: false,
+                          snack: false
+                        });
+                        setRecovery({
+                          washed: false,
+                          changed_clothes: false,
+                          breathing_exercise: false,
+                          hydrated: false,
+                          air_purifier: false
+                        });
+                        setSymptoms({
+                          cough: false,
+                          wheeze: false,
+                          fatigue: false,
+                          eye_irritation: false,
+                          throat_irritation: false,
+                          overall_feeling: 3
+                        });
+                      }}
+                      className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors flex items-center justify-center"
+                    >
+                      <Shield className="w-5 h-5 mr-2" />
+                      Retake Protocol?
+                    </button>
+                  </div>
                 </>
               ) : (
                 <button
