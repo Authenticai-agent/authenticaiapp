@@ -24,6 +24,8 @@ import EducationalMicroTips from '../components/EducationalMicroTips';
 import IndoorWellnessTip from '../components/IndoorWellnessTip';
 import DonationCTA from '../components/DonationCTA';
 import DailyInspiration from '../components/DailyInspiration';
+import AppointmentReminder from '../components/AppointmentReminder';
+import GoogleCalendarConnect from '../components/GoogleCalendarConnect';
 
 // API Base URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
@@ -750,6 +752,22 @@ const Dashboard: React.FC = () => {
           {/* Action Plan and Wellness Boost are now included in the main briefing above */}
           {/* No need for separate sections - everything renders with markdown */}
         </div>
+
+        {/* Google Calendar Integration */}
+        {user?.id && effectiveLocation && (
+          <>
+            <GoogleCalendarConnect 
+              onConnect={() => {
+                // Refresh the component to check connection status
+                window.location.reload();
+              }}
+            />
+            <AppointmentReminder 
+              userId={user.id} 
+              location={{ lat: effectiveLocation.lat, lon: effectiveLocation.lon }}
+            />
+          </>
+        )}
 
         <DonationCTA />
       </div>

@@ -133,6 +133,79 @@ def _generate_forecast_fallback(lat: float, lon: float) -> Dict[str, Any]:
     
 
 
+@router.get("/forecast/weather")
+async def get_weather_forecast(
+    lat: float = Query(..., description="Latitude"),
+    lon: float = Query(..., description="Longitude")
+) -> Dict[str, Any]:
+    """
+    Get current weather forecast for appointment recommendations
+    Returns temperature, conditions, precipitation chance
+    """
+    try:
+        openweather_key = os.getenv("OPENWEATHER_API_KEY")
+        
+        if not openweather_key:
+            logger.warning("OpenWeather API key not configured for weather")
+            return _generate_weather_fallback()
+        
+        # Fetch current weather from OpenWeather
+        url = "https://api.openweathermap.org/data/2.5/weather"
+        params = {
+            "lat": lat,
+            "lon": lon,
+            "appid": openweather_key,
+            "units": "imperial"  # Use Fahrenheit for US users
+        }
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params, timeout=10.0)
+            response.raise_for_status()
+            data = response.json()
+            
+            weather = {
+                'temperature': round(data['main']['temp'], 1),
+                'condition': data['weather'][0]['description'].title(),
+                'humidity': data['main']['humidity'],
+                'wind_speed': round(data.get('wind', {}).get('speed', 0) * 1.60934, 1), # Convert mph to km/h
+                'pressure': data['main']['pressure'],
+                'visibility': data.get('visibility', 0) / 1000, # Convert meters to km
+                'precipitation_chance': 0, # Current weather doesn't provide probability
+                'icon': data['weather'][0]['icon'],
+                'timestamp': data['dt'],
+                'source': 'openweather_current'
+            }
+            
+            logger.info(f"✅ Weather data for ({lat}, {lon}): {weather['temperature']}°F, {weather['condition']}")
+            return weather
+            
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error fetching weather: {e}")
+        return _generate_weather_fallback()
+    except Exception as e:
+        logger.error(f"Error fetching weather: {e}")
+        return _generate_weather_fallback()
+
+
+def _generate_weather_fallback() -> Dict[str, Any]:
+    """
+    Fallback weather data when API is unavailable
+    """
+    return {
+        'temperature': 72.0,
+        'condition': 'Unknown',
+        'humidity': 50,
+        'wind_speed': 5.0,
+        'pressure': 1013,
+        'visibility': 10,
+        'precipitation_chance': 0,
+        'icon': 'unknown',
+        'timestamp': None,
+        'source': 'fallback_data',
+        'error': 'Weather data unavailable - API key not configured or API request failed'
+    }
+
+
 @router.get("/forecast/week")
 async def get_week_forecast(
     lat: float = Query(..., description="Latitude"),

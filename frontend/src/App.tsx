@@ -46,6 +46,7 @@ const Wellness = lazy(() => import('./pages/Wellness'));
 const Feedback = lazy(() => import('./pages/Feedback'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const PollutionDefense = lazy(() => import('./pages/PollutionDefense'));
+const CalendarCallback = lazy(() => import('./pages/CalendarCallback'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -258,6 +259,10 @@ const routes = [
   {
     path: '/feedback',
     element: <Feedback />
+  },
+  {
+    path: '/calendar-callback',
+    element: <CalendarCallback />
   },
   // Add a catch-all route for 404s
   { 
