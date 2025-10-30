@@ -75,9 +75,12 @@ const PollutionDefense: React.FC = () => {
   });
 
   useEffect(() => {
-    checkActivation();
+    // Only check activation if we have a location
+    if (currentLocation) {
+      checkActivation();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, currentLocation]); // Trigger when user OR location changes
 
   // Auto-reminder during walk phase
   useEffect(() => {
@@ -93,7 +96,7 @@ const PollutionDefense: React.FC = () => {
 
   const checkActivation = async () => {
     if (!currentLocation) {
-      toast.error('Please enable location to check air quality');
+      // Don't show error - the UI will display location setup screen
       return;
     }
 
