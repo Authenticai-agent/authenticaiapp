@@ -106,9 +106,10 @@ Include:
 4. **Stress Levels**: When they felt stressed and when they felt calm
 5. **Sleep**: How well they slept and tips to sleep better
 6. **Energy**: When they felt energized vs tired
-7. **Great Job On**: What they did really well (celebrate wins!)
-8. **Could Work On**: A few simple things to try (be kind and encouraging)
-9. **Next Steps**: 3-5 easy action items for next {period}
+7. **Pollution Defense**: If they completed pollution defense protocols, comment on their air quality exposure, symptoms, and recovery practices
+8. **Great Job On**: What they did really well (celebrate wins!)
+9. **Could Work On**: A few simple things to try (be kind and encouraging)
+10. **Next Steps**: 3-5 easy action items for next {period}
 
 IMPORTANT:
 - Write like you're talking to a friend
@@ -117,6 +118,7 @@ IMPORTANT:
 - No medical jargon or fancy vocabulary
 - Use emojis to keep it friendly
 - Keep sentences short and clear
+- If they had pollution exposure, acknowledge it and praise their protective actions
 - Format in markdown"""
 
         # Call Gemini API
@@ -209,6 +211,10 @@ def prepare_data_summary(data: Dict[str, Any]) -> str:
     affirmations_completed = data.get("affirmations_completed", 0)
     challenges_completed = data.get("challenges_completed", 0)
     
+    # Pollution Defense Protocol data
+    pollution_protocols = data.get("pollution_defense_protocols", [])
+    pollution_summary = format_pollution_defense_data(pollution_protocols) if pollution_protocols else None
+    
     summary = f"""
 PERIOD: {period.upper()}
 TOTAL CHECK-INS: {total_check_ins}
@@ -237,6 +243,8 @@ ENGAGEMENT:
 - Affirmations Completed: {affirmations_completed}
 - Challenges Completed: {challenges_completed}
 
+{pollution_summary if pollution_summary else ""}
+
 NOTES FROM CHECK-INS:
 {format_check_in_notes(check_ins)}
 """
@@ -254,6 +262,57 @@ def format_check_in_notes(check_ins: List[Dict]) -> str:
             notes.append(f"- {date}: \"{note}\"")
     
     return "\n".join(notes) if notes else "No notes provided"
+
+
+def format_pollution_defense_data(protocols: List[Dict]) -> str:
+    """Format pollution defense protocol data for wellness report"""
+    if not protocols:
+        return ""
+    
+    total_protocols = len(protocols)
+    
+    # Calculate averages
+    avg_aqi = sum(p.get("aqi", 0) for p in protocols if p.get("aqi")) / max(total_protocols, 1)
+    
+    # Count symptoms
+    symptom_counts = {
+        "wheeze": 0,
+        "cough": 0,
+        "fatigue": 0,
+        "eye_irritation": 0,
+        "throat_irritation": 0
+    }
+    
+    severe_symptoms_count = 0
+    
+    for protocol in protocols:
+        symptoms = protocol.get("symptoms", {})
+        if symptoms.get("wheeze"): symptom_counts["wheeze"] += 1
+        if symptoms.get("cough"): symptom_counts["cough"] += 1
+        if symptoms.get("fatigue"): symptom_counts["fatigue"] += 1
+        if symptoms.get("eye_irritation"): symptom_counts["eye_irritation"] += 1
+        if symptoms.get("throat_irritation"): symptom_counts["throat_irritation"] += 1
+        
+        if protocol.get("severe_symptoms"):
+            severe_symptoms_count += 1
+    
+    # Most common symptoms
+    common_symptoms = [k for k, v in sorted(symptom_counts.items(), key=lambda x: x[1], reverse=True) if v > 0][:3]
+    
+    # Calculate protocol completion rate
+    completed_recovery = sum(1 for p in protocols if p.get("recovery", {}).get("breathing_exercise")) / max(total_protocols, 1) * 100
+    
+    summary = f"""
+POLLUTION DEFENSE PROTOCOLS:
+- Total Protocols Completed: {total_protocols}
+- Average AQI Exposure: {avg_aqi:.1f}
+- Severe Symptom Days: {severe_symptoms_count}
+- Most Common Symptoms: {', '.join(common_symptoms) if common_symptoms else 'None reported'}
+- Recovery Completion Rate: {completed_recovery:.0f}%
+- Assessment: {"High pollution exposure - extra care needed" if avg_aqi > 100 else "Moderate pollution exposure" if avg_aqi > 50 else "Good air quality days"}
+"""
+    
+    return summary
 
 
 @router.get("/report-history/{user_id}")
