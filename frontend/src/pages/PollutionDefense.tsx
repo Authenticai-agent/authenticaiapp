@@ -296,65 +296,182 @@ const PollutionDefense: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center">
-              <Shield className="w-8 h-8 text-blue-600 mr-3" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Pollution Defense Protocol</h1>
-                <p className="text-gray-600">Your personal protection routine</p>
-              </div>
+          <div className="flex items-center mb-4">
+            <Shield className="w-8 h-8 text-blue-600 mr-3" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Pollution Defense Protocol</h1>
+              <p className="text-gray-600">A daily personal defense routine for walking or commuting through polluted environments</p>
             </div>
-            {activationData?.air_quality && (
-              <div className={`px-4 py-2 rounded-lg border-2 ${getSeverityColor(activationData.air_quality.severity)}`}>
-                <div className="text-sm font-semibold">AQI {Math.round(activationData.air_quality.aqi)}</div>
-                <div className="text-xs">{activationData.air_quality.label}</div>
-              </div>
-            )}
           </div>
 
-          {activationData && (
-            <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-200">
-              {isTemporary && (
-                <div className="mb-2 flex items-center text-sm text-amber-700 bg-amber-50 px-3 py-1 rounded">
-                  <MapPin className="w-4 h-4 mr-1" />
-                  <span>Viewing temporary location (will reset to GPS on logout)</span>
-                </div>
-              )}
-              <p className="text-blue-900 font-medium">{activationData.message}</p>
-              {activationData.air_quality && (
-                <div className="grid grid-cols-3 gap-4 mt-3 text-sm">
-                  <div>
-                    <span className="text-gray-600">PM2.5:</span>
-                    <span className="ml-2 font-semibold">{activationData.air_quality.pm25.toFixed(1)} µg/m³</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">O₃:</span>
-                    <span className="ml-2 font-semibold">{activationData.air_quality.o3.toFixed(1)} ppb</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">NO₂:</span>
-                    <span className="ml-2 font-semibold">{activationData.air_quality.no2.toFixed(1)} ppb</span>
-                  </div>
-                </div>
-              )}
+          {isTemporary && (
+            <div className="mb-3 flex items-center text-sm text-amber-700 bg-amber-50 px-3 py-2 rounded">
+              <MapPin className="w-4 h-4 mr-1" />
+              <span>Viewing temporary location (will reset to GPS on logout)</span>
             </div>
           )}
+
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border-l-4 border-blue-500">
+            <h3 className="font-semibold text-blue-900 mb-2">🌫️ About This Protocol</h3>
+            <p className="text-blue-800 text-sm">
+              This routine helps you minimize health impact when walking or commuting through polluted areas. 
+              Follow the 3-phase protocol: <strong>Before You Go</strong>, <strong>During Exposure</strong>, and <strong>After You Return</strong>.
+            </p>
+          </div>
         </div>
 
-        {/* Phase: Initial Check */}
-        {phase === 'check' && activationData?.should_activate && (
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Ready to Activate?</h2>
-            <p className="text-gray-600 mb-6">
-              The air quality requires extra protection today. Follow the Pollution Defense Protocol to minimize health impact.
-            </p>
-            <button
-              onClick={startSession}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
-            >
-              <Shield className="w-5 h-5 mr-2" />
-              Activate Pollution Defense Mode
-            </button>
+        {/* Protocol Overview - Always Visible */}
+        {phase === 'check' && (
+          <div className="space-y-6">
+            {/* Phase 1: Before You Go */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold">1</span>
+                Before You Go (2-3 min)
+              </h2>
+              
+              <div className="space-y-4">
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">✅ Check & Plan</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Check current AQI (PM2.5, O₃, NO₂) - available on Dashboard</li>
+                    <li>• Plan timing: Avoid rush hour (7-9 AM, 4-6 PM)</li>
+                    <li>• Choose micro-routes: Parks, side streets, paths away from traffic</li>
+                    <li>• Morning before sunrise or after rain = cleaner air</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-green-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🧥 Gear Up</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• <strong>Mask:</strong> N95/N99/FFP2 with full seal</li>
+                    <li>• <strong>Eyewear:</strong> Sunglasses or light goggles protect from particles</li>
+                    <li>• <strong>Clothing:</strong> Long sleeves + hair covering reduce soot/dust</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-cyan-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🧃 Pre-Exposure Boost</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• <strong>Hydrate:</strong> Glass of water with lemon or green tea</li>
+                    <li>• <strong>Snack:</strong> Orange, kiwi, or berries (Vitamin C + antioxidants)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                onClick={startSession}
+                className="w-full mt-6 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center"
+              >
+                <Shield className="w-5 h-5 mr-2" />
+                Start Protocol Session
+              </button>
+            </div>
+
+            {/* Phase 2: During Exposure */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-green-100 text-green-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold">2</span>
+                During Exposure (Smart Movement)
+              </h2>
+              
+              <div className="space-y-4">
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">💨 Breathing Strategy</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Breathe through nose, not mouth (filters ~30% of particulates)</li>
+                    <li>• Avoid deep or rapid breathing (no jogging in high pollution)</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-purple-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🏙️ Route Behavior</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Walk on upwind side of traffic</li>
+                    <li>• Stay 1-2m from curb (cuts exposure 20-40%)</li>
+                    <li>• Skip idling cars, bus stops, construction zones</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-orange-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🕓 Limit Exposure Time</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Stay outside only as long as necessary</li>
+                    <li>• Take breaks indoors or in shaded green areas</li>
+                    <li>• Trees can cut local PM by up to 25%</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Phase 3: After Exposure */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <span className="bg-red-100 text-red-600 w-8 h-8 rounded-full flex items-center justify-center mr-3 font-bold">3</span>
+                After You Return (Detox & Recovery)
+              </h2>
+              
+              <div className="space-y-4">
+                <div className="border-l-4 border-blue-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🚿 Cleanse</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Wash face, hands, hair immediately</li>
+                    <li>• Change outer clothes to avoid carrying particles indoors</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-cyan-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">💧 Hydrate & Recover</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Drink 1-2 glasses water or coconut water</li>
+                    <li>• Herbal teas: ginger, turmeric, licorice, tulsi, peppermint</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-purple-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🫁 Lung Recovery (3-5 min)</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• <strong>Box breathing:</strong> 4-4-4-4 (inhale-hold-exhale-hold)</li>
+                    <li>• <strong>Shoulder roll + deep sigh:</strong> Relieves thoracic tension</li>
+                    <li>• <strong>Humming breath:</strong> Creates nitric oxide, opens airways</li>
+                  </ul>
+                </div>
+
+                <div className="border-l-4 border-green-500 pl-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">🥗 Nutrition Reinforcement</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• <strong>Antioxidants:</strong> Spinach, berries, citrus, broccoli, avocado, nuts</li>
+                    <li>• <strong>Omega-3s:</strong> Fish, chia, flax (reduce inflammation)</li>
+                    <li>• <strong>Detox helpers:</strong> Cruciferous vegetables support liver</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Long-term Resilience */}
+            <div className="bg-gradient-to-r from-green-50 to-cyan-50 rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">🌿 Long-Term Resilience</h2>
+              
+              <div className="space-y-3">
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Daily Habits</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Run HEPA air purifiers 1-2 hours after coming home</li>
+                    <li>• Ventilate when outdoor AQI &lt; 80</li>
+                    <li>• Exercise indoors on poor-air days</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-1">Weekly Clean-Air Reset</h3>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    <li>• Spend 2-3 hours in green or coastal area</li>
+                    <li>• Practice lung cleansing yoga or guided breathing</li>
+                    <li>• Track how you feel before and after</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
