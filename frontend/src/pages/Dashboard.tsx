@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useGlobalLocation } from '../contexts/LocationContext';
+import { useLocation } from '../hooks/useLocation';
 import { predictionsAPI, airQualityAPI, forecastAPI } from '../services/api';
 import { resolveEffectiveLocation } from '../utils/location';
 import { getLocationName } from '../utils/geocoding';
@@ -59,8 +60,12 @@ interface DailyBriefing {
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const { currentLocation } = useGlobalLocation();
+  const { currentLocation: hookLocation } = useLocation(); // Also get from useLocation hook
   const [loading, setLoading] = useState(true);
   const [usingDefaultLocation, setUsingDefaultLocation] = useState(false);
+  
+  // Use hookLocation if available, fallback to currentLocation
+  const effectiveLocation = hookLocation || currentLocation;
   const [riskPrediction, setRiskPrediction] = useState<RiskPrediction | null>(null);
   const [airQuality, setAirQuality] = useState<AirQualityData | null>(null);
   const [dailyBriefing, setDailyBriefing] = useState<DailyBriefing | null>(null);
@@ -92,10 +97,10 @@ const Dashboard: React.FC = () => {
     setDailyBriefing(null);
     
     // Load location name
-    if (currentLocation) {
-      getLocationName(currentLocation.lat, currentLocation.lon)
+    if (effectiveLocation) {
+      getLocationName(effectiveLocation.lat, effectiveLocation.lon)
         .then(name => setLocationName(name))
-        .catch(() => setLocationName(`${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)}`));
+        .catch(() => setLocationName(`${effectiveLocation.lat.toFixed(4)}, ${effectiveLocation.lon.toFixed(4)}`));
     }
     
     // Load data from localStorage first, then fetch fresh data
@@ -103,7 +108,7 @@ const Dashboard: React.FC = () => {
     
     // Always try to load data - loadDashboardData will resolve location if needed
     loadDashboardData();
-  }, [currentLocation]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [effectiveLocation]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Debug air quality state changes
   useEffect(() => {
