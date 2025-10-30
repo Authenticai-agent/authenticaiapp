@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const PremiumFeatures: React.FC = () => {
-  const { location } = useGlobalLocation();
+  const { currentLocation } = useGlobalLocation();
   const [activeTab, setActiveTab] = useState<'locations' | 'forecast' | 'trends' | 'notifications'>('locations');
 
   const tabs = [
@@ -107,11 +107,11 @@ const PremiumFeatures: React.FC = () => {
             </div>
           )}
 
-          {activeTab === 'forecast' && location && (
+          {activeTab === 'forecast' && currentLocation && (
             <div>
               <HourlyForecastChart 
-                lat={location.lat} 
-                lon={location.lon} 
+                lat={currentLocation.lat} 
+                lon={currentLocation.lon} 
                 hours={24}
               />
             </div>
