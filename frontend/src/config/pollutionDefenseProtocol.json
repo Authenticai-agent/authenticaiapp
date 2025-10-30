@@ -1,0 +1,296 @@
+{
+  "version": "1.0.0",
+  "routine_id": "pollution_defense_protocol",
+  "name": "Pollution Defense Protocol",
+  "description": "A practical routine to reduce health impact when you must walk or commute through polluted areas.",
+  "triggers": [
+    {
+      "id": "air_quality_threshold",
+      "type": "aq_monitor",
+      "conditions_any": [
+        { "metric": "AQI", "op": ">", "value": 100 },
+        { "metric": "PM2_5", "op": ">", "value": 35 },
+        { "metric": "O3", "op": ">", "unit": "ppb", "value": 70 }
+      ],
+      "frequency_limit": { "per": "day", "max_runs": 2 },
+      "notify": {
+        "title": "Pollution Defense Mode",
+        "body": "Air is {AQI_label} (AQI {AQI}). Activate your routine before heading out.",
+        "cta": "Open Routine"
+      }
+    }
+  ],
+  "audience_overrides": [
+    {
+      "segment_id": "respiratory_sensitive",
+      "match_any": [
+        { "profile.flag.asthma": true },
+        { "profile.flag.copd": true },
+        { "profile.flag.allergies": true },
+        { "profile.age": { "op": ">=", "value": 65 } }
+      ],
+      "adjustments": {
+        "intensity": "reduced",
+        "messages": {
+          "pre.header": "Extra Care Today",
+          "during.pace_hint": "Keep an easy pace and nasal-breathe."
+        }
+      }
+    }
+  ],
+  "variables": {
+    "locale": "en-US",
+    "units": { "distance": "metric", "temp": "C" },
+    "defaults": {
+      "walk_duration_min": 15,
+      "during_reminder_every_min": 5
+    }
+  },
+  "phases": [
+    {
+      "id": "pre_exposure",
+      "title": "Before You Go (2–3 min)",
+      "steps": [
+        {
+          "type": "card.info",
+          "id": "pre_status",
+          "title": "Current Air Quality",
+          "body": "AQI {AQI} • PM2.5 {PM2_5} µg/m³ • O₃ {O3} ppb",
+          "severity": "{AQI_severity}"
+        },
+        {
+          "type": "checklist",
+          "id": "gear_check",
+          "title": "Quick Prep",
+          "items": [
+            { "id": "mask", "label": "Wear a fitted N95/FFP2 (seal check)", "required": true },
+            { "id": "eyewear", "label": "Sunglasses/eyewear to reduce irritation" },
+            { "id": "route", "label": "Pick side streets/park edge; stay off the curb" },
+            { "id": "timing", "label": "Avoid rush hour if possible" }
+          ]
+        },
+        {
+          "type": "action.hydrate",
+          "id": "hydrate",
+          "title": "Hydrate",
+          "suggestions": [
+            { "id": "water", "label": "Water (250–350 ml)" },
+            { "id": "green_tea", "label": "Green tea (unsweetened)" },
+            { "id": "lemon_water", "label": "Water + lemon" }
+          ],
+          "autosave": true
+        },
+        {
+          "type": "action.snack",
+          "id": "antioxidant_snack",
+          "title": "Antioxidant Snack (Optional)",
+          "options": [
+            "Orange or kiwi",
+            "Handful of berries",
+            "Small apple + 6–8 almonds"
+          ],
+          "optional": true
+        },
+        {
+          "type": "coach.tip",
+          "id": "pre_breathing_tip",
+          "title": "Breathing Plan",
+          "body": "During the walk, breathe through your nose and keep an easy-moderate pace."
+        }
+      ],
+      "exit_cta": "Start Walk Mode"
+    },
+    {
+      "id": "during_exposure",
+      "title": "During Your Walk/Commute",
+      "steps": [
+        {
+          "type": "walk_mode.start",
+          "id": "walk_mode",
+          "config": {
+            "reminder_every_min": "{defaults.during_reminder_every_min}",
+            "reminders": [
+              {
+                "id": "rem_nasal_breath",
+                "title": "Nasal Breathing",
+                "body": "Inhale through the nose, relaxed pace. Nasal passages filter ~30% of particulates.",
+                "sound": "soft"
+              },
+              {
+                "id": "rem_off_curb",
+                "title": "Micro-route Tips",
+                "body": "Stay 1–2m from the curb (reduces exposure 20-40%). Avoid idling vehicles and bus stops. Walk on upwind side of traffic.",
+                "sound": "soft"
+              },
+              {
+                "id": "rem_pace",
+                "title": "Pace Control",
+                "body": "Keep an easy to moderate pace. Avoid deep or rapid breathing.",
+                "sound": "soft"
+              }
+            ],
+            "adaptive_prompts": [
+              {
+                "if": { "wind.direction_relative": "tailwind_from_road" },
+                "title": "Wind Check",
+                "body": "Cross to the upwind side if safe."
+              },
+              {
+                "if": { "AQI_delta": { "op": ">", "value": 20 } },
+                "title": "Air Spike",
+                "body": "Slow your pace for 2–3 min and nasal-breathe."
+              }
+            ]
+          }
+        },
+        {
+          "type": "timer.micro",
+          "id": "mid_walk_pause",
+          "title": "60-second Calm Pause",
+          "duration_sec": 60,
+          "script": [
+            "Relax shoulders",
+            "4-second inhale (nose)",
+            "6-second exhale (nose/hum)",
+            "Repeat x5"
+          ],
+          "optional": true
+        }
+      ],
+      "exit_cta": "I'm Done - Start Recovery"
+    },
+    {
+      "id": "post_exposure",
+      "title": "Recovery & Detox (4–6 min)",
+      "steps": [
+        {
+          "type": "action.cleanup",
+          "id": "wash_up",
+          "title": "Quick Clean",
+          "items": [
+            "Wash hands and face",
+            "Rinse eyes with clean water if irritated",
+            "Change outer layer if dusty"
+          ]
+        },
+        {
+          "type": "breath.coach",
+          "id": "lung_recovery",
+          "title": "Lung Recovery (3 min)",
+          "sequence": [
+            { "pattern": "box", "inhale": 4, "hold1": 4, "exhale": 4, "hold2": 4, "cycles": 4 },
+            { "pattern": "humming", "inhale": 3, "exhale": 6, "cycles": 5 }
+          ],
+          "visualization": "circle_expand_contract"
+        },
+        {
+          "type": "action.hydrate",
+          "id": "rehydrate",
+          "title": "Re-hydrate",
+          "suggestions": [
+            { "id": "water2", "label": "Water (250–350 ml)" },
+            { "id": "herbal_tea", "label": "Turmeric-ginger or peppermint tea" }
+          ]
+        },
+        {
+          "type": "nutrition.suggest",
+          "id": "post_meal",
+          "title": "Post-Pollution Meal",
+          "tags": ["antioxidant", "omega3", "cruciferous"],
+          "examples": [
+            "Leafy salad + citrus + olive oil + walnuts",
+            "Steamed broccoli + salmon/tofu + brown rice",
+            "Berry yogurt bowl + chia/flax"
+          ]
+        },
+        {
+          "type": "environment.indoor_air",
+          "id": "home_air_reset",
+          "title": "Home Air Reset",
+          "actions": [
+            { "id": "hepa_on", "label": "Run HEPA purifier 60–120 min" },
+            { "id": "ventilate_if_ok", "label": "Ventilate if outdoor AQI < 80" }
+          ]
+        },
+        {
+          "type": "reflect.checkin",
+          "id": "symptom_check",
+          "title": "How do you feel now?",
+          "scale": { "min": 1, "max": 5, "labels": ["Great", "Not good"] },
+          "fields": [
+            { "id": "cough", "label": "Cough/irritation", "type": "boolean" },
+            { "id": "wheeze", "label": "Wheezing", "type": "boolean" },
+            { "id": "fatigue", "label": "Fatigue", "type": "boolean" }
+          ],
+          "autosave": true
+        }
+      ],
+      "exit_cta": "Complete Protocol"
+    }
+  ],
+  "weekly_reset": {
+    "id": "clean_air_reset",
+    "title": "Weekly Clean-Air Reset",
+    "trigger": { "type": "weekday", "days": ["Sat","Sun"], "time_local": "09:00" },
+    "steps": [
+      {
+        "type": "goal.suggest",
+        "id": "green_time",
+        "title": "2–3 hours in a green/coastal area",
+        "body": "Log location and mood after your outing."
+      },
+      {
+        "type": "breath.session",
+        "id": "yoga_breath",
+        "title": "Guided Lung Cleansing (8–10 min)",
+        "sequence": [
+          { "pattern": "coherence", "inhale": 5, "exhale": 5, "minutes": 5 },
+          { "pattern": "humming", "inhale": 3, "exhale": 6, "minutes": 3 }
+        ]
+      }
+    ],
+    "rewards": { "badge": "Clean-Air Champion", "streak": true }
+  },
+  "safety": {
+    "show_emergency_cta_if": [
+      { "metric": "AQI", "op": ">", "value": 200 },
+      { "profile.flag.asthma": true, "symptom.wheeze": true }
+    ],
+    "emergency_cta": {
+      "title": "Take Extra Care",
+      "body": "Consider postponing outdoor activity or shortening time outside. Seek medical advice if symptoms escalate."
+    }
+  },
+  "telemetry": {
+    "events": [
+      "routine.opened",
+      "pre.checklist.completed",
+      "walk_mode.started",
+      "walk_mode.reminder_shown",
+      "post.breathing.completed",
+      "post.symptom_check.saved",
+      "weekly_reset.completed"
+    ]
+  },
+  "localization_keys": [
+    "Pollution Defense Mode",
+    "Air is {AQI_label} (AQI {AQI})",
+    "Wear a fitted N95/FFP2 (seal check)",
+    "Nasal Breathing",
+    "Home Air Reset",
+    "Guided Lung Cleansing"
+  ],
+  "accessibility": {
+    "voice_prompts": true,
+    "haptic_cues": true,
+    "high_contrast_support": true
+  },
+  "integration": {
+    "storage": { "provider": "supabase", "tables": ["routine_events", "symptom_checkins"] },
+    "feature_flags": ["pollution_defense_v1"],
+    "deeplinks": {
+      "open": "authenticai://routine/pollution_defense_protocol",
+      "start_walk_mode": "authenticai://routine/pollution_defense_protocol/during_exposure"
+    }
+  }
+}
