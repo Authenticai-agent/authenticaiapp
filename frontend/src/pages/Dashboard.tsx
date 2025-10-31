@@ -18,7 +18,6 @@ import {
 import clsx from 'clsx';
 import TomorrowOutlook from '../components/TomorrowOutlook';
 import SmartScoreTrend from '../components/SmartScoreTrend';
-import LungEnergyMeter from '../components/LungEnergyMeter';
 import CommunityGoodDayChallenge from '../components/CommunityGoodDayChallenge';
 import EducationalMicroTips from '../components/EducationalMicroTips';
 import IndoorWellnessTip from '../components/IndoorWellnessTip';
@@ -659,6 +658,9 @@ const Dashboard: React.FC = () => {
             </Link>
           </div>
 
+          {/* Good Day Challenge - moved next to Air Quality */}
+          <CommunityGoodDayChallenge />
+
         </div>
 
         {/* Free Tier Engagement Cards */}
@@ -675,11 +677,6 @@ const Dashboard: React.FC = () => {
             currentScore={riskPrediction?.risk_score || 0} 
             airQuality={airQuality}
           />
-          <LungEnergyMeter />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <CommunityGoodDayChallenge />
           <EducationalMicroTips />
         </div>
 

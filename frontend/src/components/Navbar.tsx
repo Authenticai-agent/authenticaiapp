@@ -234,15 +234,6 @@ const Navbar: React.FC = () => {
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                {user?.subscription_tier === 'free' && (
-                  <button
-                    disabled
-                    className="mr-4 text-xs px-3 py-1 bg-gray-100 text-gray-400 rounded cursor-not-allowed"
-                    title="Coming Soon"
-                  >
-                    Upgrade (Coming Soon)
-                  </button>
-                )}
                 <Menu as="div" className="ml-3 relative">
                   <div>
                     <Menu.Button className="bg-white flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">

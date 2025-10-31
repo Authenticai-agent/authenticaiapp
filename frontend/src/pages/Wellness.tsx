@@ -9,6 +9,7 @@ import DailyInspiration from '../components/DailyInspiration';
 import StreakDisplay from '../components/StreakDisplay';
 import WellnessReport from '../components/WellnessReport';
 import MorningMovementProgram from '../components/MorningMovementProgram';
+import LungEnergyMeter from '../components/LungEnergyMeter';
 import { updateStreak } from '../utils/streaks';
 import { saveCheckIn } from '../utils/wellnessDataCollector';
 
@@ -306,6 +307,9 @@ const Wellness: React.FC = () => {
               <DailyAffirmation />
               <DailyChallenge />
             </div>
+
+            {/* Lung Energy Meter - moved from Dashboard */}
+            <LungEnergyMeter />
 
             {/* Check-in Form */}
             <div className="bg-white rounded-xl shadow-lg p-8">
