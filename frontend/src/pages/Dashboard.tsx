@@ -9,7 +9,7 @@ import { getLocationName } from '../utils/geocoding';
 import ReactMarkdown from 'react-markdown';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
-import { canGenerateBriefing, incrementBriefingCount, getRemainingBriefings } from '../utils/briefingLimit';
+import { canGenerateBriefing, incrementBriefingCount, getRemainingBriefings, syncUsageFromBackend } from '../utils/briefingLimit';
 import { 
   ExclamationTriangleIcon, 
   CloudIcon,
@@ -443,13 +443,24 @@ const Dashboard: React.FC = () => {
       console.log('Formatted daily briefing:', newDailyBriefing);
       setDailyBriefing(newDailyBriefing);
       
-      // Increment briefing count
-      const usage = incrementBriefingCount();
-      const remaining = getRemainingBriefings();
-      toast.success(`Briefing generated! ${remaining}/5 remaining today`, {
-        duration: 3000,
-        icon: '✅'
-      });
+      // SYNC USAGE FROM BACKEND (source of truth)
+      // The backend tracks usage in database, so we sync localStorage with it
+      if (data.usage) {
+        syncUsageFromBackend(data.usage);
+        const remaining = data.usage.remaining || 0;
+        toast.success(`Briefing generated! ${remaining}/${data.usage.limit} remaining today`, {
+          duration: 3000,
+          icon: '✅'
+        });
+      } else {
+        // Fallback to local increment if backend doesn't return usage
+        incrementBriefingCount();
+        const remaining = getRemainingBriefings();
+        toast.success(`Briefing generated! ${remaining}/5 remaining today`, {
+          duration: 3000,
+          icon: '✅'
+        });
+      }
       
       // Update the dashboard risk score to match the briefing (ensures consistency)
       if (data.risk_score) {
@@ -467,10 +478,33 @@ const Dashboard: React.FC = () => {
       
       // Save to localStorage for persistence
       saveCachedData(riskPrediction, airQuality, newDailyBriefing);
-      toast.success('Daily briefing generated!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating briefing:', error);
-      toast.error('Failed to generate daily briefing. Please try again.');
+      
+      // Handle rate limit error (429)
+      if (error.response?.status === 429 || error.message?.includes('limit')) {
+        const errorData = error.response?.data || {};
+        const remaining = errorData.remaining || 0;
+        const limit = errorData.limit || 5;
+        
+        toast.error(
+          `Daily limit reached! You've used all ${limit} briefings today. Try again tomorrow! 🌅`,
+          {
+            duration: 5000,
+            icon: '🚫'
+          }
+        );
+        
+        // Sync usage from error response
+        if (errorData.count !== undefined && errorData.limit !== undefined) {
+          syncUsageFromBackend({
+            count: errorData.count,
+            limit: errorData.limit
+          });
+        }
+      } else {
+        toast.error('Failed to generate daily briefing. Please try again.');
+      }
     } finally {
       setBriefingLoading(false);
     }

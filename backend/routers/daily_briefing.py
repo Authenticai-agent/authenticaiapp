@@ -19,6 +19,7 @@ from services.premium_lean_engine import premium_lean_engine
 from services.briefing_history_service import briefing_history_service
 from routers.air_quality import AirQualityService, get_air_quality_service
 from middleware.rate_limiter import check_rate_limit  # NEW: Rate limiting
+from services.briefing_usage_service import briefing_usage_service  # STRICT: Database-backed usage tracking
 # from services.unified_environmental_engine import unified_environmental_engine  # Temporary disable
 
 # Initialize Gemini service for professional wellness coach tone
@@ -529,10 +530,32 @@ async def get_dynamic_briefing_authenticated(
     Get Dynamic Daily Briefing for authenticated user
     Uses user's actual profile and CURRENT selected location
     WITH CACHING: Reduces Gemini API calls by 80-90%
-    RATE LIMITED: 5 requests per 24 hours
+    STRICT LIMIT: 5 briefings per day for free users (database-backed)
     """
-    # Rate limit check (5 requests per day)
-    await check_rate_limit(request, current_user.id, "daily_briefing")
+    # STRICT DATABASE-BACKED LIMIT CHECK
+    # This persists across logout, localStorage clear, hard refresh, server restart
+    subscription_tier = getattr(current_user, 'subscription_tier', 'free')
+    
+    # Check if user can generate a briefing today
+    usage_info = briefing_usage_service.get_daily_usage(str(current_user.id), subscription_tier)
+    
+    if not usage_info['can_generate']:
+        logger.warning(
+            f"🚫 User {current_user.id} ({subscription_tier}) attempted to exceed daily limit: "
+            f"{usage_info['count']}/{usage_info['limit']}"
+        )
+        raise HTTPException(
+            status_code=429,
+            detail={
+                "error": "Daily briefing limit reached",
+                "message": f"You've used all {usage_info['limit']} of your daily briefings. Try again tomorrow!",
+                "count": usage_info['count'],
+                "limit": usage_info['limit'],
+                "remaining": 0,
+                "resets_at": "midnight",
+                "subscription_tier": subscription_tier
+            }
+        )
     
     try:
         # Check cache first (1-hour window for same location AND user)
@@ -725,6 +748,18 @@ async def get_dynamic_briefing_authenticated(
         if keys_to_delete:
             logger.info(f"🧹 Cleaned {len(keys_to_delete)} old cache entries")
         
+        # INCREMENT USAGE COUNT - Only after successful generation
+        # This ensures we only count actual briefings, not cached ones
+        try:
+            updated_usage = briefing_usage_service.increment_usage(str(current_user.id), subscription_tier)
+            logger.info(
+                f"✅ Briefing usage incremented: {updated_usage['count']}/{updated_usage['limit']} "
+                f"(remaining: {updated_usage['remaining']})"
+            )
+        except Exception as usage_error:
+            logger.error(f"Failed to increment usage count: {usage_error}")
+            # Don't fail the request if usage tracking fails, but log it
+        
         return {
             "briefing": briefing,
             "metadata": metadata,
@@ -734,7 +769,8 @@ async def get_dynamic_briefing_authenticated(
             "user_id": str(current_user.id),
             "generated_at": generated_at,
             "engine": "dynamic_daily_briefing_v1",
-            "cached": False
+            "cached": False,
+            "usage": updated_usage if 'updated_usage' in locals() else usage_info
         }
         
     except HTTPException:

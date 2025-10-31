@@ -1,6 +1,14 @@
 /**
  * Daily Briefing Limit System
  * Free tier: 5 briefings per day
+ * 
+ * IMPORTANT: The source of truth is the BACKEND database.
+ * This localStorage is just for UI display and will be synced with backend response.
+ * The backend enforces the STRICT limit - users cannot bypass it by:
+ * - Clearing localStorage
+ * - Logging out/in
+ * - Hard refresh
+ * - Using different devices
  */
 
 export interface BriefingUsage {
@@ -47,6 +55,20 @@ export function saveBriefingUsage(usage: BriefingUsage): void {
   } catch (error) {
     console.error('Error saving briefing usage:', error);
   }
+}
+
+/**
+ * Sync usage from backend response
+ * The backend is the source of truth
+ */
+export function syncUsageFromBackend(backendUsage: { count: number; limit: number; date?: string }): void {
+  const today = new Date().toISOString().split('T')[0];
+  const usage: BriefingUsage = {
+    date: backendUsage.date || today,
+    count: backendUsage.count,
+    limit: backendUsage.limit
+  };
+  saveBriefingUsage(usage);
 }
 
 export function incrementBriefingCount(): BriefingUsage {
