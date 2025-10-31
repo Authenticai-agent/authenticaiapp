@@ -58,6 +58,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'beginner',
     duration: 5,
     isPremium: false, // Free - foundational technique
+    teaserBenefit: 'Strengthens your diaphragm and increases lung capacity for better oxygen intake',
     description: 'The foundation of all breathing exercises. Strengthens the diaphragm and increases lung capacity.',
     benefits: [
       'Strengthens diaphragm muscle',
@@ -122,6 +123,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'beginner',
     duration: 3,
     isPremium: true,
+    teaserBenefit: 'Keeps airways open longer and reduces shortness of breath for COPD and asthma relief',
     description: 'Slows breathing pace and keeps airways open longer. Especially helpful for COPD and asthma.',
     benefits: [
       'Keeps airways open longer',
@@ -191,6 +193,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'beginner',
     duration: 4,
     isPremium: true,
+    teaserBenefit: 'Navy SEAL technique that reduces stress, improves focus, and regulates your nervous system',
     description: 'Equal-length breathing pattern used by Navy SEALs. Excellent for stress and anxiety.',
     benefits: [
       'Reduces stress and anxiety',
@@ -273,6 +276,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'intermediate',
     duration: 3,
     isPremium: true,
+    teaserBenefit: 'Dr. Weil\'s natural tranquilizer that helps you fall asleep faster and reduces anxiety',
     description: 'Dr. Andrew Weil\'s technique for deep relaxation and sleep. Natural tranquilizer for the nervous system.',
     benefits: [
       'Promotes deep relaxation',
@@ -349,6 +353,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'intermediate',
     duration: 5,
     isPremium: true,
+    teaserBenefit: 'Ancient yogic technique that balances left and right brain for mental clarity and calm',
     description: 'Ancient yogic breathing technique that balances the nervous system and clears energy channels.',
     benefits: [
       'Balances left and right brain',
@@ -438,6 +443,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'beginner',
     duration: 10,
     isPremium: true,
+    teaserBenefit: 'Maximizes heart rate variability and reduces stress hormones for cardiovascular health',
     description: 'Breathing at 5 breaths per minute to maximize heart rate variability and promote calm.',
     benefits: [
       'Maximizes heart rate variability',
@@ -507,6 +513,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'advanced',
     duration: 5,
     isPremium: true,
+    teaserBenefit: 'Energizing yogic breath that cleanses your respiratory system and boosts mental clarity',
     description: 'Energizing yogic breathing technique that cleanses the respiratory system and energizes the body.',
     benefits: [
       'Cleanses respiratory system',
@@ -587,6 +594,7 @@ export const breathingExercises: BreathingExercise[] = [
     difficulty: 'advanced',
     duration: 10,
     isPremium: true,
+    teaserBenefit: 'Reduces asthma symptoms by improving oxygen delivery and increasing CO2 tolerance',
     description: 'Reduces hyperventilation and improves oxygen delivery. Particularly effective for asthma.',
     benefits: [
       'Reduces asthma symptoms',
