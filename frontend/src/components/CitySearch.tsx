@@ -86,9 +86,9 @@ const CitySearch: React.FC<CitySearchProps> = ({ onSelectCity, placeholder = 'Se
           lon: parseFloat(item.lon),
           display_name: item.display_name
         }))
-        .filter((city, index, self) => 
+        .filter((city: CityResult, index: number, self: CityResult[]) => 
           // Remove duplicates based on name and coordinates
-          index === self.findIndex((c) => 
+          index === self.findIndex((c: CityResult) => 
             c.name === city.name && 
             Math.abs(c.lat - city.lat) < 0.01 && 
             Math.abs(c.lon - city.lon) < 0.01
