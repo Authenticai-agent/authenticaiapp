@@ -10,6 +10,7 @@ import {
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import LoadingSpinner from './LoadingSpinner';
+import CitySearch from './CitySearch';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
 
@@ -319,6 +320,39 @@ const MultipleLocations: React.FC = () => {
           </div>
 
           <div className="space-y-4">
+            {/* City Search */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                🔍 Search for a City
+              </label>
+              <CitySearch
+                placeholder="Type city name (e.g., West Chester, OH or Cincinnati, OH)"
+                onSelectCity={(city) => {
+                  setFormData({
+                    name: formData.name || `${city.name}, ${city.state || city.country}`,
+                    lat: city.lat.toString(),
+                    lon: city.lon.toString(),
+                    address: city.display_name
+                  });
+                  toast.success(`Selected: ${city.name}, ${city.state}`);
+                }}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Search for cities like "West Chester, OH", "Cincinnati", "Fairfield, OH", etc.
+              </p>
+            </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-gray-50 text-gray-500">or enter manually</span>
+              </div>
+            </div>
+
+            {/* Manual Entry */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Location Name *
@@ -368,7 +402,7 @@ const MultipleLocations: React.FC = () => {
               </label>
               <input
                 type="text"
-                placeholder="123 Main St, City, State"
+                placeholder="Auto-filled from city search or enter manually"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
