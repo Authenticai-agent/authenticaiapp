@@ -48,6 +48,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const PollutionDefense = lazy(() => import('./pages/PollutionDefense'));
 const PremiumFeatures = lazy(() => import('./pages/PremiumFeatures'));
 const CalendarCallback = lazy(() => import('./pages/CalendarCallback'));
+const BreathingLibrary = lazy(() => import('./pages/BreathingLibrary'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -268,6 +269,10 @@ const routes = [
   {
     path: '/calendar-callback',
     element: <CalendarCallback />
+  },
+  {
+    path: '/breathing',
+    element: <ProtectedRoute><BreathingLibrary /></ProtectedRoute>
   },
   // Add a catch-all route for 404s
   { 

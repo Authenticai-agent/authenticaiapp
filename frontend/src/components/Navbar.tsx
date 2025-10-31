@@ -9,6 +9,7 @@ const activeNavigation = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Air Quality', href: '/air-quality' },
   { name: 'Wellness', href: '/wellness' },
+  { name: 'Breathing', href: '/breathing' },
   { name: 'Pollution Defense', href: '/pollution-defense' },
   { name: 'Privacy', href: '/privacy' },
   { name: 'FAQ', href: '/faq' },
