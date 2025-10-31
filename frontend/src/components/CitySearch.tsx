@@ -52,14 +52,13 @@ const CitySearch: React.FC<CitySearchProps> = ({ onSelectCity, placeholder = 'Se
   const searchCities = async (searchQuery: string) => {
     setLoading(true);
     try {
-      // Use OpenWeatherMap Geocoding API (free, no API key needed for basic use)
-      // Or use Nominatim (OpenStreetMap)
+      // Use Nominatim (OpenStreetMap) with more flexible filtering
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?` +
         `q=${encodeURIComponent(searchQuery)}&` +
         `format=json&` +
         `addressdetails=1&` +
-        `limit=10&` +
+        `limit=20&` + // Increased limit for better results
         `countrycodes=us` // Limit to US for better results
       );
 
@@ -68,20 +67,33 @@ const CitySearch: React.FC<CitySearchProps> = ({ onSelectCity, placeholder = 'Se
       const data = await response.json();
       
       const cities: CityResult[] = data
-        .filter((item: any) => 
-          item.type === 'city' || 
-          item.type === 'town' || 
-          item.type === 'village' ||
-          item.class === 'place'
-        )
+        .filter((item: any) => {
+          // More flexible filtering - include any place with a city/town/village
+          const hasCity = item.address?.city || item.address?.town || item.address?.village;
+          const isPlace = item.class === 'place' || item.class === 'boundary';
+          return hasCity || isPlace;
+        })
         .map((item: any) => ({
-          name: item.address?.city || item.address?.town || item.address?.village || item.name,
+          name: item.address?.city || 
+                item.address?.town || 
+                item.address?.village || 
+                item.address?.suburb ||
+                item.address?.hamlet ||
+                item.name,
           state: item.address?.state,
           country: item.address?.country || 'USA',
           lat: parseFloat(item.lat),
           lon: parseFloat(item.lon),
           display_name: item.display_name
         }))
+        .filter((city, index, self) => 
+          // Remove duplicates based on name and coordinates
+          index === self.findIndex((c) => 
+            c.name === city.name && 
+            Math.abs(c.lat - city.lat) < 0.01 && 
+            Math.abs(c.lon - city.lon) < 0.01
+          )
+        )
         .slice(0, 10); // Limit to 10 results
 
       setResults(cities);
