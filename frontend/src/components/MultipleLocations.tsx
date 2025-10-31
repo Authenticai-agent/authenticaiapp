@@ -87,25 +87,32 @@ const MultipleLocations: React.FC = () => {
       locs.map(async (location) => {
         try {
           const response = await fetch(
-            `${API_BASE_URL}/air-quality?lat=${location.lat}&lon=${location.lon}`,
+            `${API_BASE_URL}/air-quality/current?lat=${location.lat}&lon=${location.lon}`,
             {
               headers: { 'Authorization': `Bearer ${token}` }
             }
           );
           
-          if (!response.ok) throw new Error('Failed to fetch AQ');
+          if (!response.ok) {
+            console.error(`Air quality API error for ${location.name}:`, response.status);
+            throw new Error('Failed to fetch AQ');
+          }
           
           const aqData = await response.json();
+          
+          // Handle array response from /current endpoint
+          const currentData = Array.isArray(aqData) ? aqData[0] : aqData;
           
           return {
             ...location,
             air_quality: {
-              aqi: aqData.aqi,
-              pm25: aqData.pm25,
-              category: getAQICategory(aqData.aqi)
+              aqi: currentData.aqi || 0,
+              pm25: currentData.pm25 || 0,
+              category: getAQICategory(currentData.aqi || 0)
             }
           };
         } catch (error) {
+          console.error(`Error fetching air quality for ${location.name}:`, error);
           return {
             ...location,
             error: 'Failed to load air quality'
