@@ -404,13 +404,24 @@ const Dashboard: React.FC = () => {
           if (authResponse.ok) {
             data = await authResponse.json();
             console.log('✅ Used authenticated endpoint');
+          } else if (authResponse.status === 429) {
+            // Rate limit exceeded
+            const errorData = await authResponse.json();
+            console.log('🚫 Rate limit exceeded:', errorData);
+            const error: any = new Error('Rate limit exceeded');
+            error.response = { status: 429, data: errorData.detail || errorData };
+            throw error;
           } else if (authResponse.status === 401) {
             console.log('⚠️ Authentication failed, falling back to public endpoint');
             // Fall through to public endpoint
           } else {
             throw new Error(`Authenticated endpoint failed: ${authResponse.status}`);
           }
-        } catch (authError) {
+        } catch (authError: any) {
+          // Don't fall through if it's a rate limit error
+          if (authError.response?.status === 429 || authError.message?.includes('Rate limit')) {
+            throw authError;
+          }
           console.log('⚠️ Authenticated endpoint error, falling back to public endpoint:', authError);
           // Fall through to public endpoint
         }

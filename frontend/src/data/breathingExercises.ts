@@ -1,13 +1,16 @@
 /**
  * Breathing Exercise Library
- * Premium Module - Comprehensive breathing techniques for respiratory health
+ * 45 Professional Breathing Techniques
+ * 
+ * FREE: 15 foundational techniques
+ * PREMIUM: 30 advanced techniques (with teaser headlines)
  * 
  * Each exercise includes:
- * - Detailed instructions
+ * - One-sentence wellness benefit (visible to all)
+ * - Detailed instructions (premium only for locked exercises)
  * - Benefits for respiratory health
  * - Duration and difficulty
  * - Visual animation cues
- * - When to use (air quality conditions)
  */
 
 export interface BreathingExercise {
@@ -18,6 +21,7 @@ export interface BreathingExercise {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   duration: number; // in minutes
   isPremium: boolean;
+  teaserBenefit: string; // One-sentence benefit visible to all users
   description: string;
   benefits: string[];
   bestFor: string[];
