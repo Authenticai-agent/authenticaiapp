@@ -24,6 +24,7 @@ import IndoorWellnessTip from '../components/IndoorWellnessTip';
 import DonationCTA from '../components/DonationCTA';
 import AppointmentReminder from '../components/AppointmentReminder';
 import GoogleCalendarConnect from '../components/GoogleCalendarConnect';
+import DashboardLocationSearch from '../components/DashboardLocationSearch';
 
 // API Base URL
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
@@ -662,6 +663,9 @@ const Dashboard: React.FC = () => {
           <CommunityGoodDayChallenge />
 
         </div>
+
+        {/* Location Search - moved from Air Quality page */}
+        <DashboardLocationSearch />
 
         {/* Free Tier Engagement Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
